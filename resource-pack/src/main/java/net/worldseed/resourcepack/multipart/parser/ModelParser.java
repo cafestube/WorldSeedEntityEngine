@@ -1,22 +1,19 @@
 package net.worldseed.resourcepack.multipart.parser;
 
-import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Vec;
-import net.worldseed.multipart.ModelEngine;
+import net.worldseed.resourcepack.PackBuilder;
+import net.worldseed.resourcepack.math.Vec;
 import net.worldseed.resourcepack.multipart.generator.ModelGenerator;
 import net.worldseed.resourcepack.multipart.generator.TextureGenerator;
-import org.apache.commons.io.FileUtils;
 
 import javax.imageio.ImageIO;
 import javax.json.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.*;
+import java.nio.channels.Channels;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -26,7 +23,7 @@ public class ModelParser {
     private static final List<JsonObject> entries = new ArrayList<>();
     private static int index = 0;
 
-    private static JsonObject display(Point offset) {
+    private static JsonObject display(Vec offset) {
         JsonArrayBuilder translationHead = Json.createArrayBuilder();
         translationHead.add(offset.x() * -4);
         translationHead.add(offset.y() * 4 - 6.5);
@@ -88,7 +85,7 @@ public class ModelParser {
                 .build();
     }
 
-    public static Optional<Point> getPos(JsonArray pivot) {
+    public static Optional<Vec> getPos(JsonArray pivot) {
         if (pivot == null) return Optional.empty();
         else {
             JsonArray arr = pivot.asJsonArray();
@@ -117,7 +114,7 @@ public class ModelParser {
         // fallback model
         final JsonObjectBuilder modelFallback = Json.createObjectBuilder();
         modelFallback.add("type", "model");
-        modelFallback.add("model", "minecraft:item/" + ModelEngine.getModelMaterial().key().value().toLowerCase());
+        modelFallback.add("model", "minecraft:item/" + PackBuilder.MODEL_MATERIAL.replace("minecraft:", "").toLowerCase());
         model.add("fallback", modelFallback);
 
         JsonObject itemFile = Json.createObjectBuilder().add("model", model).build();
@@ -141,8 +138,8 @@ public class ModelParser {
             double cubeMaxZ = -100000;
 
             for (Cube cube : bone.cubes) {
-                Point cubeOrigin = cube.origin;
-                Point cubeSize = cube.size;
+                Vec cubeOrigin = cube.origin;
+                Vec cubeSize = cube.size;
 
                 cubeMinX = Math.min(cubeMinX, cubeOrigin.x());
                 cubeMinY = Math.min(cubeMinY, cubeOrigin.y());
@@ -153,21 +150,21 @@ public class ModelParser {
                 cubeMaxZ = Math.max(cubeMaxZ, cubeOrigin.z() + cubeSize.z());
             }
 
-            final Point cubeMid = new Vec((cubeMaxX + cubeMinX) / 2 - 8, (cubeMaxY + cubeMinY) / 2 - 8, (cubeMaxZ + cubeMinZ) / 2 - 8);
-            final Point trueMid = bone.pivot.mul(-1, 1, 1).sub(8, 8, 8);
-            final Point midOffset = cubeMid.sub(trueMid);
+            final Vec cubeMid = new Vec((cubeMaxX + cubeMinX) / 2 - 8, (cubeMaxY + cubeMinY) / 2 - 8, (cubeMaxZ + cubeMinZ) / 2 - 8);
+            final Vec trueMid = bone.pivot.mul(-1, 1, 1).sub(8, 8, 8);
+            final Vec midOffset = cubeMid.sub(trueMid);
 
-            final Point cubeDiff = new Vec(trueMid.x() - cubeMinX + 16, trueMid.y() - cubeMinY + 16, trueMid.z() - cubeMinZ + 16);
+            final Vec cubeDiff = new Vec(trueMid.x() - cubeMinX + 16, trueMid.y() - cubeMinY + 16, trueMid.z() - cubeMinZ + 16);
 
             for (Cube cube : bone.cubes()) {
-                Point cubePivot = new Vec(-(cube.pivot().x() + cubeMid.x()), cube.pivot.y() - cubeMid.y(), cube.pivot.z() - cubeMid.z());
-                Point cubeSize = cube.size;
-                Point cubeOrigin = cube.origin;
+                Vec cubePivot = new Vec(-(cube.pivot().x() + cubeMid.x()), cube.pivot.y() - cubeMid.y(), cube.pivot.z() - cubeMid.z());
+                Vec cubeSize = cube.size;
+                Vec cubeOrigin = cube.origin;
 
-                Point cubeFrom = new Vec(cubeOrigin.x() - cubeMid.x(), cubeOrigin.y() - cubeMid.y(), cubeOrigin.z() - cubeMid.z());
-                Point cubeTo = new Vec(cubeFrom.x() + cubeSize.x(), cubeFrom.y() + cubeSize.y(), cubeFrom.z() + cubeSize.z());
+                Vec cubeFrom = new Vec(cubeOrigin.x() - cubeMid.x(), cubeOrigin.y() - cubeMid.y(), cubeOrigin.z() - cubeMid.z());
+                Vec cubeTo = new Vec(cubeFrom.x() + cubeSize.x(), cubeFrom.y() + cubeSize.y(), cubeFrom.z() + cubeSize.z());
 
-                Point cubeRotation = new Vec(-cube.rotation.x(), -cube.rotation.y(), cube.rotation.z());
+                Vec cubeRotation = new Vec(-cube.rotation.x(), -cube.rotation.y(), cube.rotation.z());
                 HashMap<TextureFace, UV> uvs = new HashMap<>();
 
                 for (TextureFace face : cube.uv.keySet()) {
@@ -290,18 +287,18 @@ public class ModelParser {
         for (JsonValue bone : bonesJson) {
             if (bone.asJsonObject().getJsonArray("cubes") == null) continue;
             String name = bone.asJsonObject().getString("name");
-            Point bonePivot = getPos(bone.asJsonObject().get("pivot").asJsonArray()).orElse(Vec.ZERO);
+            Vec bonePivot = getPos(bone.asJsonObject().get("pivot").asJsonArray()).orElse(Vec.ZERO);
 
             List<Cube> cubes = new ArrayList<>();
             for (JsonValue cubeJson : bone.asJsonObject().getJsonArray("cubes")) {
-                Optional<Point> origin = getPos(cubeJson.asJsonObject().getJsonArray("origin"));
-                Optional<Point> size = getPos(cubeJson.asJsonObject().getJsonArray("size"));
+                Optional<Vec> origin = getPos(cubeJson.asJsonObject().getJsonArray("origin"));
+                Optional<Vec> size = getPos(cubeJson.asJsonObject().getJsonArray("size"));
 
-                Optional<Point> pivot = Optional.empty();
+                Optional<Vec> pivot = Optional.empty();
                 if (cubeJson.asJsonObject().getJsonArray("pivot") != null)
                     pivot = getPos(cubeJson.asJsonObject().getJsonArray("pivot"));
 
-                Optional<Point> rotation = Optional.empty();
+                Optional<Vec> rotation = Optional.empty();
                 if (cubeJson.asJsonObject().getJsonArray("rotation") != null)
                     rotation = getPos(cubeJson.asJsonObject().getJsonArray("rotation"));
 
@@ -309,7 +306,8 @@ public class ModelParser {
                 Map<TextureFace, UV> uv = getUV(cubeJson.asJsonObject().getJsonObject("uv"));
 
                 if (origin.isPresent() && size.isPresent()) {
-                    Cube cube = new Cube(origin.get().withX(-origin.get().x() - size.get().x()), size.get(), pivot.orElse(Vec.ZERO), rotation.orElse(Vec.ZERO), uv);
+                    Cube cube = new Cube(origin.get().withX(-origin.get().x() - size.get().x()),
+                            size.get(), pivot.orElse(Vec.ZERO), rotation.orElse(Vec.ZERO), uv);
                     cubes.add(cube);
                 }
             }
@@ -338,7 +336,14 @@ public class ModelParser {
                     var toWrite = createIndividualModels(subbones, textureWidth, textureHeight, bbModel, modelTextureJson.build(), textureSize, substate.getValue().state());
 
                     for (var w : toWrite.entrySet()) {
-                        FileUtils.writeStringToFile(modelPathMobs.resolve(bbModel.id() + "/" + substate.getKey() + "/" + w.getKey()).toFile(), w.getValue().toString(), Charset.defaultCharset());
+                        Path path = modelPathMobs.resolve(bbModel.id() + "/" + substate.getKey() + "/" + w.getKey());
+                        if(!Files.exists(path.getParent())) {
+                            Files.createDirectories(path.getParent());
+                        }
+
+                        try (OutputStream out = Files.newOutputStream(path)) {
+                            Channels.newChannel(out).write(StandardCharsets.UTF_8.encode(w.getValue().toString()));
+                        }
                     }
                 }
             }
@@ -409,7 +414,7 @@ public class ModelParser {
         return res.build();
     }
 
-    private static JsonArray pointAsJson(Point from) {
+    private static JsonArray pointAsJson(Vec from) {
         JsonArrayBuilder res = Json.createArrayBuilder();
         res.add(Math.round(from.x() * 10000) / 10000.0);
         res.add(Math.round(from.y() * 10000) / 10000.0);
@@ -496,16 +501,16 @@ public class ModelParser {
     public record ModelEngineFiles(JsonObject mappings, JsonObject binding, List<ModelFile> models) {
     }
 
-    record Cube(Point origin, Point size, Point pivot, Point rotation, Map<TextureFace, UV> uv) {
+    record Cube(Vec origin, Vec size, Vec pivot, Vec rotation, Map<TextureFace, UV> uv) {
     }
 
-    record Bone(String name, List<Cube> cubes, Point pivot) {
+    record Bone(String name, List<Cube> cubes, Vec pivot) {
     }
 
-    record ItemId(String name, String bone, Point offset, Point diff, int id) {
+    record ItemId(String name, String bone, Vec offset, Vec diff, int id) {
     }
 
-    record MappingEntry(Map<String, Integer> map, Point offset, Point diff) {
+    record MappingEntry(Map<String, Integer> map, Vec offset, Vec diff) {
         public JsonObject asJson() {
             JsonObjectBuilder res = Json.createObjectBuilder();
 
@@ -534,7 +539,7 @@ public class ModelParser {
         }
     }
 
-    record RotationInfo(double angle, String axis, Point origin) {
+    record RotationInfo(double angle, String axis, Vec origin) {
         public JsonObject asJson() {
             JsonObjectBuilder res = Json.createObjectBuilder();
             res.add("angle", angle);
@@ -544,7 +549,7 @@ public class ModelParser {
         }
     }
 
-    record Element(Point from, Point to, Map<TextureFace, UV> faces, RotationInfo rotation) {
+    record Element(Vec from, Vec to, Map<TextureFace, UV> faces, RotationInfo rotation) {
         public JsonObject asJson() {
             JsonObjectBuilder res = Json.createObjectBuilder();
             res.add("from", pointAsJson(from));

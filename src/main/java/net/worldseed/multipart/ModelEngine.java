@@ -59,7 +59,7 @@ public class ModelEngine {
         }
     });
     private static Path modelPath;
-    private static Material modelMaterial = Material.MAGMA_CREAM;
+    private static Material modelMaterial = Material.PAPER;
 
     /**
      * Loads the model from the given path. Assumes the server is already initialized.

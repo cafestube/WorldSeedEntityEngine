@@ -1,6 +1,5 @@
 package net.worldseed.resourcepack;
 
-import net.worldseed.multipart.ModelEngine;
 import net.worldseed.resourcepack.multipart.generator.ModelGenerator;
 import net.worldseed.resourcepack.multipart.generator.TextureGenerator;
 import net.worldseed.resourcepack.multipart.parser.ModelParser;
@@ -17,6 +16,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class PackBuilder {
+
+    public static final String MODEL_MATERIAL = "minecraft:paper";
 
     public static JsonArray applyInflate(JsonArray from, double inflate) {
         JsonArrayBuilder inflated = Json.createArrayBuilder();
@@ -156,7 +157,7 @@ public class PackBuilder {
             }
         });
 
-        final String itemName = ModelEngine.getModelMaterial().name().replace("minecraft:", "");
+        final String itemName = MODEL_MATERIAL.replace("minecraft:", "");
         Files.writeString(baseModelPath.resolve(itemName + ".json"), modelData.binding().toString(), Charset.defaultCharset());
         return modelData.mappings();
     }
