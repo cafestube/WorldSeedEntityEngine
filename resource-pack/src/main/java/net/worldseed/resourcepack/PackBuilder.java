@@ -90,11 +90,6 @@ public class PackBuilder {
 
     private static JsonObject writeCustomModels(List<Model> entityModels, Path modelDataPath, Path texturePathMobs, Path modelPathMobs, Path baseModelPath) throws Exception {
         Map<String, ModelGenerator.BBEntityModel> res = new HashMap<>();
-        JsonObjectBuilder thumbnailMap = Json.createObjectBuilder();
-        thumbnailMap.add("parent", "item/generated");
-        thumbnailMap.add("textures", Json.createObjectBuilder().add("layer0", "minecraft:item/ink_sac").build());
-
-        JsonArrayBuilder overrides = Json.createArrayBuilder();
 
         for (Model entityModel : entityModels) {
             ModelGenerator.BBEntityModel bbModel = ModelGenerator.generate(entityModel);
@@ -106,19 +101,6 @@ public class PackBuilder {
 
             res.put(bbModel.id(), bbModel);
         }
-
-        thumbnailMap.add("overrides", overrides.build());
-
-        Files.writeString(baseModelPath.resolve("ink_sac.json"),
-                Json.createObjectBuilder()
-                        .add("model", Json.createObjectBuilder()
-                                .add("type", "minecraft:model")
-                                .add("model", "minecraft:item/ink_sac"))
-                        .build().toString(), Charset.defaultCharset());
-
-        Path inkSacTargetPath = baseModelPath.resolve("../models/item/ink_sac.json");
-        Files.createDirectories(inkSacTargetPath.getParent());
-        Files.writeString(inkSacTargetPath, thumbnailMap.build().toString(), Charset.defaultCharset());
 
         ModelParser.ModelEngineFiles modelData = ModelParser.parse(res.values(), modelPathMobs);
 
