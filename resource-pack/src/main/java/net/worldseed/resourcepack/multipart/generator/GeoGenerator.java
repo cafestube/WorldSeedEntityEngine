@@ -46,9 +46,8 @@ public class GeoGenerator {
                 if (cubeRotation.y() != 0) rotationCount++;
                 if (cubeRotation.z() != 0) rotationCount++;
 
-                if (rotationCount > 1 || (cubeRotation.x() != 45 && cubeRotation.x() != -22.5 && cubeRotation.x() != 22.5 && cubeRotation.x() != -45 && cubeRotation.x() != 0)
-                        || (cubeRotation.y() != 45 && cubeRotation.y() != -22.5 && cubeRotation.y() != 22.5 && cubeRotation.y() != -45 && cubeRotation.y() != 0)
-                        || (cubeRotation.z() != 45 && cubeRotation.z() != -22.5 && cubeRotation.z() != 22.5 && cubeRotation.z() != -45 && cubeRotation.z() != 0)) {
+                // Minecraft doesnt support more than one rotation per cube, so we need to fix it
+                if (rotationCount > 1) {
                     JsonObjectBuilder clonedCube = Json.createObjectBuilder(cube)
                             .add("rotation", Json.createArrayBuilder().add(0).add(0).add(0).build())
                             .add("name", name + "_fix_" + UUID.randomUUID());

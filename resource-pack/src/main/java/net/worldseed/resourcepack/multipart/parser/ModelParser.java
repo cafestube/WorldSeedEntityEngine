@@ -175,16 +175,6 @@ public class ModelParser {
                 double rotationAmount = 0;
                 String rotationAxis = "z";
 
-                if (cubeRotation.x() != 45 && cubeRotation.x() != -22.5 && cubeRotation.x() != 22.5 && cubeRotation.x() != -45 && cubeRotation.x() != 0) {
-                    throw new IllegalArgumentException("Invalid rotation: " + boneName + " X " + bbModel.id() + " " + cubeRotation.x());
-                }
-                if (cubeRotation.y() != 45 && cubeRotation.y() != -22.5 && cubeRotation.y() != 22.5 && cubeRotation.y() != -45 && cubeRotation.y() != 0) {
-                    throw new IllegalArgumentException("Invalid rotation: " + boneName + " Y " + bbModel.id() + " " + cubeRotation.y());
-                }
-                if (cubeRotation.z() != 45 && cubeRotation.z() != -22.5 && cubeRotation.z() != 22.5 && cubeRotation.z() != -45 && cubeRotation.z() != 0) {
-                    throw new IllegalArgumentException("Invalid rotation: " + boneName + " Z " + bbModel.id() + " " + cubeRotation.z());
-                }
-
                 if (cubeRotation.x() != 0) {
                     rotationAmount = cubeRotation.x();
                     rotationAxis = "x";
