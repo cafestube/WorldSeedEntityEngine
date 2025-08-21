@@ -1,14 +1,13 @@
 package net.worldseed.multipart.animations;
 
 import net.minestom.server.coordinate.Point;
-import net.worldseed.multipart.ModelLoader;
 
 public interface BoneAnimation {
     String name();
 
     String boneName();
 
-    ModelLoader.AnimationType getType();
+    AnimationLoader.AnimationType getType();
 
     Point getTransformAtTime(int time);
 

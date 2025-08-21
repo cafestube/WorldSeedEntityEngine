@@ -2,10 +2,7 @@ package net.worldseed.multipart;
 
 import com.google.gson.*;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.component.DataComponent;
-import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.event.EventDispatcher;
@@ -13,9 +10,6 @@ import net.minestom.server.event.EventListener;
 import net.minestom.server.event.entity.EntityDamageEvent;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import net.minestom.server.event.player.PlayerPacketEvent;
-import net.minestom.server.item.ItemStack;
-import net.minestom.server.item.Material;
-import net.minestom.server.item.component.CustomModelData;
 import net.minestom.server.network.packet.client.play.ClientInputPacket;
 import net.worldseed.multipart.events.ModelControlEvent;
 import net.worldseed.multipart.events.ModelDamageEvent;
@@ -24,18 +18,10 @@ import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.mql.MQLPoint;
 
 import javax.json.JsonNumber;
-import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 
 public class ModelEngine {
-    public final static HashMap<String, Point> offsetMappings = new HashMap<>();
-    public final static HashMap<String, Point> diffMappings = new HashMap<>();
-    static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-    private final static HashMap<String, HashMap<String, ItemStack>> blockMappings = new HashMap<>();
     private static final EventListener<PlayerPacketEvent> playerListener = EventListener.of(PlayerPacketEvent.class, event -> {
         if (event.getPacket() instanceof ClientInputPacket packet) {
             Entity ridingEntity = event.getPlayer().getVehicle();
@@ -58,64 +44,17 @@ public class ModelEngine {
             MinecraftServer.getGlobalEventHandler().call(modelDamageEvent);
         }
     });
-    private static Path modelPath;
-    private static Material modelMaterial = Material.PAPER;
 
     /**
-     * Loads the model from the given path. Assumes the server is already initialized.
-     *
-     * @param mappingsData mappings file created by model parser
-     * @param modelPath    path of the models
+     * Registers the event listeners for the Model Engine.
      */
-    public static void loadMappings(Reader mappingsData, Path modelPath) {
+    public static void registerListener() {
         MinecraftServer.getGlobalEventHandler()
                 .addListener(playerListener)
                 .addListener(playerInteractListener)
                 .addListener(entityDamageListener);
-
-        JsonObject map = GSON.fromJson(mappingsData, JsonObject.class);
-        ModelEngine.modelPath = modelPath;
-
-        blockMappings.clear();
-        offsetMappings.clear();
-        diffMappings.clear();
-        ModelLoader.clearCache();
-
-        map.entrySet().forEach(entry -> {
-            HashMap<String, ItemStack> keys = new HashMap<>();
-
-            entry.getValue().getAsJsonObject()
-                    .get("id")
-                    .getAsJsonObject()
-                    .entrySet()
-                    .forEach(id -> keys.put(id.getKey(), generateBoneItem(id.getValue().getAsFloat())));
-
-            blockMappings.put(entry.getKey(), keys);
-            offsetMappings.put(entry.getKey(), getPos(entry.getValue().getAsJsonObject().get("offset").getAsJsonArray()).orElse(Pos.ZERO));
-            diffMappings.put(entry.getKey(), getPos(entry.getValue().getAsJsonObject().get("diff").getAsJsonArray()).orElse(Pos.ZERO));
-        });
     }
 
-    private static ItemStack generateBoneItem(float model_id) {
-        return ItemStack.builder(modelMaterial).set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(
-                List.of(model_id),
-                List.of(),
-                List.of(),
-                List.of()
-        )).build();
-    }
-
-    public static HashMap<String, ItemStack> getItems(String model, String name) {
-        return blockMappings.get(model + "/" + name);
-    }
-
-    public static Path getGeoPath(String id) {
-        return modelPath.resolve(id).resolve("model.geo.json");
-    }
-
-    public static Path getAnimationPath(String id) {
-        return modelPath.resolve(id).resolve("model.animation.json");
-    }
 
     public static Optional<Point> getPos(JsonElement pivot) {
         if (pivot == null) return Optional.empty();
@@ -136,18 +75,11 @@ public class ModelEngine {
         }
     }
 
-    public static Material getModelMaterial() {
-        return modelMaterial;
-    }
-
-    public static void setModelMaterial(Material modelMaterial) {
-        ModelEngine.modelMaterial = modelMaterial;
-    }
-
     public static Optional<MQLPoint> getMQLPos(JsonArray arr) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         if (arr == null) return Optional.empty();
         else {
             return Optional.of(new MQLPoint(arr));
         }
     }
+
 }

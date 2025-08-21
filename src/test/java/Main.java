@@ -35,9 +35,6 @@ import org.apache.commons.io.FileUtils;
 import org.zeroturnaround.zip.ZipUtil;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -56,14 +53,11 @@ public class Main {
         } catch (IllegalArgumentException ignored) {
         }
 
-        ModelEngine.setModelMaterial(Material.MAGMA_CREAM);
-
         FileUtils.copyDirectory(BASE_PATH.resolve("resourcepack_template").toFile(), BASE_PATH.resolve("resourcepack").toFile());
-        var config = PackBuilder.generate(BASE_PATH.resolve("bbmodel"), BASE_PATH.resolve("resourcepack"), MODEL_PATH);
+        var config = PackBuilder.generate(BASE_PATH.resolve("bbmodel"), BASE_PATH.resolve("resourcepack"), MODEL_PATH, "worldseed");
         FileUtils.writeStringToFile(BASE_PATH.resolve("model_mappings.json").toFile(), config.modelMappings(), Charset.defaultCharset());
 
-        Reader mappingsData = new InputStreamReader(new FileInputStream(BASE_PATH.resolve("model_mappings.json").toFile()));
-        ModelEngine.loadMappings(mappingsData, MODEL_PATH);
+        ModelEngine.registerListener();
 
         ZipUtil.pack(BASE_PATH.resolve("resourcepack").toFile(), ZIP_PATH.toFile());
         File zipFile = ZIP_PATH.toFile();

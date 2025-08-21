@@ -3,7 +3,7 @@ package net.worldseed.multipart.model_bones.display_entity;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
 import net.worldseed.multipart.GenericModel;
-import net.worldseed.multipart.ModelLoader;
+import net.worldseed.multipart.animations.AnimationLoader;
 import net.worldseed.multipart.animations.BoneAnimation;
 import net.worldseed.multipart.model_bones.ModelBoneViewable;
 
@@ -20,7 +20,7 @@ public class ModelBoneHeadDisplay extends ModelBonePartDisplay implements ModelB
 
         for (BoneAnimation currentAnimation : this.allAnimations) {
             if (currentAnimation != null && currentAnimation.isPlaying()) {
-                if (currentAnimation.getType() == ModelLoader.AnimationType.ROTATION) {
+                if (currentAnimation.getType() == AnimationLoader.AnimationType.ROTATION) {
                     Point calculatedTransform = currentAnimation.getTransform();
                     netTransform = netTransform.add(calculatedTransform);
                 }

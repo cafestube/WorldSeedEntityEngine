@@ -1,5 +1,6 @@
 package demo_models.bulbasaur;
 
+import demo_models.Registry;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
@@ -37,7 +38,7 @@ public class BulbasaurMob extends EntityCreature {
         this.setInvisible(true);
         this.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.1f);
 
-        this.model = new BulbasaurModel();
+        this.model = new BulbasaurModel(Registry.REGISTRY);
         model.init(instance, pos, 1f);
 
         model.eventNode().addListener(ModelDamageEvent.class, (event) -> {

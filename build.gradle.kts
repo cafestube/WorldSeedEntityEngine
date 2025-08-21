@@ -41,6 +41,7 @@ publishing {
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.0-M2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.0-M2")
+    testImplementation("org.slf4j:slf4j-simple:2.0.17")
 
     compileOnly("net.minestom:minestom:2025.08.12-1.21.8")
     testImplementation("net.minestom:minestom:2025.08.12-1.21.8")

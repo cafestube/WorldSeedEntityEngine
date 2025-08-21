@@ -1,16 +1,18 @@
 package demo_models.gem_golem;
 
+import net.kyori.adventure.key.Key;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.GenericModelImpl;
+import net.worldseed.multipart.ModelRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class GemGolemModel extends GenericModelImpl {
-    @Override
-    public String getId() {
-        return "gem_golem.bbmodel";
+
+    public GemGolemModel(ModelRegistry registry) {
+        super(registry, "gem_golem.bbmodel");
     }
 
     public void init(@Nullable Instance instance, @NotNull Pos position, Entity nametag) {

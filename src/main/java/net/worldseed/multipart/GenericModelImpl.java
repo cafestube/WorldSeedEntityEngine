@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.util.RGBLike;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.ServerProcess;
@@ -64,7 +65,13 @@ public abstract class GenericModelImpl implements GenericModel {
 
     private static final EventFilter<ModelEvent, GenericModel> MODEL_FILTER = EventFilter.from(ModelEvent.class, GenericModel.class, ModelEvent::model);
 
-    public GenericModelImpl() {
+    private final ModelRegistry modelRegistry;
+    private final String modelId;
+
+    public GenericModelImpl(ModelRegistry registry, String modelId) {
+        this.modelRegistry = registry;
+        this.modelId = modelId;
+
         final ServerProcess process = MinecraftServer.process();
         if (process != null) {
             this.eventNode = process.eventHandler().map(this, MODEL_FILTER);
@@ -127,11 +134,22 @@ public abstract class GenericModelImpl implements GenericModel {
         init(instance, position, 1);
     }
 
+    @Override
+    public ModelRegistry getModelRegistry() {
+        return modelRegistry;
+    }
+
+    @Override
+    public String getId() {
+        return this.modelId;
+    }
+
     public void init(@Nullable Instance instance, @NotNull Pos position, float scale) {
         this.instance = instance;
         this.position = position;
 
-        JsonObject loadedModel = ModelLoader.loadModel(getId());
+        JsonObject loadedModel = this.getModelRegistry().getOrLoadGeometry(getId());
+
         this.setGlobalRotation(position.yaw());
 
         loadBones(loadedModel, scale);
@@ -287,11 +305,11 @@ public abstract class GenericModelImpl implements GenericModel {
     }
 
     public Point getDiff(String boneName) {
-        return ModelEngine.diffMappings.get(getId() + "/" + boneName);
+        return modelRegistry.diffMappings.get(getId() + "/" + boneName);
     }
 
     public Point getOffset(String boneName) {
-        return ModelEngine.offsetMappings.get(getId() + "/" + boneName);
+        return modelRegistry.offsetMappings.get(getId() + "/" + boneName);
     }
 
     @Override

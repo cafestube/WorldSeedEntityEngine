@@ -1,12 +1,13 @@
 package net.worldseed.multipart.animations;
 
 import com.google.gson.JsonElement;
+import net.worldseed.multipart.animations.data.AnimationData;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
 public interface AnimationHandler {
-    void registerAnimation(String name, JsonElement animation, int priority);
+    void registerAnimation(String name, AnimationData animation, int priority);
 
     void registerAnimation(ModelAnimation animator);
 

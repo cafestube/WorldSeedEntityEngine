@@ -1,6 +1,5 @@
 package net.worldseed.resourcepack.multipart.parser;
 
-import net.worldseed.resourcepack.PackBuilder;
 import net.worldseed.resourcepack.math.Vec;
 import net.worldseed.resourcepack.multipart.generator.ModelGenerator;
 import net.worldseed.resourcepack.multipart.generator.TextureGenerator;
@@ -20,7 +19,7 @@ import java.util.*;
 public class ModelParser {
 
     private static final Map<String, MappingEntry> mappings = new HashMap<>();
-    private static final List<JsonObject> entries = new ArrayList<>();
+    private static final Map<String, List<JsonObject>> entries = new HashMap<>();
     private static int index = 0;
 
     private static JsonObject display(Vec offset) {
@@ -104,22 +103,22 @@ public class ModelParser {
             models.addAll(createFiles(folder, modelPathMobs));
         }
 
-        final JsonObjectBuilder model = Json.createObjectBuilder();
-        model.add("type", "range_dispatch");
-        model.add("property", "custom_model_data");
+        List<ItemModelFile> itemModels = new ArrayList<>();
 
-        // model entries
-        model.add("entries", entriesToJson());
+        for (Map.Entry<String, List<JsonObject>> entry : entries.entrySet()) {
+            final JsonObjectBuilder model = Json.createObjectBuilder();
+            model.add("type", "range_dispatch");
+            model.add("property", "custom_model_data");
 
-        // fallback model
-        final JsonObjectBuilder modelFallback = Json.createObjectBuilder();
-        modelFallback.add("type", "model");
-        modelFallback.add("model", "minecraft:item/" + PackBuilder.MODEL_MATERIAL.replace("minecraft:", "").toLowerCase());
-        model.add("fallback", modelFallback);
+            // model entries
+            model.add("entries", entriesToJson(entry.getValue()));
 
-        JsonObject itemFile = Json.createObjectBuilder().add("model", model).build();
+            JsonObject itemFile = Json.createObjectBuilder().add("model", model).build();
 
-        return new ModelEngineFiles(mappingsToJson(), itemFile, models);
+            itemModels.add(new ItemModelFile(entry.getKey(), itemFile));
+        }
+
+        return new ModelEngineFiles(mappingsToJson(), itemModels, models);
     }
 
     private static Map<String, JsonObject> createIndividualModels(List<Bone> bones, int textureWidth, int textureHeight, ModelGenerator.BBEntityModel bbModel, JsonObject builtTextures, JsonArray textureSize, TextureState state) {
@@ -213,10 +212,10 @@ public class ModelParser {
                             );
 
                     if (mappings.get(item.name + "/" + item.bone) == null)
-                        mappings.put(item.name + "/" + item.bone, new MappingEntry(new HashMap<>(), item.offset, item.diff));
+                        mappings.put(item.name + "/" + item.bone, new MappingEntry(new HashMap<>(), item.offset, item.diff, bbModel.id()));
 
                     mappings.get(item.name + "/" + item.bone).map.put(state.name(), item.id);
-                    entries.add(createEntry(item.id, bbModel.id(), state.name(), item.bone));
+                    entries.computeIfAbsent(bbModel.id(), s -> new ArrayList<>()).add(createEntry(item.id, bbModel.id(), state.name(), item.bone));
                 }
 
                 JsonObjectBuilder boneInfo = Json.createObjectBuilder();
@@ -376,9 +375,9 @@ public class ModelParser {
         return res.build();
     }
 
-    private static JsonArray entriesToJson() {
+    private static JsonArray entriesToJson(List<JsonObject> list) {
         final JsonArrayBuilder entries = Json.createArrayBuilder();
-        for (JsonObject entry : ModelParser.entries) {
+        for (JsonObject entry : list) {
             entries.add(entry);
         }
 
@@ -488,7 +487,11 @@ public class ModelParser {
                             int textureWidth, int textureHeight) {
     }
 
-    public record ModelEngineFiles(JsonObject mappings, JsonObject binding, List<ModelFile> models) {
+    public record ItemModelFile(String id, JsonObject binding) {
+
+    }
+
+    public record ModelEngineFiles(JsonObject mappings, List<ItemModelFile> binding, List<ModelFile> models) {
     }
 
     record Cube(Vec origin, Vec size, Vec pivot, Vec rotation, Map<TextureFace, UV> uv) {
@@ -500,13 +503,14 @@ public class ModelParser {
     record ItemId(String name, String bone, Vec offset, Vec diff, int id) {
     }
 
-    record MappingEntry(Map<String, Integer> map, Vec offset, Vec diff) {
+    record MappingEntry(Map<String, Integer> map, Vec offset, Vec diff, String modelId) {
         public JsonObject asJson() {
             JsonObjectBuilder res = Json.createObjectBuilder();
 
             res.add("id", entrySetToJson(map));
             res.add("offset", pointAsJson(offset));
             res.add("diff", pointAsJson(diff));
+            res.add("model_id", modelId);
 
             return res.build();
         }

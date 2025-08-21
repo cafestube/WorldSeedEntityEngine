@@ -1,5 +1,6 @@
 package demo_models.gem_golem;
 
+import demo_models.Registry;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Point;
@@ -45,7 +46,7 @@ public class GemGolemMob extends EntityCreature {
     public GemGolemMob(Instance instance, Pos pos) {
         super(EntityType.PUFFERFISH);
 
-        this.model = new GemGolemModel();
+        this.model = new GemGolemModel(Registry.REGISTRY);
 
         BoneEntity nametag = new BoneEntity(EntityType.ARMOR_STAND, model, "nametag");
         nametag.setCustomNameVisible(true);

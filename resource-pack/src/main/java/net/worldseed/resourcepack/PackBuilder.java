@@ -17,8 +17,6 @@ import java.util.stream.Stream;
 
 public class PackBuilder {
 
-    public static final String MODEL_MATERIAL = "minecraft:paper";
-
     public static JsonArray applyInflate(JsonArray from, double inflate) {
         JsonArrayBuilder inflated = Json.createArrayBuilder();
         for (int i = 0; i < from.size(); ++i) {
@@ -28,7 +26,7 @@ public class PackBuilder {
         return inflated.build();
     }
 
-    public static ConfigJson generate(Path bbmodel, Path resourcepack, Path modelDataPath) throws Exception {
+    public static ConfigJson generate(Path bbmodel, Path resourcepack, Path modelDataPath, String namespace) throws Exception {
         Files.createDirectories(resourcepack);
         Files.createDirectories(modelDataPath);
 
@@ -36,14 +34,14 @@ public class PackBuilder {
 
         List<Model> entityModels = recursiveFileSearch(bbmodel, bbmodel, additionalStateFiles);
 
-        Path texturePathMobs = resourcepack.resolve("assets/worldseed/textures/mobs/");
-        Path modelPathMobs = resourcepack.resolve("assets/worldseed/models/mobs/");
-        Path baseModelPath = resourcepack.resolve("assets/minecraft/items/");
+        Path assets = resourcepack.resolve("assets/" + namespace + "/");
+        Path texturePathMobs = assets.resolve("textures/mobs/");
+        Path modelPathMobs = assets.resolve("models/mobs/");
+        Path baseModelPath = assets.resolve("items/");
 
         Files.createDirectories(texturePathMobs);
         Files.createDirectories(modelPathMobs);
         Files.createDirectories(baseModelPath);
-        Files.createDirectories(resourcepack.resolve("assets/minecraft/models/"));
 
         JsonObject modelMappings = writeCustomModels(entityModels, modelDataPath, texturePathMobs, modelPathMobs, baseModelPath);
 
@@ -88,7 +86,7 @@ public class PackBuilder {
         }
     }
 
-    private static JsonObject writeCustomModels(List<Model> entityModels, Path modelDataPath, Path texturePathMobs, Path modelPathMobs, Path baseModelPath) throws Exception {
+    private static JsonObject writeCustomModels(List<Model> entityModels, Path modelDataPath, Path texturePathMobs, Path modelPathMobs, Path itemModelPath) throws Exception {
         Map<String, ModelGenerator.BBEntityModel> res = new HashMap<>();
 
         for (Model entityModel : entityModels) {
@@ -138,9 +136,11 @@ public class PackBuilder {
                 }
             }
         });
-
-        final String itemName = MODEL_MATERIAL.replace("minecraft:", "");
-        Files.writeString(baseModelPath.resolve(itemName + ".json"), modelData.binding().toString(), Charset.defaultCharset());
+        for (ModelParser.ItemModelFile itemModelFile : modelData.binding()) {
+            Path path = itemModelPath.resolve("bbmodel").resolve(itemModelFile.id() + ".json");
+            Files.createDirectories(path.getParent());
+            Files.writeString(path, itemModelFile.binding().toString(), Charset.defaultCharset());
+        }
         return modelData.mappings();
     }
 

@@ -10,6 +10,7 @@ import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.animations.AnimationHandlerImpl;
+import net.worldseed.multipart.animations.data.AnimationData;
 import net.worldseed.multipart.events.ModelDamageEvent;
 import net.worldseed.multipart.events.ModelInteractEvent;
 import org.jetbrains.annotations.NotNull;
@@ -69,8 +70,8 @@ public abstract class EmotePlayer extends EntityCreature {
      *
      * @param emotes Map containing the emote name, and emote data
      */
-    public void loadEmotes(Map<String, JsonObject> emotes) {
-        for (Map.Entry<String, JsonObject> entry : emotes.entrySet()) {
+    public void loadEmotes(Map<String, AnimationData> emotes) {
+        for (Map.Entry<String, AnimationData> entry : emotes.entrySet()) {
             this.animationHandler.registerAnimation(entry.getKey(), entry.getValue(), emoteIndex);
             emoteIndex++;
         }

@@ -29,6 +29,8 @@ public interface GenericModel extends Viewable, EventHandler<ModelEvent>, Shape 
      */
     String getId();
 
+    ModelRegistry getModelRegistry();
+
     /**
      * Get the pivot point of the model. Used for global rotation
      *

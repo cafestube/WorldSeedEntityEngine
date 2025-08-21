@@ -3,6 +3,7 @@ package net.worldseed.gestures;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import net.kyori.adventure.key.Key;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
@@ -75,6 +76,7 @@ public class EmoteModel extends GenericModelImpl {
     private final PlayerSkin skin;
 
     public EmoteModel(PlayerSkin skin) {
+        super(null, "player_emote");
         this.skin = skin;
     }
 
@@ -95,11 +97,6 @@ public class EmoteModel extends GenericModelImpl {
     public boolean removeViewer(@NotNull Player player) {
         System.out.println("Removing viewer " + player.getUsername());
         return super.removeViewer(player);
-    }
-
-    @Override
-    public String getId() {
-        return null;
     }
 
     private void init_(@Nullable Instance instance, @NotNull Pos position) {

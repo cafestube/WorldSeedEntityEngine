@@ -1,5 +1,6 @@
 package demo_models.minimal;
 
+import demo_models.Registry;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
@@ -17,7 +18,7 @@ public class MinimalMob extends EntityCreature {
         super(EntityType.ZOMBIE);
         this.setInvisible(true);
 
-        this.model = new Minimal();
+        this.model = new Minimal(Registry.REGISTRY);
         model.init(instance, pos);
 
         this.animationHandler = new AnimationHandlerImpl(model);

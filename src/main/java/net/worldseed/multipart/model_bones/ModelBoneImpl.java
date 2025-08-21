@@ -5,11 +5,8 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemStack;
-import net.worldseed.multipart.GenericModel;
-import net.worldseed.multipart.ModelEngine;
-import net.worldseed.multipart.ModelLoader.AnimationType;
-import net.worldseed.multipart.ModelMath;
-import net.worldseed.multipart.Quaternion;
+import net.worldseed.multipart.*;
+import net.worldseed.multipart.animations.AnimationLoader.AnimationType;
 import net.worldseed.multipart.animations.BoneAnimation;
 
 import java.util.ArrayList;
@@ -42,7 +39,8 @@ public abstract class ModelBoneImpl implements ModelBone {
         if (this.diff != null) this.pivot = pivot.add(this.diff);
         else this.pivot = pivot;
 
-        this.items = ModelEngine.getItems(model.getId(), name);
+        ModelRegistry modelRegistry = model.getModelRegistry();
+        this.items = modelRegistry != null ? modelRegistry.getItems(model.getId(), name) : new HashMap<>();
         this.scale = scale;
     }
 

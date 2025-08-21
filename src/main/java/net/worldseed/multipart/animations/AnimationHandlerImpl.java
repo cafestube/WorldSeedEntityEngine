@@ -7,7 +7,9 @@ import net.minestom.server.timer.ExecutionType;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
 import net.worldseed.multipart.GenericModel;
-import net.worldseed.multipart.ModelLoader;
+import net.worldseed.multipart.animations.data.AnimatedBoneData;
+import net.worldseed.multipart.animations.data.AnimationData;
+import net.worldseed.multipart.animations.data.BoneAnimationData;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -31,47 +33,46 @@ public class AnimationHandlerImpl implements AnimationHandler {
     }
 
     protected void loadDefaultAnimations() {
-        JsonObject loadedAnimations = ModelLoader.loadAnimations(model.getId());
+        Map<String, AnimationData> loadedAnimations = model.getModelRegistry().getOrLoadAnimations(model.getId());
         // Init animation
         int i = 0;
-        for (Map.Entry<String, JsonElement> animation : loadedAnimations.get("animations").getAsJsonObject().entrySet()) {
+        for (Map.Entry<String, AnimationData> animation : loadedAnimations.entrySet()) {
             registerAnimation(animation.getKey(), animation.getValue(), i);
             i--;
         }
     }
 
     @Override
-    public void registerAnimation(String name, JsonElement animation, int priority) {
-        final JsonElement animationLength = animation.getAsJsonObject().get("animation_length");
-        final double length = animationLength == null ? 0 : animationLength.getAsDouble();
+    public void registerAnimation(String name, AnimationData animation, int priority) {
+        final double length = animation.length();
 
         HashSet<BoneAnimation> animationSet = new HashSet<>();
         HashSet<String> animatedBones = new HashSet<>();
 
-        for (Map.Entry<String, JsonElement> boneEntry : animation.getAsJsonObject().get("bones").getAsJsonObject().entrySet()) {
+        for (Map.Entry<String, AnimatedBoneData> boneEntry : animation.bones().entrySet()) {
             String boneName = boneEntry.getKey();
             var bone = model.getPart(boneName);
             if (bone == null) continue;
 
-            JsonElement animationRotation = boneEntry.getValue().getAsJsonObject().get("rotation");
-            JsonElement animationPosition = boneEntry.getValue().getAsJsonObject().get("position");
-            JsonElement animationScale = boneEntry.getValue().getAsJsonObject().get("scale");
+            BoneAnimationData animationRotation = boneEntry.getValue().rotation();
+            BoneAnimationData animationPosition = boneEntry.getValue().position();
+            BoneAnimationData animationScale = boneEntry.getValue().scale();
 
             boolean animated = false;
 
             if (animationRotation != null) {
                 animated = true;
-                BoneAnimationImpl boneAnimation = new BoneAnimationImpl(model.getId(), name, boneName, bone, animationRotation, ModelLoader.AnimationType.ROTATION, length);
+                BoneAnimationImpl boneAnimation = new BoneAnimationImpl(name, boneName, bone, animationRotation, AnimationLoader.AnimationType.ROTATION, length);
                 animationSet.add(boneAnimation);
             }
             if (animationPosition != null) {
                 animated = true;
-                BoneAnimationImpl boneAnimation = new BoneAnimationImpl(model.getId(), name, boneName, bone, animationPosition, ModelLoader.AnimationType.TRANSLATION, length);
+                BoneAnimationImpl boneAnimation = new BoneAnimationImpl(name, boneName, bone, animationPosition, AnimationLoader.AnimationType.TRANSLATION, length);
                 animationSet.add(boneAnimation);
             }
             if (animationScale != null) {
                 animated = true;
-                BoneAnimationImpl boneAnimation = new BoneAnimationImpl(model.getId(), name, boneName, bone, animationScale, ModelLoader.AnimationType.SCALE, length);
+                BoneAnimationImpl boneAnimation = new BoneAnimationImpl(name, boneName, bone, animationScale, AnimationLoader.AnimationType.SCALE, length);
                 animationSet.add(boneAnimation);
             }
 

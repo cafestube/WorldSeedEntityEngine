@@ -3,10 +3,11 @@ package net.worldseed.multipart.animations;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.kyori.adventure.key.Key;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
 import net.worldseed.multipart.ModelEngine;
-import net.worldseed.multipart.ModelLoader;
+import net.worldseed.multipart.animations.data.BoneAnimationData;
 import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.mql.MQLPoint;
 
@@ -15,7 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class BoneAnimationImpl implements BoneAnimation {
-    private final ModelLoader.AnimationType type;
+    private final AnimationLoader.AnimationType type;
 
     private final FrameProvider frameProvider;
     private final int length;
@@ -25,52 +26,17 @@ public class BoneAnimationImpl implements BoneAnimation {
     private short tick = 0;
     private AnimationHandlerImpl.AnimationDirection direction = AnimationHandlerImpl.AnimationDirection.FORWARD;
 
-    BoneAnimationImpl(String modelName, String animationName, String boneName, ModelBone bone, JsonElement keyframes, ModelLoader.AnimationType animationType, double length) {
+    BoneAnimationImpl(String animationName, String boneName, ModelBone bone, BoneAnimationData keyframes, AnimationLoader.AnimationType animationType, double length) {
         this.type = animationType;
         this.length = (int) (length * 20);
         this.name = animationName;
         this.boneName = boneName;
 
-        FrameProvider found;
-        if (this.type == ModelLoader.AnimationType.ROTATION) {
-            found = ModelLoader.getCacheRotation(modelName, bone.getName() + "/" + animationName);
-        } else if (this.type == ModelLoader.AnimationType.TRANSLATION) {
-            found = ModelLoader.getCacheTranslation(modelName, bone.getName() + "/" + animationName);
-        } else if (this.type == ModelLoader.AnimationType.SCALE) {
-            found = ModelLoader.getCacheScale(modelName, bone.getName() + "/" + animationName);
-        } else {
-            found = null;
-        }
-
-        if (found == null) {
-            if (length != 0) {
-                found = computeCachedTransforms(keyframes);
-
-                if (this.type == ModelLoader.AnimationType.ROTATION) {
-                    ModelLoader.addToRotationCache(modelName, bone.getName() + "/" + animationName, found);
-                } else if (this.type == ModelLoader.AnimationType.TRANSLATION) {
-                    ModelLoader.addToTranslationCache(modelName, bone.getName() + "/" + animationName, found);
-                } else if (this.type == ModelLoader.AnimationType.SCALE) {
-                    ModelLoader.addToScaleCache(modelName, bone.getName() + "/" + animationName, found);
-                }
-            } else {
-                found = computeMathTransforms(keyframes);
-
-                if (this.type == ModelLoader.AnimationType.ROTATION) {
-                    ModelLoader.addToRotationCache(modelName, bone.getName() + "/" + animationName, found);
-                } else if (this.type == ModelLoader.AnimationType.TRANSLATION) {
-                    ModelLoader.addToTranslationCache(modelName, bone.getName() + "/" + animationName, found);
-                } else if (this.type == ModelLoader.AnimationType.SCALE) {
-                    ModelLoader.addToScaleCache(modelName, bone.getName() + "/" + animationName, found);
-                }
-            }
-        }
-
-        this.frameProvider = found;
+        this.frameProvider = keyframes.frameProvider();
         bone.addAnimation(this);
     }
 
-    public ModelLoader.AnimationType getType() {
+    public AnimationLoader.AnimationType getType() {
         return type;
     }
 
@@ -130,45 +96,7 @@ public class BoneAnimationImpl implements BoneAnimation {
         return new ComputedFrameProvider(transform, type, length);
     }
 
-    private FrameProvider computeCachedTransforms(JsonElement keyframes) {
-        LinkedHashMap<Double, PointInterpolation> transform = new LinkedHashMap<>();
 
-        try {
-            for (Map.Entry<String, JsonElement> entry : keyframes.getAsJsonObject().entrySet()) {
-                double time = Double.parseDouble(entry.getKey());
-
-                if (entry.getValue() instanceof JsonObject obj) {
-                    if (obj.get("post") instanceof JsonArray arr) {
-                        if (arr.get(0) instanceof JsonObject) {
-                            MQLPoint point = ModelEngine.getMQLPos(obj.get("post").getAsJsonArray().get(0)).orElse(MQLPoint.ZERO);
-                            String lerp = entry.getValue().getAsJsonObject().get("lerp_mode").getAsString();
-                            if (lerp == null) lerp = "linear";
-                            transform.put(time, new PointInterpolation(point, lerp));
-                        } else {
-                            MQLPoint point = ModelEngine.getMQLPos(obj.get("post").getAsJsonArray()).orElse(MQLPoint.ZERO);
-                            String lerp = entry.getValue().getAsJsonObject().get("lerp_mode").getAsString();
-                            if (lerp == null) lerp = "linear";
-                            transform.put(time, new PointInterpolation(point, lerp));
-                        }
-                    }
-                } else if (entry.getValue() instanceof JsonArray arr) {
-                    MQLPoint point = ModelEngine.getMQLPos(arr).orElse(MQLPoint.ZERO);
-                    transform.put(time, new PointInterpolation(point, "linear"));
-                }
-            }
-        } catch (IllegalStateException | InvocationTargetException | NoSuchMethodException |
-                 InstantiationException | IllegalAccessException e) {
-            try {
-                e.printStackTrace();
-                MQLPoint point = ModelEngine.getMQLPos(keyframes.getAsJsonObject()).orElse(MQLPoint.ZERO);
-                transform.put(0.0, new PointInterpolation(point, "linear"));
-            } catch (Exception e2) {
-                e.printStackTrace();
-            }
-        }
-
-        return new CachedFrameProvider(length, transform, type);
-    }
 
     public void stop() {
         this.tick = 0;

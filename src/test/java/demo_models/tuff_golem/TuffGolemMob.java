@@ -1,5 +1,6 @@
 package demo_models.tuff_golem;
 
+import demo_models.Registry;
 import demo_models.gem_golem.GemGolemTarget;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
@@ -33,7 +34,7 @@ public class TuffGolemMob extends EntityCreature {
         this.entityMeta.setInvisible(true);
         this.player = player;
 
-        this.model = new TuffGolem();
+        this.model = new TuffGolem(Registry.REGISTRY);
         model.init(instance, pos);
 
         this.animationHandler = new AnimationHandlerImpl(model);
