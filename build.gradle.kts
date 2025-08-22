@@ -19,7 +19,7 @@ repositories {
 
 publishing {
     publications.create<MavenPublication>("maven") {
-        groupId = "net.worldseed.multipart"
+        groupId = "net.cafestube.multipart"
         artifactId = "WorldSeedEntityEngine"
         version = "11.3.3"
 
@@ -28,12 +28,9 @@ publishing {
 
     repositories {
         maven {
-            name = "AtlasEngine"
-            url = uri("https://reposilite.atlasengine.ca/public")
+            name = "cafestubeRepository"
             credentials(PasswordCredentials::class)
-            authentication {
-                create<BasicAuthentication>("basic")
-            }
+            url = uri("https://repo.cafestube.net/repository/maven-public-snapshots/")
         }
     }
 }

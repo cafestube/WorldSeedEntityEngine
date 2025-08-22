@@ -1,9 +1,10 @@
 plugins {
     id("java")
+    id("maven-publish")
 }
 
-group = "org.example"
-version = "unspecified"
+group = "net.cafestube.multipart"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
@@ -21,4 +22,22 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+
+publishing {
+    publications.create<MavenPublication>("maven") {
+        groupId = "net.cafestube.multipart"
+        artifactId = "EntityEngineGenerator"
+
+        from(components["java"])
+    }
+
+    repositories {
+        maven {
+            name = "cafestubeRepository"
+            credentials(PasswordCredentials::class)
+            url = uri("https://repo.cafestube.net/repository/maven-public-snapshots/")
+        }
+    }
 }
