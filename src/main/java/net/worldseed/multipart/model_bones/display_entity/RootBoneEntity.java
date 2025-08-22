@@ -14,10 +14,7 @@ import java.util.List;
 
 public class RootBoneEntity extends BoneEntity {
     public RootBoneEntity(GenericModel model) {
-        super(EntityType.ARMOR_STAND, model, "root");
-
-        ArmorStandMeta meta = (ArmorStandMeta) this.getEntityMeta();
-        meta.setMarker(true);
+        super(EntityType.ITEM_DISPLAY, model, "root");
 
         this.setInvisible(true);
         this.setNoGravity(true);
