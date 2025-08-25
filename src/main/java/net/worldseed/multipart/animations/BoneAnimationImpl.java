@@ -8,6 +8,7 @@ import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
 import net.worldseed.multipart.ModelEngine;
 import net.worldseed.multipart.animations.data.BoneAnimationData;
+import net.worldseed.multipart.math.PositionParser;
 import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.mql.MQLPoint;
 
@@ -78,7 +79,7 @@ public class BoneAnimationImpl implements BoneAnimation {
         try {
             for (Map.Entry<String, JsonElement> entry : keyframes.getAsJsonObject().entrySet()) {
                 double time = Double.parseDouble(entry.getKey());
-                MQLPoint point = ModelEngine.getMQLPos(entry.getValue().getAsJsonObject().get("post").getAsJsonArray().get(0).getAsJsonObject()).orElse(MQLPoint.ZERO);
+                MQLPoint point = PositionParser.getMQLPos(entry.getValue().getAsJsonObject().get("post").getAsJsonArray().get(0).getAsJsonObject()).orElse(MQLPoint.ZERO);
                 String lerp = entry.getValue().getAsJsonObject().get("lerp_mode").getAsString();
                 transform.put(time, new PointInterpolation(point, lerp));
             }
@@ -86,7 +87,7 @@ public class BoneAnimationImpl implements BoneAnimation {
                  InstantiationException | IllegalAccessException e) {
             try {
                 e.printStackTrace();
-                MQLPoint point = ModelEngine.getMQLPos(keyframes.getAsJsonObject()).orElse(MQLPoint.ZERO);
+                MQLPoint point = PositionParser.getMQLPos(keyframes.getAsJsonObject()).orElse(MQLPoint.ZERO);
                 transform.put(0.0, new PointInterpolation(point, "linear"));
             } catch (Exception e2) {
                 e.printStackTrace();

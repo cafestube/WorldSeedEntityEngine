@@ -12,6 +12,7 @@ import net.minestom.server.item.component.CustomModelData;
 import net.worldseed.multipart.animations.AnimationLoader;
 import net.worldseed.multipart.animations.data.AnimationData;
 import net.worldseed.multipart.data.ModelProvider;
+import net.worldseed.multipart.math.PositionParser;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -110,8 +111,8 @@ public class ModelRegistry {
                     .forEach(id -> keys.put(id.getKey(), generateBoneItem(id.getValue().getAsFloat(), modelId)));
 
             blockMappings.put(entry.getKey(), keys);
-            offsetMappings.put(entry.getKey(), ModelEngine.getPos(entry.getValue().getAsJsonObject().get("offset").getAsJsonArray()).orElse(Pos.ZERO));
-            diffMappings.put(entry.getKey(), ModelEngine.getPos(entry.getValue().getAsJsonObject().get("diff").getAsJsonArray()).orElse(Pos.ZERO));
+            offsetMappings.put(entry.getKey(), PositionParser.getPos(entry.getValue().getAsJsonObject().get("offset").getAsJsonArray()).orElse(Pos.ZERO));
+            diffMappings.put(entry.getKey(), PositionParser.getPos(entry.getValue().getAsJsonObject().get("diff").getAsJsonArray()).orElse(Pos.ZERO));
         });
     }
 

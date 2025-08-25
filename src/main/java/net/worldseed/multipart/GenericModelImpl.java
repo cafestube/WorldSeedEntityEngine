@@ -24,6 +24,7 @@ import net.minestom.server.network.packet.server.SendablePacket;
 import net.worldseed.multipart.animations.AnimationHandlerImpl;
 import net.worldseed.multipart.events.AnimationCompleteEvent;
 import net.worldseed.multipart.events.ModelEvent;
+import net.worldseed.multipart.math.PositionParser;
 import net.worldseed.multipart.model_bones.*;
 import net.worldseed.multipart.model_bones.bone_types.HeadBone;
 import net.worldseed.multipart.model_bones.bone_types.RideableBone;
@@ -199,8 +200,8 @@ public abstract class GenericModelImpl implements GenericModel {
             JsonElement pivot = bone.getAsJsonObject().get("pivot");
             String name = bone.getAsJsonObject().get("name").getAsString();
 
-            Point boneRotation = ModelEngine.getPos(bone.getAsJsonObject().get("rotation")).orElse(Pos.ZERO).mul(-1, -1, 1);
-            Point pivotPos = ModelEngine.getPos(pivot).orElse(Pos.ZERO).mul(-1, 1, 1);
+            Point boneRotation = PositionParser.getPos(bone.getAsJsonObject().get("rotation")).orElse(Pos.ZERO).mul(-1, -1, 1);
+            Point pivotPos = PositionParser.getPos(pivot).orElse(Pos.ZERO).mul(-1, 1, 1);
 
             boolean found = false;
             for (Map.Entry<Predicate<String>, Function<ModelBoneInfo, @Nullable ModelBone>> entry : this.boneSuppliers.entrySet()) {

@@ -5,6 +5,7 @@ import net.worldseed.multipart.ModelEngine;
 import net.worldseed.multipart.animations.data.AnimatedBoneData;
 import net.worldseed.multipart.animations.data.AnimationData;
 import net.worldseed.multipart.animations.data.BoneAnimationData;
+import net.worldseed.multipart.math.PositionParser;
 import net.worldseed.multipart.mql.MQLPoint;
 
 import java.io.*;
@@ -76,19 +77,19 @@ public class AnimationLoader {
                 if (entry.getValue() instanceof JsonObject obj) {
                     if (obj.get("post") instanceof JsonArray arr) {
                         if (arr.get(0) instanceof JsonObject) {
-                            MQLPoint point = ModelEngine.getMQLPos(obj.get("post").getAsJsonArray().get(0)).orElse(MQLPoint.ZERO);
+                            MQLPoint point = PositionParser.getMQLPos(obj.get("post").getAsJsonArray().get(0)).orElse(MQLPoint.ZERO);
                             String lerp = entry.getValue().getAsJsonObject().get("lerp_mode").getAsString();
                             if (lerp == null) lerp = "linear";
                             transform.put(time, new BoneAnimationImpl.PointInterpolation(point, lerp));
                         } else {
-                            MQLPoint point = ModelEngine.getMQLPos(obj.get("post").getAsJsonArray()).orElse(MQLPoint.ZERO);
+                            MQLPoint point = PositionParser.getMQLPos(obj.get("post").getAsJsonArray()).orElse(MQLPoint.ZERO);
                             String lerp = entry.getValue().getAsJsonObject().get("lerp_mode").getAsString();
                             if (lerp == null) lerp = "linear";
                             transform.put(time, new BoneAnimationImpl.PointInterpolation(point, lerp));
                         }
                     }
                 } else if (entry.getValue() instanceof JsonArray arr) {
-                    MQLPoint point = ModelEngine.getMQLPos(arr).orElse(MQLPoint.ZERO);
+                    MQLPoint point = PositionParser.getMQLPos(arr).orElse(MQLPoint.ZERO);
                     transform.put(time, new BoneAnimationImpl.PointInterpolation(point, "linear"));
                 }
             }
@@ -96,7 +97,7 @@ public class AnimationLoader {
                  InstantiationException | IllegalAccessException e) {
             try {
                 e.printStackTrace();
-                MQLPoint point = ModelEngine.getMQLPos(keyframes.getAsJsonObject()).orElse(MQLPoint.ZERO);
+                MQLPoint point = PositionParser.getMQLPos(keyframes.getAsJsonObject()).orElse(MQLPoint.ZERO);
                 transform.put(0.0, new BoneAnimationImpl.PointInterpolation(point, "linear"));
             } catch (Exception e2) {
                 e.printStackTrace();
