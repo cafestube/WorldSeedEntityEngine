@@ -15,7 +15,7 @@ import net.minestom.server.item.Material;
 import net.minestom.server.item.component.CustomModelData;
 import net.minestom.server.item.component.HeadProfile;
 import net.worldseed.multipart.GenericModel;
-import net.worldseed.multipart.Quaternion;
+import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.model_bones.ModelBoneImpl;

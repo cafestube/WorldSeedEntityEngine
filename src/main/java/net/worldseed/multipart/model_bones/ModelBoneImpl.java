@@ -8,6 +8,8 @@ import net.minestom.server.item.ItemStack;
 import net.worldseed.multipart.*;
 import net.worldseed.multipart.animations.AnimationLoader.AnimationType;
 import net.worldseed.multipart.animations.BoneAnimation;
+import net.worldseed.multipart.math.ModelMath;
+import net.worldseed.multipart.math.Quaternion;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -6,7 +6,7 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.GenericModel;
-import net.worldseed.multipart.Quaternion;
+import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.animations.BoneAnimation;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;

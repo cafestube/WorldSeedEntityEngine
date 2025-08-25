@@ -2,7 +2,7 @@ package net.worldseed.multipart.animations;
 
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
-import net.worldseed.multipart.Quaternion;
+import net.worldseed.multipart.math.Quaternion;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;

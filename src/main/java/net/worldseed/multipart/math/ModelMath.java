@@ -1,4 +1,4 @@
-package net.worldseed.multipart;
+package net.worldseed.multipart.math;
 
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;

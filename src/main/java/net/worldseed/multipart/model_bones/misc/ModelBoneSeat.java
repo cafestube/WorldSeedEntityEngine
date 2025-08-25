@@ -11,7 +11,7 @@ import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.tag.Tag;
 import net.worldseed.multipart.GenericModel;
-import net.worldseed.multipart.Quaternion;
+import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.model_bones.ModelBoneImpl;

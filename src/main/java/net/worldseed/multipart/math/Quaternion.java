@@ -1,4 +1,4 @@
-package net.worldseed.multipart;
+package net.worldseed.multipart.math;
 
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
@@ -84,7 +84,7 @@ final public class Quaternion {
 
     @Override
     public String toString() {
-        return "net.worldseed.multipart.Quaternion{" +
+        return "net.worldseed.multipart.math.Quaternion{" +
                 "x=" + x +
                 ", y=" + y +
                 ", z=" + z +
