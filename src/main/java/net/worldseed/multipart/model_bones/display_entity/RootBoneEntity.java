@@ -26,7 +26,7 @@ public class RootBoneEntity extends BoneEntity {
 
         List<Integer> parts = this.getModel().getParts().stream()
                 .map(ModelBone::getEntity)
-                .filter(e -> e != null && e.getEntityType() == EntityType.ITEM_DISPLAY)
+                .filter(e -> e != null && (e.getEntityType() == EntityType.ITEM_DISPLAY || e.getEntityType() == EntityType.TEXT_DISPLAY))
                 .map(Entity::getEntityId)
                 .toList();
         SetPassengersPacket packet = new SetPassengersPacket(this.getEntityId(), parts);

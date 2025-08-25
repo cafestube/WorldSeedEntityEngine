@@ -1,32 +1,39 @@
 package net.worldseed.multipart.model_bones.misc;
 
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.RGBLike;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
+import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.metadata.display.AbstractDisplayMeta;
+import net.minestom.server.entity.metadata.display.TextDisplayMeta;
+import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.model_bones.ModelBoneImpl;
 import net.worldseed.multipart.model_bones.bone_types.NametagBone;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class ModelBoneNametag extends ModelBoneImpl implements NametagBone {
-    private Entity bound;
-
     public ModelBoneNametag(Point pivot, String name, Point rotation, GenericModel model, float scale) {
         super(pivot, name, rotation, model, scale);
     }
 
     @Override
     public void addViewer(Player player) {
-        if (this.bound != null) this.bound.addViewer(player);
+        if (this.stand != null) this.stand.addViewer(player);
     }
 
     @Override
     public void removeViewer(Player player) {
-        if (this.bound != null) this.bound.removeViewer(player);
+        if (this.stand != null) this.stand.removeViewer(player);
     }
 
     @Override
@@ -73,18 +80,17 @@ public class ModelBoneNametag extends ModelBoneImpl implements NametagBone {
         return calculatePosition();
     }
 
-    public void bind(Entity entity) {
-        this.bound = entity;
-    }
-
     public void draw() {
-        if (this.offset == null || bound == null) return;
-        bound.teleport(calculatePosition());
+        if (this.offset == null || stand == null) return;
+
+        this.stand.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
+            textDisplayMeta.setTranslation(calculatePositionInternal());
+        });
     }
 
     @Override
     public Pos calculatePosition() {
-        if (this.bound == null) return Pos.ZERO;
+        if (this.stand == null) return Pos.ZERO;
         if (this.offset == null) return Pos.ZERO;
 
         Point p = this.offset;
@@ -107,13 +113,45 @@ public class ModelBoneNametag extends ModelBoneImpl implements NametagBone {
         return Vec.ZERO;
     }
 
-    @Override
-    public void unbind() {
-        this.bound = null;
+    private Pos calculatePositionInternal() {
+        if (this.offset == null) return Pos.ZERO;
+        Point p = this.offset;
+        p = applyTransform(p);
+        return new Pos(p).div(4).mul(scale).withView(0, 0);
     }
 
     @Override
-    public Entity getNametag() {
-        return this.bound;
+    public void setNametag(Component component) {
+        if(component == null && this.stand == null) return;
+
+        if(component == null) {
+            this.stand.remove();
+            this.stand = null;
+            return;
+        }
+
+        if(this.stand != null && (this.stand.isActive() || this.model.getInstance() == null)) {
+            this.stand.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
+                textDisplayMeta.setText(component);
+            });
+            return;
+        }
+
+        this.stand = new BoneEntity(EntityType.TEXT_DISPLAY, this.model, this.name);
+        this.stand.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
+            textDisplayMeta.setText(component);
+            textDisplayMeta.setTranslation(calculatePositionInternal());
+            textDisplayMeta.setBillboardRenderConstraints(AbstractDisplayMeta.BillboardConstraints.VERTICAL);
+        });
+
+        if(this.model.getInstance() != null) {
+            this.stand.setInstance(model.getInstance(), model.getPosition());
+        }
+    }
+
+    @Override
+    public Component getNametag() {
+        if(this.stand == null) return null;
+        return ((TextDisplayMeta) this.stand.getEntityMeta()).getText();
     }
 }

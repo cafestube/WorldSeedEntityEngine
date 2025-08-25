@@ -48,17 +48,7 @@ public class GemGolemMob extends EntityCreature {
 
         this.model = new GemGolemModel(Registry.REGISTRY);
 
-        BoneEntity nametag = new BoneEntity(EntityType.ARMOR_STAND, model, "nametag");
-        nametag.setCustomNameVisible(true);
-        nametag.setCustomName(Component.text("Gem Golem"));
-        nametag.setNoGravity(true);
-        nametag.setInvisible(true);
-        nametag.setInstance(instance, pos);
-
-        ArmorStandMeta meta = (ArmorStandMeta) nametag.getEntityMeta();
-        meta.setMarker(true);
-
-        model.init(instance, pos, nametag);
+        model.init(instance, pos, Component.text("Gem Golem"));
 
         this.animationHandler = new AnimationHandlerImpl(model);
         animationHandler.playRepeat("idle_extended");

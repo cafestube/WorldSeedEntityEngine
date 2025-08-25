@@ -1,8 +1,7 @@
 package demo_models.gem_golem;
 
-import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import net.minestom.server.coordinate.Pos;
-import net.minestom.server.entity.Entity;
 import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.GenericModelImpl;
 import net.worldseed.multipart.ModelRegistry;
@@ -15,8 +14,8 @@ public class GemGolemModel extends GenericModelImpl {
         super(registry, "gem_golem.bbmodel");
     }
 
-    public void init(@Nullable Instance instance, @NotNull Pos position, Entity nametag) {
+    public void init(@Nullable Instance instance, @NotNull Pos position, Component nametag) {
         super.init(instance, position, 3.5f);
-        bindNametag("nametag", nametag);
+        setNametag("nametag", nametag);
     }
 }

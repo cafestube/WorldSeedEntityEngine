@@ -1,5 +1,6 @@
 package net.worldseed.multipart;
 
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.RGBLike;
 import net.minestom.server.Viewable;
 import net.minestom.server.collision.Shape;
@@ -156,9 +157,7 @@ public interface GenericModel extends Viewable, EventHandler<ModelEvent>, Shape 
 
     @Nullable BoneEntity generateRoot();
 
-    void bindNametag(String name, Entity nametag);
+    void setNametag(String name, @Nullable Component nametag);
 
-    void unbindNametag(String name);
-
-    @Nullable Entity getNametag(String name);
+    @Nullable Component getNametag(String name);
 }

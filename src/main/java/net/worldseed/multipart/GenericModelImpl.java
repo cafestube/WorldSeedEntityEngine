@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.RGBLike;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.ServerProcess;
@@ -506,17 +507,12 @@ public abstract class GenericModelImpl implements GenericModel {
     }
 
     @Override
-    public void bindNametag(String name, Entity nametag) {
-        if (this.parts.get(name) instanceof ModelBoneNametag nametagBone) nametagBone.bind(nametag);
+    public void setNametag(String name, Component nametag) {
+        if (this.parts.get(name) instanceof ModelBoneNametag nametagBone) nametagBone.setNametag(nametag);
     }
 
     @Override
-    public void unbindNametag(String name) {
-        if (this.parts.get(name) instanceof ModelBoneNametag nametagBone) nametagBone.unbind();
-    }
-
-    @Override
-    public Entity getNametag(String name) {
+    public Component getNametag(String name) {
         if (this.parts.get(name) instanceof ModelBoneNametag nametagBone) return nametagBone.getNametag();
         return null;
     }
