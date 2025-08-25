@@ -1,6 +1,6 @@
 package net.worldseed.multipart.animations;
 
-import net.minestom.server.coordinate.Point;
+import net.worldseed.multipart.math.Point;
 
 public interface BoneAnimation {
     String name();

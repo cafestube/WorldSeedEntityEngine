@@ -1,9 +1,8 @@
 package net.worldseed.multipart.animations;
 
-import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Vec;
 import net.worldseed.multipart.animations.data.BoneAnimationData;
-import net.worldseed.multipart.model_bones.ModelBone;
+import net.worldseed.multipart.math.Point;
+import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.mql.MQLPoint;
 
 public class BoneAnimationImpl implements BoneAnimation {
@@ -15,7 +14,7 @@ public class BoneAnimationImpl implements BoneAnimation {
     private final String boneName;
     private boolean playing = false;
     private short tick = 0;
-    private AnimationHandlerImpl.AnimationDirection direction = AnimationHandlerImpl.AnimationDirection.FORWARD;
+    private AnimationHandler.AnimationDirection direction = AnimationHandler.AnimationDirection.FORWARD;
 
     BoneAnimationImpl(String animationName, String boneName, ModelBone bone, BoneAnimationData keyframes, AnimationLoader.AnimationType animationType, double length) {
         this.type = animationType;
@@ -37,10 +36,10 @@ public class BoneAnimationImpl implements BoneAnimation {
 
     public void tick() {
         if (playing) {
-            if (direction == AnimationHandlerImpl.AnimationDirection.FORWARD) {
+            if (direction == AnimationHandler.AnimationDirection.FORWARD) {
                 tick++;
                 if (tick > length && length != 0) tick = 0;
-            } else if (direction == AnimationHandlerImpl.AnimationDirection.BACKWARD) {
+            } else if (direction == AnimationHandler.AnimationDirection.BACKWARD) {
                 tick--;
                 if (tick < 0 && length != 0) tick = (short) length;
             }
@@ -59,7 +58,7 @@ public class BoneAnimationImpl implements BoneAnimation {
         return this.frameProvider.getFrame(time);
     }
 
-    public void setDirection(AnimationHandlerImpl.AnimationDirection direction) {
+    public void setDirection(AnimationHandler.AnimationDirection direction) {
         this.direction = direction;
     }
 

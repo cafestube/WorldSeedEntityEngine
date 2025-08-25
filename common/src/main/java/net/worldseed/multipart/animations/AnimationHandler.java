@@ -44,7 +44,7 @@ public interface AnimationHandler {
      */
     void playOnce(String animation, Runnable cb) throws IllegalArgumentException;
 
-    void playOnce(String animation, AnimationHandlerImpl.AnimationDirection direction, boolean override, Runnable cb) throws IllegalArgumentException;
+    void playOnce(String animation, AnimationHandler.AnimationDirection direction, boolean override, Runnable cb) throws IllegalArgumentException;
 
     /**
      * Destroy the animation handler

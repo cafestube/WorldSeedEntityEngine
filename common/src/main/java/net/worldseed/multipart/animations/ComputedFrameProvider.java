@@ -1,7 +1,7 @@
 package net.worldseed.multipart.animations;
 
-import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Vec;
+import net.worldseed.multipart.math.Point;
+import net.worldseed.multipart.math.Vec;
 
 import java.util.LinkedHashMap;
 

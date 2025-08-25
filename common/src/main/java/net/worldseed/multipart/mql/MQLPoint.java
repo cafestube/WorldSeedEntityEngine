@@ -4,8 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.hollowcube.mql.jit.MqlCompiler;
-import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Vec;
+import net.worldseed.multipart.math.Point;
+import net.worldseed.multipart.math.Vec;
 
 import java.lang.reflect.InvocationTargetException;
 
