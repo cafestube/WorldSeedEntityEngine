@@ -5,7 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 
 public class BuildPack {
-    private static final Path BASE_PATH = Path.of("src/test/resources");
+    private static final Path BASE_PATH = Path.of("minestom/src/test/resources");
     private static final Path MODEL_PATH = BASE_PATH.resolve("models");
 
     public static void main(String[] args) throws Exception {

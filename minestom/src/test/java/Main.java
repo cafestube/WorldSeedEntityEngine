@@ -41,7 +41,7 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Main {
-    private static final Path BASE_PATH = Path.of("src/test/resources");
+    private static final Path BASE_PATH = Path.of("minestom/src/test/resources");
     private static final Path ZIP_PATH = BASE_PATH.resolve("resourcepack.zip");
     private static final Path MODEL_PATH = BASE_PATH.resolve("models");
 
