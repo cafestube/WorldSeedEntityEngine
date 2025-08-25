@@ -1,6 +1,5 @@
-package net.worldseed.gestures;
+package net.worldseed.multipart.gestures;
 
-import com.google.gson.JsonObject;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.*;
 import net.minestom.server.entity.attribute.Attribute;

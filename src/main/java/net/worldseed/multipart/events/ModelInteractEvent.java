@@ -4,7 +4,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import net.worldseed.multipart.model_bones.BoneEntity;
-import net.worldseed.gestures.EmoteModel;
+import net.worldseed.multipart.gestures.EmoteModel;
 import net.worldseed.multipart.GenericModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

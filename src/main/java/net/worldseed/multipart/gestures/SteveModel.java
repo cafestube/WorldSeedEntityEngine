@@ -1,4 +1,4 @@
-package net.worldseed.gestures;
+package net.worldseed.multipart.gestures;
 
 public class SteveModel {
     static final String MODEL_STRING = "{\n" +

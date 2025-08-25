@@ -1,10 +1,9 @@
 package emotes;
 
-import com.google.gson.JsonObject;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.instance.Instance;
-import net.worldseed.gestures.EmotePlayer;
+import net.worldseed.multipart.gestures.EmotePlayer;
 import net.worldseed.multipart.animations.AnimationLoader;
 import net.worldseed.multipart.animations.data.AnimationData;
 

@@ -1,4 +1,4 @@
-package net.worldseed.gestures;
+package net.worldseed.multipart.gestures;
 
 import net.kyori.adventure.util.RGBLike;
 import net.minestom.server.component.DataComponents;
