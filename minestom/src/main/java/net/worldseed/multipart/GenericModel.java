@@ -10,7 +10,8 @@ import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventHandler;
 import net.minestom.server.instance.Instance;
-import net.worldseed.multipart.animations.AnimationHandlerImpl;
+import net.worldseed.multipart.animations.AbstractAnimationHandlerImpl;
+import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.events.ModelEvent;
 import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
@@ -137,7 +138,7 @@ public interface GenericModel extends Viewable, EventHandler<ModelEvent>, Shape 
 
     Point getDiff(String bone);
 
-    void triggerAnimationEnd(String animation, AnimationHandlerImpl.AnimationDirection direction);
+    void triggerAnimationEnd(String animation, AnimationHandler.AnimationDirection direction);
 
     void setGlobalScale(float scale);
 

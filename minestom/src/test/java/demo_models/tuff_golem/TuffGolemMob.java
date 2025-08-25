@@ -16,7 +16,7 @@ import net.minestom.server.registry.RegistryKey;
 import net.minestom.server.timer.Task;
 import net.minestom.server.utils.time.TimeUnit;
 import net.worldseed.multipart.animations.AnimationHandler;
-import net.worldseed.multipart.animations.AnimationHandlerImpl;
+import net.worldseed.multipart.animations.AbstractAnimationHandlerImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class TuffGolemMob extends EntityCreature {
         this.model = new TuffGolem(Registry.REGISTRY);
         model.init(instance, pos);
 
-        this.animationHandler = new AnimationHandlerImpl(model);
+        this.animationHandler = new AbstractAnimationHandlerImpl(model);
         animationHandler.playRepeat("walk");
 
         addAIGroup(

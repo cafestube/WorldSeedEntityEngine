@@ -8,7 +8,7 @@ import net.minestom.server.event.entity.EntityDamageEvent;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.animations.AnimationHandler;
-import net.worldseed.multipart.animations.AnimationHandlerImpl;
+import net.worldseed.multipart.animations.AbstractAnimationHandlerImpl;
 import net.worldseed.multipart.animations.data.AnimationData;
 import net.worldseed.multipart.events.ModelDamageEvent;
 import net.worldseed.multipart.events.ModelInteractEvent;
@@ -41,7 +41,7 @@ public abstract class EmotePlayer extends EntityCreature {
         this.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.001f);
         this.setInstance(instance, pos).join();
 
-        this.animationHandler = new AnimationHandlerImpl(model) {
+        this.animationHandler = new AbstractAnimationHandlerImpl(model) {
             @Override
             protected void loadDefaultAnimations() {
             }

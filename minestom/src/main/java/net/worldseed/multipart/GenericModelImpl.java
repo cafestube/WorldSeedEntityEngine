@@ -22,7 +22,8 @@ import net.minestom.server.event.EventNode;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.BlockFace;
 import net.minestom.server.network.packet.server.SendablePacket;
-import net.worldseed.multipart.animations.AnimationHandlerImpl;
+import net.worldseed.multipart.animations.AbstractAnimationHandlerImpl;
+import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.events.AnimationCompleteEvent;
 import net.worldseed.multipart.events.ModelEvent;
 import net.worldseed.multipart.math.PositionParser;
@@ -131,7 +132,7 @@ public abstract class GenericModelImpl implements GenericModel {
         return this.rootEntity;
     }
 
-    public void triggerAnimationEnd(String animation, AnimationHandlerImpl.AnimationDirection direction) {
+    public void triggerAnimationEnd(String animation, AnimationHandler.AnimationDirection direction) {
         MinecraftServer.getGlobalEventHandler().call(new AnimationCompleteEvent(this, animation, direction));
     }
 

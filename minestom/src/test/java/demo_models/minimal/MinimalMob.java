@@ -7,7 +7,7 @@ import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.animations.AnimationHandler;
-import net.worldseed.multipart.animations.AnimationHandlerImpl;
+import net.worldseed.multipart.animations.AbstractAnimationHandlerImpl;
 import org.jetbrains.annotations.NotNull;
 
 public class MinimalMob extends EntityCreature {
@@ -21,7 +21,7 @@ public class MinimalMob extends EntityCreature {
         this.model = new Minimal(Registry.REGISTRY);
         model.init(instance, pos);
 
-        this.animationHandler = new AnimationHandlerImpl(model);
+        this.animationHandler = new AbstractAnimationHandlerImpl(model);
         this.animationHandler.playRepeat("dab");
 
         this.setInstance(instance, pos).join();

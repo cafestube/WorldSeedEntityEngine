@@ -18,7 +18,7 @@ import net.minestom.server.timer.Task;
 import net.minestom.server.utils.position.PositionUtils;
 import net.minestom.server.utils.time.TimeUnit;
 import net.worldseed.multipart.animations.AnimationHandler;
-import net.worldseed.multipart.animations.AnimationHandlerImpl;
+import net.worldseed.multipart.animations.AbstractAnimationHandlerImpl;
 import net.worldseed.multipart.events.ModelDamageEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,7 +43,7 @@ public class BulbasaurMob extends EntityCreature {
             damage(event.getDamage().getType(), event.getDamage().getAmount());
         });
 
-        this.animationHandler = new AnimationHandlerImpl(model);
+        this.animationHandler = new AbstractAnimationHandlerImpl(model);
         this.animationHandler.playRepeat("animation.bulbasaur.ground_idle");
 
         addAIGroup(

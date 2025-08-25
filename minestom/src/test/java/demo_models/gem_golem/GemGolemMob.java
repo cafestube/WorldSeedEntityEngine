@@ -21,7 +21,7 @@ import net.minestom.server.timer.Task;
 import net.minestom.server.utils.position.PositionUtils;
 import net.minestom.server.utils.time.TimeUnit;
 import net.worldseed.multipart.animations.AnimationHandler;
-import net.worldseed.multipart.animations.AnimationHandlerImpl;
+import net.worldseed.multipart.animations.AbstractAnimationHandlerImpl;
 import net.worldseed.multipart.events.ModelControlEvent;
 import net.worldseed.multipart.events.ModelDamageEvent;
 import net.worldseed.multipart.events.ModelDismountEvent;
@@ -47,7 +47,7 @@ public class GemGolemMob extends EntityCreature {
 
         model.init(instance, pos, Component.text("Gem Golem"));
 
-        this.animationHandler = new AnimationHandlerImpl(model);
+        this.animationHandler = new AbstractAnimationHandlerImpl(model);
         animationHandler.playRepeat("idle_extended");
 
         this.controlGoal = new GemGolemControlGoal(this, animationHandler);
