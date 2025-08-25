@@ -1,6 +1,5 @@
 package net.worldseed.multipart.animations;
 
-import com.google.gson.JsonElement;
 import net.worldseed.multipart.animations.data.AnimationData;
 import org.jetbrains.annotations.Nullable;
 

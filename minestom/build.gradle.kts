@@ -43,6 +43,7 @@ dependencies {
     compileOnly("net.minestom:minestom:2025.08.12-1.21.8")
     testImplementation("net.minestom:minestom:2025.08.12-1.21.8")
     testImplementation(project(":resource-pack"))
+    implementation(project(":common"))
 
     testImplementation("commons-io:commons-io:2.20.0")
     testImplementation("org.zeroturnaround:zt-zip:1.17")

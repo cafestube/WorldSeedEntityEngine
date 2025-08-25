@@ -1,7 +1,6 @@
 package net.worldseed.multipart.animations;
 
 import com.google.gson.*;
-import net.worldseed.multipart.ModelEngine;
 import net.worldseed.multipart.animations.data.AnimatedBoneData;
 import net.worldseed.multipart.animations.data.AnimationData;
 import net.worldseed.multipart.animations.data.BoneAnimationData;

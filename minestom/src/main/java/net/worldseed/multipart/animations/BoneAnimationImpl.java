@@ -1,20 +1,10 @@
 package net.worldseed.multipart.animations;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import net.kyori.adventure.key.Key;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
-import net.worldseed.multipart.ModelEngine;
 import net.worldseed.multipart.animations.data.BoneAnimationData;
-import net.worldseed.multipart.math.PositionParser;
 import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.mql.MQLPoint;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class BoneAnimationImpl implements BoneAnimation {
     private final AnimationLoader.AnimationType type;

@@ -1,7 +1,5 @@
 package net.worldseed.multipart.animations;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.timer.ExecutionType;
 import net.minestom.server.timer.Task;
