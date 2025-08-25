@@ -1,5 +1,6 @@
 package net.worldseed.multipart.model_bones.display_entity;
 
+import net.minestom.server.ServerFlag;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
@@ -18,18 +19,6 @@ public class RootBoneEntity extends BoneEntity {
 
         this.setInvisible(true);
         this.setNoGravity(true);
-    }
-
-    @Override
-    public void updateNewViewer(@NotNull Player player) {
-        super.updateNewViewer(player);
-
-        List<Integer> parts = this.getModel().getParts().stream()
-                .map(ModelBone::getEntity)
-                .filter(e -> e != null && (e.getEntityType() == EntityType.ITEM_DISPLAY || e.getEntityType() == EntityType.TEXT_DISPLAY))
-                .map(Entity::getEntityId)
-                .toList();
-        SetPassengersPacket packet = new SetPassengersPacket(this.getEntityId(), parts);
-        player.sendPacket(packet);
+        this.setSynchronizationTicks(ServerFlag.ENTITY_SYNCHRONIZATION_TICKS);
     }
 }

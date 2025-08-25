@@ -1,6 +1,7 @@
 package net.worldseed.multipart.model_bones;
 
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.LivingEntity;
 import net.minestom.server.entity.Player;
@@ -54,5 +55,9 @@ public class BoneEntity extends LivingEntity {
 
         if (this.getEntityType() == EntityType.ZOMBIE || this.getEntityType() == EntityType.ARMOR_STAND)
             player.sendPacket(getEquipmentsPacket());
+
+        if (!getPassengers().isEmpty()) {
+            player.sendPacket(getPassengersPacket());
+        }
     }
 }

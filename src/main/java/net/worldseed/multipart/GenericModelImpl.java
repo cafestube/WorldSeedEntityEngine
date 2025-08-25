@@ -16,6 +16,7 @@ import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
+import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventFilter;
 import net.minestom.server.event.EventNode;
@@ -57,6 +58,7 @@ public abstract class GenericModelImpl implements GenericModel {
     private Pos position;
     private double globalRotation;
     private double pitch;
+    private BoneEntity rootEntity;
 
     protected record ModelBoneInfo(String name, Point pivot, Point rotation, JsonArray cubes, GenericModel model,
                                    float scale) {
@@ -83,6 +85,7 @@ public abstract class GenericModelImpl implements GenericModel {
         }
 
         registerBoneSuppliers();
+        this.rootEntity = new RootBoneEntity(this);
     }
 
     @Override
@@ -120,12 +123,13 @@ public abstract class GenericModelImpl implements GenericModel {
 
     public void setPosition(Pos pos) {
         this.position = pos;
+        this.rootEntity.teleport(new Pos(position.withView(0, 0)));
         this.parts.values().forEach(part -> part.teleport(pos));
     }
 
     @Override
-    public BoneEntity generateRoot() {
-        return new RootBoneEntity(this);
+    public BoneEntity getModelRoot() {
+        return this.rootEntity;
     }
 
     public void triggerAnimationEnd(String animation, AnimationHandlerImpl.AnimationDirection direction) {
@@ -162,8 +166,13 @@ public abstract class GenericModelImpl implements GenericModel {
 
             modelBonePart.spawn(instance, modelBonePart.calculatePosition()).join();
         }
-
+        this.rootEntity.setInstance(instance, position);
         draw();
+
+        this.getParts().stream()
+                .map(ModelBone::getEntity)
+                .filter(e -> e instanceof BoneEntity b && (b.getEntityType() == EntityType.ITEM_DISPLAY || b.getEntityType() == EntityType.TEXT_DISPLAY))
+                .forEach(rootEntity::addPassenger);
 
         this.setState("normal");
     }
@@ -271,6 +280,7 @@ public abstract class GenericModelImpl implements GenericModel {
         for (ModelBone modelBonePart : this.parts.values()) {
             modelBonePart.destroy();
         }
+        this.rootEntity.remove();
 
         this.viewableBones.clear();
         this.parts.clear();
@@ -362,6 +372,7 @@ public abstract class GenericModelImpl implements GenericModel {
     @Override
     public boolean addViewer(@NotNull Player player) {
         getParts().forEach(part -> part.addViewer(player));
+        this.rootEntity.addViewer(player);
 
         var foundPlayerGlowing = this.playerGlowColors.get(player);
         if (foundPlayerGlowing != null)
@@ -373,6 +384,8 @@ public abstract class GenericModelImpl implements GenericModel {
     @Override
     public boolean removeViewer(@NotNull Player player) {
         getParts().forEach(part -> part.removeViewer(player));
+        this.rootEntity.removeViewer(player);
+
         return this.viewers.remove(player);
     }
 

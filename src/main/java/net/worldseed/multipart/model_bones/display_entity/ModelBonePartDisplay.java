@@ -27,7 +27,6 @@ import java.util.concurrent.CompletableFuture;
 
 public class ModelBonePartDisplay extends ModelBoneImpl implements ModelBoneViewable {
     private final List<GenericModel> attached = new ArrayList<>();
-    private Entity baseStand;
 
     public ModelBonePartDisplay(Point pivot, String name, Point rotation, GenericModel model, float scale) {
         super(pivot, name, rotation, model, scale);
@@ -48,7 +47,6 @@ public class ModelBonePartDisplay extends ModelBoneImpl implements ModelBoneView
     @Override
     public void addViewer(Player player) {
         if (this.stand != null) this.stand.addViewer(player);
-        if (this.baseStand != null) this.baseStand.addViewer(player);
         this.attached.forEach(model -> model.addViewer(player));
     }
 
@@ -148,16 +146,12 @@ public class ModelBonePartDisplay extends ModelBoneImpl implements ModelBoneView
     @Override
     public void removeViewer(Player player) {
         if (this.stand != null) this.stand.removeViewer(player);
-        if (this.baseStand != null) this.baseStand.removeViewer(player);
         this.attached.forEach(model -> model.removeViewer(player));
     }
 
     @Override
     public void destroy() {
         super.destroy();
-        if (this.baseStand != null) {
-            this.baseStand.remove();
-        }
     }
 
     @Override
@@ -181,11 +175,6 @@ public class ModelBonePartDisplay extends ModelBoneImpl implements ModelBoneView
     @Override
     public Point calculateScale() {
         return calculateFinalScale(getPropogatedScale());
-    }
-
-    @Override
-    public void teleport(Point position) {
-        if (this.baseStand != null) this.baseStand.teleport(new Pos(position));
     }
 
     public void draw() {
@@ -218,18 +207,7 @@ public class ModelBonePartDisplay extends ModelBoneImpl implements ModelBoneView
     @Override
     public CompletableFuture<Void> spawn(Instance instance, Pos position) {
         var correctLocation = (180 + this.model.getGlobalRotation() + 360) % 360;
-        return super.spawn(instance, new Pos(position).withYaw((float) correctLocation)).whenCompleteAsync((v, e) -> {
-            if (e != null) {
-                e.printStackTrace();
-                return;
-            }
-
-            if (!(this.getParent() instanceof ModelBonePartDisplay)) {
-                this.baseStand = model.generateRoot();
-                assert this.baseStand != null;
-                this.baseStand.setInstance(instance, position).join();
-            }
-        });
+        return super.spawn(instance, new Pos(position).withYaw((float) correctLocation));
     }
 
     @Override

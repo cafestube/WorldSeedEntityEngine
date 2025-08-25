@@ -155,7 +155,7 @@ public interface GenericModel extends Viewable, EventHandler<ModelEvent>, Shape 
 
     void detachModel(GenericModel model, String boneName);
 
-    @Nullable BoneEntity generateRoot();
+    BoneEntity getModelRoot();
 
     void setNametag(String name, @Nullable Component nametag);
 

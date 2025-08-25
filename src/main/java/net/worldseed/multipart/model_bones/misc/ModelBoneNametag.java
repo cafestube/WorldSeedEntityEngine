@@ -146,6 +146,7 @@ public class ModelBoneNametag extends ModelBoneImpl implements NametagBone {
 
         if(this.model.getInstance() != null) {
             this.stand.setInstance(model.getInstance(), model.getPosition());
+            this.model.getModelRoot().addPassenger(this.stand);
         }
     }
 
