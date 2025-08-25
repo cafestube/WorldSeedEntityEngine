@@ -73,32 +73,6 @@ public class BoneAnimationImpl implements BoneAnimation {
         this.direction = direction;
     }
 
-    private FrameProvider computeMathTransforms(JsonElement keyframes) {
-        LinkedHashMap<Double, PointInterpolation> transform = new LinkedHashMap<>();
-
-        try {
-            for (Map.Entry<String, JsonElement> entry : keyframes.getAsJsonObject().entrySet()) {
-                double time = Double.parseDouble(entry.getKey());
-                MQLPoint point = PositionParser.getMQLPos(entry.getValue().getAsJsonObject().get("post").getAsJsonArray().get(0).getAsJsonObject()).orElse(MQLPoint.ZERO);
-                String lerp = entry.getValue().getAsJsonObject().get("lerp_mode").getAsString();
-                transform.put(time, new PointInterpolation(point, lerp));
-            }
-        } catch (IllegalStateException | InvocationTargetException | NoSuchMethodException |
-                 InstantiationException | IllegalAccessException e) {
-            try {
-                e.printStackTrace();
-                MQLPoint point = PositionParser.getMQLPos(keyframes.getAsJsonObject()).orElse(MQLPoint.ZERO);
-                transform.put(0.0, new PointInterpolation(point, "linear"));
-            } catch (Exception e2) {
-                e.printStackTrace();
-            }
-        }
-
-        return new ComputedFrameProvider(transform, type, length);
-    }
-
-
-
     public void stop() {
         this.tick = 0;
         this.playing = false;

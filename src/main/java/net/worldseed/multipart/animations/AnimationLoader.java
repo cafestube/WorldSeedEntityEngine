@@ -39,6 +39,7 @@ public class AnimationLoader {
         final double length = animationLength == null ? 0 : animationLength.getAsDouble();
         final Map<String, AnimatedBoneData> bones = new HashMap<>();
 
+        final int convertedLength = (int) (length * 20);
 
         for (Map.Entry<String, JsonElement> boneEntry : animation.getAsJsonObject().get("bones").getAsJsonObject().entrySet()) {
             String boneName = boneEntry.getKey();
@@ -51,14 +52,26 @@ public class AnimationLoader {
             BoneAnimationData position = null;
             BoneAnimationData scale = null;
 
-            if (animationRotation != null) {
-                rotation = new BoneAnimationData(computeCachedTransforms(length, animationRotation, AnimationType.ROTATION));
-            }
-            if (animationPosition != null) {
-                position = new BoneAnimationData(computeCachedTransforms(length, animationPosition, AnimationType.TRANSLATION));
-            }
-            if (animationScale != null) {
-                scale = new BoneAnimationData(computeCachedTransforms(length, animationScale, AnimationType.SCALE));
+            if (length != 0) {
+                if (animationRotation != null) {
+                    rotation = new BoneAnimationData(computeCachedTransforms(convertedLength, animationRotation, AnimationType.ROTATION));
+                }
+                if (animationPosition != null) {
+                    position = new BoneAnimationData(computeCachedTransforms(convertedLength, animationPosition, AnimationType.TRANSLATION));
+                }
+                if (animationScale != null) {
+                    scale = new BoneAnimationData(computeCachedTransforms(convertedLength, animationScale, AnimationType.SCALE));
+                }
+            } else {
+                if (animationRotation != null) {
+                    rotation = new BoneAnimationData(computeMathTransforms(convertedLength, animationRotation, AnimationType.ROTATION));
+                }
+                if (animationPosition != null) {
+                    position = new BoneAnimationData(computeMathTransforms(convertedLength, animationPosition, AnimationType.TRANSLATION));
+                }
+                if (animationScale != null) {
+                    scale = new BoneAnimationData(computeMathTransforms(convertedLength, animationScale, AnimationType.SCALE));
+                }
             }
 
             bones.put(boneName, new AnimatedBoneData(rotation, position, scale));
@@ -67,7 +80,31 @@ public class AnimationLoader {
         return new AnimationData(length, bones);
     }
 
-    private static FrameProvider computeCachedTransforms(double length, JsonElement keyframes, AnimationType type) {
+    private static FrameProvider computeMathTransforms(int length, JsonElement keyframes, AnimationType type) {
+        LinkedHashMap<Double, BoneAnimationImpl.PointInterpolation> transform = new LinkedHashMap<>();
+
+        try {
+            for (Map.Entry<String, JsonElement> entry : keyframes.getAsJsonObject().entrySet()) {
+                double time = Double.parseDouble(entry.getKey());
+                MQLPoint point = PositionParser.getMQLPos(entry.getValue().getAsJsonObject().get("post").getAsJsonArray().get(0).getAsJsonObject()).orElse(MQLPoint.ZERO);
+                String lerp = entry.getValue().getAsJsonObject().get("lerp_mode").getAsString();
+                transform.put(time, new BoneAnimationImpl.PointInterpolation(point, lerp));
+            }
+        } catch (IllegalStateException | InvocationTargetException | NoSuchMethodException |
+                 InstantiationException | IllegalAccessException e) {
+            try {
+                e.printStackTrace();
+                MQLPoint point = PositionParser.getMQLPos(keyframes.getAsJsonObject()).orElse(MQLPoint.ZERO);
+                transform.put(0.0, new BoneAnimationImpl.PointInterpolation(point, "linear"));
+            } catch (Exception e2) {
+                e.printStackTrace();
+            }
+        }
+
+        return new ComputedFrameProvider(transform, type, length);
+    }
+
+    private static FrameProvider computeCachedTransforms(int length, JsonElement keyframes, AnimationType type) {
         LinkedHashMap<Double, BoneAnimationImpl.PointInterpolation> transform = new LinkedHashMap<>();
 
         try {
@@ -104,7 +141,7 @@ public class AnimationLoader {
             }
         }
 
-        return new CachedFrameProvider((int) (length * 20), transform, type);
+        return new CachedFrameProvider(length, transform, type);
     }
 
     public enum AnimationType {
