@@ -44,11 +44,8 @@ dependencies {
     testImplementation("net.minestom:minestom:2025.08.12-1.21.8")
     testImplementation(project(":resource-pack"))
 
-    implementation("commons-io:commons-io:2.20.0")
-    implementation("org.zeroturnaround:zt-zip:1.17")
-
-    implementation("javax.json:javax.json-api:1.1.4")
-    implementation("org.glassfish:javax.json:1.1.4")
+    testImplementation("commons-io:commons-io:2.20.0")
+    testImplementation("org.zeroturnaround:zt-zip:1.17")
 
     implementation("dev.hollowcube:mql:1.0.1")
 }
