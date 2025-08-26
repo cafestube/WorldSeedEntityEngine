@@ -33,6 +33,6 @@ public class PaperEntityFactory implements EntityFactory<Player> {
 
     @Override
     public void spawn(GenericModel<Player> model, BoneEntity<Player> entity, Pos position) {
-
+        entity.teleport(position);
     }
 }

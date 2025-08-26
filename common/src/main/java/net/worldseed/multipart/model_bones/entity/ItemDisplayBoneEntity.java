@@ -1,7 +1,8 @@
 package net.worldseed.multipart.model_bones.entity;
 
 import net.kyori.adventure.util.RGBLike;
-import net.worldseed.multipart.math.Pos;
+import net.worldseed.multipart.math.Point;
+import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.math.Vec;
 
 public interface ItemDisplayBoneEntity<TViewer> extends BoneEntity<TViewer> {
@@ -18,9 +19,9 @@ public interface ItemDisplayBoneEntity<TViewer> extends BoneEntity<TViewer> {
 
     void setScale(Vec vec);
 
-    void setRightRotation(float[] floats);
+    void setRightRotation(Quaternion quaternion);
 
-    void setTranslation(Pos position);
+    void setTranslation(Point position);
 
     void setTransformationInterpolationDuration(int i);
 

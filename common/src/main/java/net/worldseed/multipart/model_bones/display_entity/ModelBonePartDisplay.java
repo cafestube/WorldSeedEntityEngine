@@ -156,7 +156,7 @@ public class ModelBonePartDisplay<TViewer> extends ModelBoneImpl<TViewer> implem
 
             display.setTransformationInterpolationStartDelta(0);
             display.setScale(new Vec(scale.x() * this.scale, scale.y() * this.scale, scale.z() * this.scale));
-            display.setRightRotation(new float[]{(float) q.x(), (float) q.y(), (float) q.z(), (float) q.w()});
+            display.setRightRotation(q);
             display.setTranslation(position);
 //                meta.setNotifyAboutChanges(true);
 

@@ -44,6 +44,7 @@ public class Main {
     private static final Path BASE_PATH = Path.of("minestom/src/test/resources");
     private static final Path ZIP_PATH = BASE_PATH.resolve("resourcepack.zip");
     private static final Path MODEL_PATH = BASE_PATH.resolve("models");
+    private static final Path TEST_PATH = Path.of("test-files");
 
     public static void main(String[] args) throws Exception {
         MinecraftServer minecraftServer = MinecraftServer.init();
@@ -53,8 +54,8 @@ public class Main {
         } catch (IllegalArgumentException ignored) {
         }
 
-        FileUtils.copyDirectory(BASE_PATH.resolve("resourcepack_template").toFile(), BASE_PATH.resolve("resourcepack").toFile());
-        var config = PackBuilder.generate(BASE_PATH.resolve("bbmodel"), BASE_PATH.resolve("resourcepack"), MODEL_PATH, "worldseed");
+        FileUtils.copyDirectory(TEST_PATH.resolve("resourcepack_template").toFile(), BASE_PATH.resolve("resourcepack").toFile());
+        var config = PackBuilder.generate(TEST_PATH.resolve("bbmodel"), BASE_PATH.resolve("resourcepack"), MODEL_PATH, "worldseed");
         FileUtils.writeStringToFile(BASE_PATH.resolve("model_mappings.json").toFile(), config.modelMappings(), Charset.defaultCharset());
 
         ModelEngine.registerListener();

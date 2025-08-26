@@ -4,6 +4,8 @@ import net.worldseed.multipart.math.Pos;
 
 public interface BoneEntity<TViewer> {
 
+    int getEntityId();
+
     void remove();
 
     boolean addViewer(TViewer player);

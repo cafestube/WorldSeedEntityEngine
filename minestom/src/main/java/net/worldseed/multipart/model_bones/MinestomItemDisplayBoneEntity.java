@@ -9,7 +9,8 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
 import net.worldseed.multipart.MinestomModel;
 import net.worldseed.multipart.PositionConversion;
-import net.worldseed.multipart.math.Pos;
+import net.worldseed.multipart.math.Point;
+import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.model_bones.entity.ItemDisplayBoneEntity;
 
@@ -85,13 +86,13 @@ public class MinestomItemDisplayBoneEntity extends MinestomBoneEntity implements
     }
 
     @Override
-    public void setRightRotation(float[] floats) {
+    public void setRightRotation(Quaternion quaternion) {
         var meta = (ItemDisplayMeta) this.getEntityMeta();
-        meta.setRightRotation(floats);
+        meta.setRightRotation(new float[]{(float) quaternion.x(), (float) quaternion.y(), (float) quaternion.z(), (float) quaternion.w()});
     }
 
     @Override
-    public void setTranslation(Pos position) {
+    public void setTranslation(Point position) {
         var meta = (ItemDisplayMeta) this.getEntityMeta();
         meta.setTranslation(PositionConversion.asMinestom(position));
     }
