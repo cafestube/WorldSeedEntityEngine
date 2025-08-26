@@ -7,7 +7,6 @@ import net.worldseed.multipart.math.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public abstract class AbstractModelBoneImpl<TViewer, TModel extends AbstractGenericModel<TViewer, ?, ?>, TBone extends AbstractModelBone<TViewer, TModel, TBone>> implements AbstractModelBone<TViewer, TModel, TBone> {
     protected final Point pivot;

@@ -99,7 +99,7 @@ public class EmoteModel extends GenericModelImpl {
 
     private void init_(@Nullable Instance instance, @NotNull Pos position) {
         this.instance = instance;
-        this.setPosition(position);
+        this.position = position;
 
         this.setGlobalRotation(position.yaw());
 
@@ -115,6 +115,7 @@ public class EmoteModel extends GenericModelImpl {
 
             modelBonePart.spawn(instance, modelBonePart.calculatePosition()).join();
         }
+        this.getModelRoot().setInstance(instance, position);
 
         draw();
     }
