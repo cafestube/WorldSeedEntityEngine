@@ -4,6 +4,7 @@ import net.worldseed.multipart.AbstractGenericModel;
 import net.worldseed.multipart.animations.AnimationLoader;
 import net.worldseed.multipart.animations.BoneAnimation;
 import net.worldseed.multipart.math.*;
+import net.worldseed.multipart.model_bones.entity.AbstractBoneEntity;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,13 +1,11 @@
 package net.worldseed.multipart;
 
-import net.minestom.server.Viewable;
 import net.minestom.server.collision.Shape;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventHandler;
 import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.events.ModelEvent;
-import net.worldseed.multipart.model_bones.AbstractBoneEntity;
 import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
 import org.jetbrains.annotations.NotNull;

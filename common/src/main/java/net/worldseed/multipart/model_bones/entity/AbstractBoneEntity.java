@@ -1,6 +1,4 @@
-package net.worldseed.multipart.model_bones;
-
-import net.kyori.adventure.util.RGBLike;
+package net.worldseed.multipart.model_bones.entity;
 
 public interface AbstractBoneEntity<TViewer> {
 

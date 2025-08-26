@@ -7,6 +7,8 @@ import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.model_bones.*;
+import net.worldseed.multipart.model_bones.entity.AbstractBoneEntity;
+import net.worldseed.multipart.model_bones.entity.AbstractItemDisplayBoneEntity;
 
 import java.util.ArrayList;
 import java.util.List;

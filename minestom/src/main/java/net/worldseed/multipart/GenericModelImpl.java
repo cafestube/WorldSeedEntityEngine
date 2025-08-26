@@ -29,6 +29,7 @@ import net.worldseed.multipart.model_bones.bone_types.HeadBone;
 import net.worldseed.multipart.model_bones.display_entity.MinestomModelBonePartDisplay;
 import net.worldseed.multipart.model_bones.display_entity.RootBoneEntity;
 import net.worldseed.multipart.model_bones.display_entity.MinestomModelBoneHeadDisplay;
+import net.worldseed.multipart.model_bones.entity.AbstractBoneEntity;
 import net.worldseed.multipart.model_bones.misc.ModelBoneHitbox;
 import net.worldseed.multipart.model_bones.misc.ModelBoneNametag;
 import net.worldseed.multipart.model_bones.misc.ModelBoneSeat;

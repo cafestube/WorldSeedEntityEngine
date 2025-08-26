@@ -1,4 +1,4 @@
-package net.worldseed.multipart.model_bones;
+package net.worldseed.multipart.model_bones.entity;
 
 import net.kyori.adventure.util.RGBLike;
 import net.worldseed.multipart.math.Pos;

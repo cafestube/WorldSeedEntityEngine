@@ -2,27 +2,19 @@ package net.worldseed.multipart.model_bones;
 
 import net.kyori.adventure.util.RGBLike;
 import net.minestom.server.entity.EntityType;
-import net.minestom.server.entity.LivingEntity;
 import net.minestom.server.entity.Metadata;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.metadata.display.ItemDisplayMeta;
-import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemStack;
-import net.minestom.server.network.packet.server.LazyPacket;
 import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
-import net.minestom.server.network.packet.server.play.SpawnEntityPacket;
-import net.minestom.server.tag.Tag;
 import net.worldseed.multipart.GenericModel;
-import net.worldseed.multipart.ModelEngine;
 import net.worldseed.multipart.PositionConversion;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
-import org.jetbrains.annotations.NotNull;
+import net.worldseed.multipart.model_bones.entity.AbstractItemDisplayBoneEntity;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 public class ItemDisplayBoneEntity extends BoneEntity implements AbstractItemDisplayBoneEntity<Player> {
 

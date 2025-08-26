@@ -5,7 +5,7 @@ import net.kyori.adventure.util.RGBLike;
 import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
-import net.worldseed.multipart.model_bones.AbstractBoneEntity;
+import net.worldseed.multipart.model_bones.entity.AbstractBoneEntity;
 import net.worldseed.multipart.model_bones.AbstractModelBone;
 import net.worldseed.multipart.model_bones.EntityFactory;
 import org.jetbrains.annotations.ApiStatus;

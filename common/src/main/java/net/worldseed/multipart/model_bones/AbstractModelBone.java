@@ -6,6 +6,7 @@ import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.animations.BoneAnimation;
+import net.worldseed.multipart.model_bones.entity.AbstractBoneEntity;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 

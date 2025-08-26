@@ -10,6 +10,7 @@ import net.minestom.server.network.packet.server.play.SpawnEntityPacket;
 import net.minestom.server.tag.Tag;
 import net.worldseed.multipart.GenericModel;
 import net.worldseed.multipart.PositionConversion;
+import net.worldseed.multipart.model_bones.entity.AbstractBoneEntity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
