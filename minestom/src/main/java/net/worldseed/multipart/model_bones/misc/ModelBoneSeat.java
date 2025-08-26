@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class ModelBoneSeat extends AbstractModelBoneImpl<Player, GenericModel, ModelBone> implements RideableBone<Player, ModelBone, GenericModel>, ModelBone {
+public class ModelBoneSeat extends AbstractModelBoneImpl<Player, GenericModel> implements RideableBone<Player, GenericModel> {
 
     public ModelBoneSeat(Point pivot, String name, Point rotation, GenericModel model, float scale) {
         super(pivot, name, rotation, model, scale);
@@ -37,18 +37,6 @@ public class ModelBoneSeat extends AbstractModelBoneImpl<Player, GenericModel, M
             entity.setTag(Tag.String("WSEE"), "seat");
             entity.setInvisible(true);
         }
-    }
-
-    @Override
-    public CompletableFuture<Void> spawn(@Nullable Instance instance, Pos pos) {
-        if (this.offset != null) {
-            BoneEntity entity = this.getEntity();
-            entity.setInvisible(true);
-            entity.setNoGravity(true);
-            entity.setSilent(true);
-            return entity.setInstance(instance, pos);
-        }
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override

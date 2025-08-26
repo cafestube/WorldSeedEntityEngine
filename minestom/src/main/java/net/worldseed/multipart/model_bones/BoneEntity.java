@@ -27,6 +27,7 @@ public class BoneEntity extends LivingEntity implements AbstractBoneEntity<Playe
         this.model = model;
         this.name = name;
 
+        this.setSilent(true);
         this.setNoGravity(true);
         this.setSynchronizationTicks(Integer.MAX_VALUE);
     }

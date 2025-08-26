@@ -6,12 +6,15 @@ import com.google.gson.JsonObject;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.instance.Instance;
+import net.worldseed.multipart.GenericModel;
 import net.worldseed.multipart.GenericModelImpl;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
+import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.model_bones.ModelBoneViewable;
+import net.worldseed.multipart.model_bones.entity.AbstractBoneEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -109,11 +112,21 @@ public class EmoteModel extends GenericModelImpl {
             e.printStackTrace();
         }
 
-        for (ModelBone modelBonePart : this.parts.values()) {
+        for (ModelBone<Player, GenericModel> modelBonePart : this.parts.values()) {
             if (modelBonePart instanceof ModelBoneViewable)
                 viewableBones.add(modelBonePart);
 
-            modelBonePart.spawn(instance, modelBonePart.calculatePosition()).join();
+            AbstractBoneEntity<Player> entity = modelBonePart.getEntity();
+            if(entity instanceof BoneEntity be) {
+                be.setInstance(instance, modelBonePart.calculatePosition()).join();
+            }
+
+            for (ModelBone<Player, GenericModel> child : modelBonePart.getChildren()) {
+                AbstractBoneEntity<Player> childEntity = child.getEntity();
+                if(childEntity instanceof BoneEntity be) {
+                    be.setInstance(instance, child.calculatePosition()).join();
+                }
+            }
         }
         this.getModelRoot().setInstance(instance, position);
 

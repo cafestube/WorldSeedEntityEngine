@@ -13,7 +13,7 @@ import net.worldseed.multipart.model_bones.entity.AbstractItemDisplayBoneEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ModelBonePartDisplay<TViewer, TModel extends AbstractGenericModel<TViewer, ?, ?>, TBone extends AbstractModelBone<TViewer, TModel, TBone>> extends AbstractModelBoneImpl<TViewer, TModel, TBone> implements ModelBoneViewable {
+public class ModelBonePartDisplay<TViewer, TModel extends AbstractGenericModel<TViewer, ?>> extends AbstractModelBoneImpl<TViewer, TModel> implements ModelBoneViewable {
     private final List<TModel> attached = new ArrayList<>();
 
     public ModelBonePartDisplay(Point pivot, String name, Point rotation, TModel model, float scale) {
@@ -119,7 +119,7 @@ public class ModelBonePartDisplay<TViewer, TModel extends AbstractGenericModel<T
 
     @Override
     public Pos calculatePosition() {
-        return new Pos(model.getPosition()).withView(0, 0);
+        return new Pos(model.getPosition()).withView((float) (180 + this.model.getGlobalRotation() + 360) % 360, 0);
     }
 
     private Pos calculatePositionInternal() {
@@ -141,7 +141,7 @@ public class ModelBonePartDisplay<TViewer, TModel extends AbstractGenericModel<T
     }
 
     public void draw() {
-        this.children.forEach(TBone::draw);
+        this.children.forEach(ModelBone::draw);
         if (this.offset == null) return;
 
         AbstractBoneEntity<TViewer> entity = this.getEntity();

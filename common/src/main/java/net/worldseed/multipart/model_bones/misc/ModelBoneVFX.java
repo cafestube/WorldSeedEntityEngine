@@ -5,16 +5,14 @@ import net.worldseed.multipart.AbstractGenericModel;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
-import net.worldseed.multipart.model_bones.AbstractModelBone;
+import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.model_bones.AbstractModelBoneImpl;
 import net.worldseed.multipart.model_bones.bone_types.VFXBone;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-public class ModelBoneVFX<TViewer, TModel extends AbstractGenericModel<TViewer, TBone, TModel>, TBone extends AbstractModelBone<TViewer, TModel, TBone>> extends AbstractModelBoneImpl<TViewer, TModel, TBone> implements VFXBone<TViewer, TBone, TModel> {
+public class ModelBoneVFX<TViewer, TModel extends AbstractGenericModel<TViewer, TModel>> extends AbstractModelBoneImpl<TViewer, TModel> implements VFXBone<TViewer, TModel> {
     private final List<TModel> attached = new ArrayList<>();
     private Pos position = Pos.ZERO;
 
@@ -77,7 +75,7 @@ public class ModelBoneVFX<TViewer, TModel extends AbstractGenericModel<TViewer, 
     }
 
     public void draw() {
-        this.children.forEach(TBone::draw);
+        this.children.forEach(ModelBone::draw);
         if (this.offset == null) return;
 
         this.position = calculatePosition();

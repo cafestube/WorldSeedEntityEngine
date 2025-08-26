@@ -6,7 +6,7 @@ import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.model_bones.entity.AbstractBoneEntity;
-import net.worldseed.multipart.model_bones.AbstractModelBone;
+import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.model_bones.EntityFactory;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public interface AbstractGenericModel<TViewer, TBone extends AbstractModelBone<TViewer, TModel, TBone>, TModel extends AbstractGenericModel<TViewer, TBone, TModel>> {
+public interface AbstractGenericModel<TViewer, TModel extends AbstractGenericModel<TViewer, TModel>> {
     /**
      * Get the ID of the model
      *
@@ -112,7 +112,7 @@ public interface AbstractGenericModel<TViewer, TBone extends AbstractModelBone<T
     Point getVFX(String name);
 
     @ApiStatus.Internal
-    TBone getPart(String boneName);
+    ModelBone<TViewer, TModel> getPart(String boneName);
 
     @ApiStatus.Internal
     void draw();
@@ -125,7 +125,7 @@ public interface AbstractGenericModel<TViewer, TBone extends AbstractModelBone<T
      */
     void setHeadRotation(String name, double rotation);
 
-    @NotNull List<TBone> getParts();
+    @NotNull List<ModelBone<TViewer, TModel>> getParts();
 
 
     Point getOffset(String bone);
@@ -150,7 +150,7 @@ public interface AbstractGenericModel<TViewer, TBone extends AbstractModelBone<T
 
     void detachModel(TModel model, String boneName);
 
-    AbstractBoneEntity getModelRoot();
+    AbstractBoneEntity<TViewer> getModelRoot();
 
     void setNametag(String name, @Nullable Component nametag);
 

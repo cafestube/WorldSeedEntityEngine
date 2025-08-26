@@ -29,11 +29,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ModelBoneHitbox extends AbstractModelBoneImpl<Player, GenericModel, ModelBone> implements HitboxBone<Player, ModelBone, GenericModel>, ModelBone {
+public class ModelBoneHitbox extends AbstractModelBoneImpl<Player, GenericModel> implements HitboxBone<Player, GenericModel> {
     private static final int INTERPOLATE_TICKS = 2;
     private static final Tag<String> WSEE = Tag.String("WSEE");
     private final JsonArray cubes;
-    private final Collection<ModelBone> illegitimateChildren = new ConcurrentLinkedDeque<>();
+    private final Collection<ModelBone<Player, GenericModel>> illegitimateChildren = new ConcurrentLinkedDeque<>();
     private final Point orgPivot;
     private Task positionTask;
 
@@ -102,7 +102,7 @@ public class ModelBoneHitbox extends AbstractModelBoneImpl<Player, GenericModel,
 
         generateStands(this.cubes, orgPivot, this.name, this.rotation, this.model);
         this.illegitimateChildren.forEach(modelBone -> {
-            modelBone.spawn(model.getInstance(), model.getPosition());
+            ((BoneEntity) modelBone.getEntity()).setInstance(model.getInstance(), model.getPosition());
             modelBone.setParent(getParent());
             model.getViewers().forEach(modelBone::addViewer);
         });
@@ -187,7 +187,7 @@ public class ModelBoneHitbox extends AbstractModelBoneImpl<Player, GenericModel,
     }
 
     @Override
-    public void setParent(ModelBone parent) {
+    public void setParent(ModelBone<Player, GenericModel> parent) {
         super.setParent(parent);
         this.illegitimateChildren.forEach(modelBone -> modelBone.setParent(parent));
     }
@@ -198,25 +198,9 @@ public class ModelBoneHitbox extends AbstractModelBoneImpl<Player, GenericModel,
     }
 
     @Override
-    public @NotNull Collection<ModelBone> getChildren() {
+    public @NotNull Collection<ModelBone<Player, GenericModel>> getChildren() {
         if (this.illegitimateChildren == null) return List.of();
         return this.illegitimateChildren;
-    }
-
-    @Override
-    public CompletableFuture<Void> spawn(Instance instance, Pos position) {
-        this.illegitimateChildren.forEach(modelBone -> {
-            modelBone.spawn(instance, modelBone.calculatePosition().add(model.getPosition()));
-            MinecraftServer.getSchedulerManager().scheduleNextTick(modelBone::draw);
-        });
-
-        BoneEntity entity = this.getEntity();
-        if (this.offset != null && entity != null) {
-            entity.setNoGravity(true);
-            entity.setSilent(true);
-            return entity.setInstance(instance, position);
-        }
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override

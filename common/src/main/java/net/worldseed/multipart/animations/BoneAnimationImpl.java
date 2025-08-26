@@ -3,7 +3,7 @@ package net.worldseed.multipart.animations;
 import net.worldseed.multipart.animations.data.BoneAnimationData;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Vec;
-import net.worldseed.multipart.model_bones.AbstractModelBone;
+import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.mql.MQLPoint;
 
 public class BoneAnimationImpl implements BoneAnimation {
@@ -17,7 +17,7 @@ public class BoneAnimationImpl implements BoneAnimation {
     private short tick = 0;
     private AnimationHandler.AnimationDirection direction = AnimationHandler.AnimationDirection.FORWARD;
 
-    BoneAnimationImpl(String animationName, String boneName, AbstractModelBone bone, BoneAnimationData keyframes, AnimationLoader.AnimationType animationType, double length) {
+    BoneAnimationImpl(String animationName, String boneName, ModelBone bone, BoneAnimationData keyframes, AnimationLoader.AnimationType animationType, double length) {
         this.type = animationType;
         this.length = (int) (length * 20);
         this.name = animationName;

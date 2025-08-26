@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.List;
 
 @ApiStatus.Internal
-public interface AbstractModelBone<TViewer, TModel extends AbstractGenericModel<TViewer, ?, ?>, TBone extends AbstractModelBone<TViewer, TModel, TBone>> {
+public interface ModelBone<TViewer, TModel extends AbstractGenericModel<TViewer, ?>> {
 
     Point applyTransform(Point p);
 
@@ -32,9 +32,9 @@ public interface AbstractModelBone<TViewer, TModel extends AbstractGenericModel<
 
     Point getPosition();
 
-    TBone getParent();
+    ModelBone<TViewer, TModel> getParent();
 
-    void setParent(TBone parent);
+    void setParent(ModelBone<TViewer, TModel> parent);
 
     Point getPropogatedRotation();
 
@@ -54,7 +54,7 @@ public interface AbstractModelBone<TViewer, TModel extends AbstractGenericModel<
 
     Quaternion calculateFinalAngle(Quaternion q);
 
-    void addChild(TBone child);
+    void addChild(ModelBone<TViewer, TModel> child);
 
     void addAnimation(BoneAnimation animation);
 
@@ -82,7 +82,7 @@ public interface AbstractModelBone<TViewer, TModel extends AbstractGenericModel<
 
     default void teleport(Point position) {}
 
-    default @NotNull Collection<TBone> getChildren() {
+    default @NotNull Collection<ModelBone<TViewer, TModel>> getChildren() {
         return List.of();
     };
 }

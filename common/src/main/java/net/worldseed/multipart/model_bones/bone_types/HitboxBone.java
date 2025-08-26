@@ -1,7 +1,7 @@
 package net.worldseed.multipart.model_bones.bone_types;
 
 import net.worldseed.multipart.AbstractGenericModel;
-import net.worldseed.multipart.model_bones.AbstractModelBone;
+import net.worldseed.multipart.model_bones.ModelBone;
 
-public interface HitboxBone<TPlayer, TBone extends AbstractModelBone<TPlayer, TModel, TBone>, TModel extends AbstractGenericModel<TPlayer, TBone, TModel>> extends AbstractModelBone<TPlayer, TModel, TBone> {
+public interface HitboxBone<TPlayer, TModel extends AbstractGenericModel<TPlayer, TModel>> extends ModelBone<TPlayer, TModel> {
 }

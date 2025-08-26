@@ -9,18 +9,18 @@ import net.worldseed.multipart.model_bones.entity.AbstractBoneEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractModelBoneImpl<TViewer, TModel extends AbstractGenericModel<TViewer, ?, ?>, TBone extends AbstractModelBone<TViewer, TModel, TBone>> implements AbstractModelBone<TViewer, TModel, TBone> {
+public abstract class AbstractModelBoneImpl<TViewer, TModel extends AbstractGenericModel<TViewer, ?>> implements ModelBone<TViewer, TModel> {
     protected final Point pivot;
     protected final String name;
     protected final List<BoneAnimation> allAnimations = new ArrayList<>();
-    protected final ArrayList<TBone> children = new ArrayList<>();
+    protected final ArrayList<ModelBone<TViewer, TModel>> children = new ArrayList<>();
     protected final TModel model;
     protected Point diff;
     protected float scale;
     protected Point offset;
     protected Point rotation;
     protected AbstractBoneEntity<TViewer> stand;
-    private TBone parent;
+    private ModelBone<TViewer, TModel> parent;
 
     public AbstractModelBoneImpl(Point pivot, String name, Point rotation, TModel model, float scale) {
         this.name = name;
@@ -42,12 +42,12 @@ public abstract class AbstractModelBoneImpl<TViewer, TModel extends AbstractGene
     }
 
     @Override
-    public TBone getParent() {
+    public ModelBone<TViewer, TModel> getParent() {
         return parent;
     }
 
     @Override
-    public void setParent(TBone parent) {
+    public void setParent(ModelBone<TViewer, TModel> parent) {
         this.parent = parent;
     }
 
@@ -157,13 +157,13 @@ public abstract class AbstractModelBoneImpl<TViewer, TModel extends AbstractGene
         this.allAnimations.add(animation);
     }
 
-    public void addChild(TBone child) {
+    public void addChild(ModelBone<TViewer, TModel> child) {
         this.children.add(child);
     }
 
     @Override
     public void destroy() {
-        this.children.forEach(TBone::destroy);
+        this.children.forEach(ModelBone::destroy);
         this.children.clear();
 
         if (this.stand != null) {

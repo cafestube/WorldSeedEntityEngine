@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class ModelBoneEmote extends AbstractModelBoneImpl<Player, GenericModel, ModelBone> implements ModelBoneViewable, ModelBone {
+public class ModelBoneEmote extends AbstractModelBoneImpl<Player, GenericModel> implements ModelBoneViewable {
     private final Double verticalOffset;
 
     public ModelBoneEmote(Point pivot, String name, Point rotation, GenericModel model, int translation, Double verticalOffset, PlayerSkin skin) {
@@ -76,20 +76,6 @@ public class ModelBoneEmote extends AbstractModelBoneImpl<Player, GenericModel, 
     public BoneEntity getEntity() {
         return (BoneEntity) super.getEntity();
     }
-
-    @Override
-    public CompletableFuture<Void> spawn(Instance instance, Pos position) {
-        var correctLocation = new Pos(position).withYaw((float) (180 + this.model.getGlobalRotation() + 360) % 360);
-
-        BoneEntity entity = this.getEntity();
-        if (this.offset != null && entity != null) {
-            entity.setNoGravity(true);
-            entity.setSilent(true);
-            return entity.setInstance(instance, correctLocation);
-        }
-        return CompletableFuture.completedFuture(null);
-    }
-
 
     @Override
     public void draw() {
@@ -217,7 +203,7 @@ public class ModelBoneEmote extends AbstractModelBoneImpl<Player, GenericModel, 
     }
 
     @Override
-    public @NotNull Collection<ModelBone> getChildren() {
+    public @NotNull Collection<ModelBone<Player, GenericModel>> getChildren() {
         return List.of();
     }
 

@@ -7,12 +7,11 @@ import net.minestom.server.event.EventHandler;
 import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.events.ModelEvent;
 import net.worldseed.multipart.model_bones.BoneEntity;
-import net.worldseed.multipart.model_bones.ModelBone;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-public interface GenericModel extends AbstractGenericModel<Player, ModelBone, GenericModel>, Shape, EventHandler<@NotNull ModelEvent> {
+public interface GenericModel extends AbstractGenericModel<Player, GenericModel>, Shape, EventHandler<@NotNull ModelEvent> {
 
     @Override
     ModelRegistry getModelRegistry();

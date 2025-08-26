@@ -10,7 +10,7 @@ public class MinestomEntityFactory implements EntityFactory<Player> {
     public static MinestomEntityFactory INSTANCE = new MinestomEntityFactory();
 
     @Override
-    public AbstractItemDisplayBoneEntity<Player> createItemDisplayBoneEntity(AbstractGenericModel<Player, ?, ?> model, String name) {
+    public AbstractItemDisplayBoneEntity<Player> createItemDisplayBoneEntity(AbstractGenericModel<Player, ?> model, String name) {
         return new ItemDisplayBoneEntity((GenericModel) model, name);
     }
 }
