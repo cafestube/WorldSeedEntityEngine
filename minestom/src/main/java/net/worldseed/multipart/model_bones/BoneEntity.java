@@ -78,4 +78,9 @@ public class BoneEntity extends LivingEntity implements AbstractBoneEntity<Playe
     public void setRotation(float yaw, float pitch) {
         setView(yaw, pitch);
     }
+
+    @Override
+    public void teleport(net.worldseed.multipart.math.Pos pos) {
+        super.teleport(PositionConversion.asMinestom(pos));
+    }
 }

@@ -91,6 +91,16 @@ public class ModelRegistry implements AbstractModelRegistry {
         return loadedModel1;
     }
 
+    @Override
+    public Point getDiffMapping(String model, String boneName) {
+        return diffMappings.get(model + "/" + boneName);
+    }
+
+    @Override
+    public Point getOffsetMapping(String model, String boneName) {
+        return offsetMappings.get(model + "/" + boneName);
+    }
+
     private void loadMappings() {
         JsonObject modelData = null;
         try {

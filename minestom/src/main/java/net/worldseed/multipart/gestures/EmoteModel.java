@@ -84,7 +84,7 @@ public class EmoteModel extends GenericModelImpl {
     @Override
     protected void registerBoneSuppliers() {
         boneSuppliers.put(name -> true, (info) -> {
-            return new ModelBoneEmote(info.pivot(), info.name(), info.rotation(), info.model(), BONE_TRANSLATIONS.get(info.name()), VERTICAL_OFFSETS.getOrDefault(info.name(), 0.0), skin);
+            return new ModelBoneEmote(info.pivot(), info.name(), info.rotation(), this, BONE_TRANSLATIONS.get(info.name()), VERTICAL_OFFSETS.getOrDefault(info.name(), 0.0), skin);
         });
     }
 
