@@ -6,7 +6,7 @@ import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.animations.BoneAnimation;
-import net.worldseed.multipart.model_bones.entity.AbstractBoneEntity;
+import net.worldseed.multipart.model_bones.entity.BoneEntity;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +26,7 @@ public interface ModelBone<TViewer> {
 
     String getName();
 
-    AbstractBoneEntity<TViewer> getEntity();
+    BoneEntity<TViewer> getEntity();
 
     Point getOffset();
 

@@ -14,7 +14,7 @@ import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.model_bones.ModelBoneImpl;
-import net.worldseed.multipart.model_bones.BoneEntity;
+import net.worldseed.multipart.model_bones.MinestomBoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.model_bones.bone_types.RideableBone;
 
@@ -27,9 +27,9 @@ public class ModelBoneSeat extends ModelBoneImpl<Player> implements RideableBone
         super(pivot, name, rotation, model, scale);
 
         if (this.offset != null) {
-            this.stand = new BoneEntity(EntityType.ARMOR_STAND, model, name);
+            this.stand = new MinestomBoneEntity(EntityType.ARMOR_STAND, model, name);
 
-            BoneEntity entity = this.getEntity();
+            MinestomBoneEntity entity = this.getEntity();
             entity.editEntityMeta(ArmorStandMeta.class, meta -> {
                 meta.setMarker(true);
             });
@@ -40,19 +40,19 @@ public class ModelBoneSeat extends ModelBoneImpl<Player> implements RideableBone
     }
 
     @Override
-    public BoneEntity getEntity() {
-        return (BoneEntity) super.getEntity();
+    public MinestomBoneEntity getEntity() {
+        return (MinestomBoneEntity) super.getEntity();
     }
 
     @Override
     public void addViewer(Player player) {
-        BoneEntity entity = this.getEntity();
+        MinestomBoneEntity entity = this.getEntity();
         if (entity != null) entity.addViewer(player);
     }
 
     @Override
     public void removeViewer(Player player) {
-        BoneEntity entity = this.getEntity();
+        MinestomBoneEntity entity = this.getEntity();
         if (entity != null) entity.removeViewer(player);
     }
 
@@ -138,7 +138,7 @@ public class ModelBoneSeat extends ModelBoneImpl<Player> implements RideableBone
         if (this.offset == null) return;
 
         Pos found = calculatePosition();
-        BoneEntity entity = this.getEntity();
+        MinestomBoneEntity entity = this.getEntity();
         
         // TODO: needed by minestom?
         entity.setView(found.yaw(), found.pitch());

@@ -4,7 +4,7 @@ import net.worldseed.multipart.GenericModel;
 import net.worldseed.multipart.animations.AnimationLoader;
 import net.worldseed.multipart.animations.BoneAnimation;
 import net.worldseed.multipart.math.*;
-import net.worldseed.multipart.model_bones.entity.AbstractBoneEntity;
+import net.worldseed.multipart.model_bones.entity.BoneEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ public abstract class ModelBoneImpl<TViewer> implements ModelBone<TViewer> {
     protected float scale;
     protected Point offset;
     protected Point rotation;
-    protected AbstractBoneEntity<TViewer> stand;
+    protected BoneEntity<TViewer> stand;
     private ModelBone<TViewer> parent;
 
     public ModelBoneImpl(Point pivot, String name, Point rotation, GenericModel<TViewer> model, float scale) {
@@ -37,7 +37,7 @@ public abstract class ModelBoneImpl<TViewer> implements ModelBone<TViewer> {
     }
 
     @Override
-    public AbstractBoneEntity<TViewer> getEntity() {
+    public BoneEntity<TViewer> getEntity() {
         return stand;
     }
 

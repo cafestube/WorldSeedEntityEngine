@@ -11,16 +11,16 @@ import net.worldseed.multipart.MinestomModel;
 import net.worldseed.multipart.PositionConversion;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
-import net.worldseed.multipart.model_bones.entity.AbstractItemDisplayBoneEntity;
+import net.worldseed.multipart.model_bones.entity.ItemDisplayBoneEntity;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ItemDisplayBoneEntity extends BoneEntity implements AbstractItemDisplayBoneEntity<Player> {
+public class MinestomItemDisplayBoneEntity extends MinestomBoneEntity implements ItemDisplayBoneEntity<Player> {
 
     protected final HashMap<String, ItemStack> items;
 
-    public ItemDisplayBoneEntity(MinestomModel model, String name) {
+    public MinestomItemDisplayBoneEntity(MinestomModel model, String name) {
         super(EntityType.ITEM_DISPLAY, model, name);
 
         this.items = model.getModelRegistry().getItems(model.getId(), name);

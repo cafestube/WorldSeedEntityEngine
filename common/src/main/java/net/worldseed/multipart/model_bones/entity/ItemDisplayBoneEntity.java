@@ -4,7 +4,7 @@ import net.kyori.adventure.util.RGBLike;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
 
-public interface AbstractItemDisplayBoneEntity<TViewer> extends AbstractBoneEntity<TViewer> {
+public interface ItemDisplayBoneEntity<TViewer> extends BoneEntity<TViewer> {
 
     void setGlowing(RGBLike color);
 

@@ -6,7 +6,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventHandler;
 import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.events.ModelEvent;
-import net.worldseed.multipart.model_bones.BoneEntity;
+import net.worldseed.multipart.model_bones.display_entity.MinestomRootBoneEntity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -25,5 +25,5 @@ public interface MinestomModel extends GenericModel<Player>, Shape, EventHandler
     Instance getInstance();
 
     @Override
-    BoneEntity getModelRoot();
+    MinestomRootBoneEntity getModelRoot();
 }

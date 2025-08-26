@@ -5,9 +5,10 @@ import net.kyori.adventure.util.RGBLike;
 import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
-import net.worldseed.multipart.model_bones.entity.AbstractBoneEntity;
+import net.worldseed.multipart.model_bones.entity.BoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.model_bones.EntityFactory;
+import net.worldseed.multipart.model_bones.entity.RootBoneEntity;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -150,7 +151,7 @@ public interface GenericModel<TViewer> {
 
     void detachModel(GenericModel<TViewer> model, String boneName);
 
-    AbstractBoneEntity<TViewer> getModelRoot();
+    RootBoneEntity<TViewer> getModelRoot();
 
     void setNametag(String name, @Nullable Component nametag);
 

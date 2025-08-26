@@ -18,7 +18,7 @@ import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.model_bones.ModelBoneImpl;
-import net.worldseed.multipart.model_bones.BoneEntity;
+import net.worldseed.multipart.model_bones.MinestomBoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.model_bones.bone_types.HitboxBone;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +47,7 @@ public class ModelBoneHitbox extends ModelBoneImpl<Player> implements HitboxBone
             this.offset = null;
         } else {
             if (this.offset != null) {
-                BoneEntity entity = new BoneEntity(EntityType.INTERACTION, model, name) {
+                MinestomBoneEntity entity = new MinestomBoneEntity(EntityType.INTERACTION, model, name) {
                     @Override
                     public void updateNewViewer(@NotNull Player player) {
                         super.updateNewViewer(player);
@@ -76,18 +76,18 @@ public class ModelBoneHitbox extends ModelBoneImpl<Player> implements HitboxBone
     }
 
     @Override
-    public BoneEntity getEntity() {
-        return (BoneEntity) super.getEntity();
+    public MinestomBoneEntity getEntity() {
+        return (MinestomBoneEntity) super.getEntity();
     }
 
     public void addViewer(Player player) {
-        BoneEntity entity = this.getEntity();
+        MinestomBoneEntity entity = this.getEntity();
         if (entity != null) entity.addViewer(player);
         illegitimateChildren.forEach(modelBone -> modelBone.addViewer(player));
     }
 
     public void removeViewer(Player player) {
-        BoneEntity entity = this.getEntity();
+        MinestomBoneEntity entity = this.getEntity();
         if (entity != null) entity.removeViewer(player);
         illegitimateChildren.forEach(modelBone -> modelBone.removeViewer(player));
     }
@@ -101,7 +101,7 @@ public class ModelBoneHitbox extends ModelBoneImpl<Player> implements HitboxBone
 
         generateStands(this.cubes, orgPivot, this.name, this.rotation, (MinestomModel) this.model);
         this.illegitimateChildren.forEach(modelBone -> {
-            ((BoneEntity) modelBone.getEntity()).setInstance(((MinestomModel)model).getInstance(), model.getPosition());
+            ((MinestomBoneEntity) modelBone.getEntity()).setInstance(((MinestomModel)model).getInstance(), model.getPosition());
             modelBone.setParent(getParent());
             model.getViewers().forEach(modelBone::addViewer);
         });
@@ -250,7 +250,7 @@ public class ModelBoneHitbox extends ModelBoneImpl<Player> implements HitboxBone
             this.illegitimateChildren.forEach(ModelBone::draw);
         }
 
-        BoneEntity entity = this.getEntity();
+        MinestomBoneEntity entity = this.getEntity();
         if (this.offset == null || entity == null) return;
 
         var finalPosition = PositionConversion.asMinestom(calculatePosition().add(model.getPosition()));

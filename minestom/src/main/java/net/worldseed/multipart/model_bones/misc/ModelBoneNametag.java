@@ -13,9 +13,9 @@ import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.model_bones.ModelBoneImpl;
-import net.worldseed.multipart.model_bones.BoneEntity;
+import net.worldseed.multipart.model_bones.MinestomBoneEntity;
 import net.worldseed.multipart.model_bones.bone_types.NametagBone;
-import net.worldseed.multipart.model_bones.display_entity.RootBoneEntity;
+import net.worldseed.multipart.model_bones.display_entity.MinestomRootBoneEntity;
 
 import java.util.List;
 
@@ -25,19 +25,19 @@ public class ModelBoneNametag extends ModelBoneImpl<Player> implements NametagBo
     }
 
     @Override
-    public BoneEntity getEntity() {
-        return (BoneEntity) super.getEntity();
+    public MinestomBoneEntity getEntity() {
+        return (MinestomBoneEntity) super.getEntity();
     }
 
     @Override
     public void addViewer(Player player) {
-        BoneEntity entity = this.getEntity();
+        MinestomBoneEntity entity = this.getEntity();
         if (entity != null) entity.addViewer(player);
     }
 
     @Override
     public void removeViewer(Player player) {
-        BoneEntity entity = this.getEntity();
+        MinestomBoneEntity entity = this.getEntity();
         if (entity != null) entity.removeViewer(player);
     }
 
@@ -86,7 +86,7 @@ public class ModelBoneNametag extends ModelBoneImpl<Player> implements NametagBo
     }
 
     public void draw() {
-        BoneEntity entity = this.getEntity();
+        MinestomBoneEntity entity = this.getEntity();
         if (this.offset == null || stand == null) return;
         
         entity.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
@@ -138,7 +138,7 @@ public class ModelBoneNametag extends ModelBoneImpl<Player> implements NametagBo
             return;
         }
         
-        BoneEntity entity = this.getEntity();
+        MinestomBoneEntity entity = this.getEntity();
         if(entity != null && (entity.isActive() || model.getInstance() == null)) {
             entity.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
                 textDisplayMeta.setText(component);
@@ -146,7 +146,7 @@ public class ModelBoneNametag extends ModelBoneImpl<Player> implements NametagBo
             return;
         }
 
-        this.stand = entity = new BoneEntity(EntityType.TEXT_DISPLAY, model, this.name);
+        this.stand = entity = new MinestomBoneEntity(EntityType.TEXT_DISPLAY, model, this.name);
         entity.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
             textDisplayMeta.setText(component);
             textDisplayMeta.setTranslation(PositionConversion.asMinestom(calculatePositionInternal()));
@@ -155,13 +155,13 @@ public class ModelBoneNametag extends ModelBoneImpl<Player> implements NametagBo
 
         if(model.getInstance() != null) {
             entity.setInstance(model.getInstance(), model.getPosition());
-            ((RootBoneEntity) this.model.getModelRoot()).addPassenger(entity);
+            ((MinestomRootBoneEntity) this.model.getModelRoot()).addPassenger(entity);
         }
     }
 
     @Override
     public Component getNametag() {
-        BoneEntity entity = this.getEntity();
+        MinestomBoneEntity entity = this.getEntity();
         if(entity == null) return null;
         return ((TextDisplayMeta) entity.getEntityMeta()).getText();
     }

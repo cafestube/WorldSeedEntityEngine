@@ -1,9 +1,8 @@
 package net.worldseed.multipart.model_bones.entity;
 
-import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 
-public interface AbstractBoneEntity<TViewer> {
+public interface BoneEntity<TViewer> {
 
     void remove();
 

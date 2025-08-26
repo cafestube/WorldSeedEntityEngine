@@ -32,7 +32,7 @@ public class ModelBoneEmote extends ModelBoneImpl<Player> implements ModelBoneVi
         this.verticalOffset = verticalOffset;
 
         if (this.offset != null) {
-            BoneEntity entity = new BoneEntity(EntityType.ITEM_DISPLAY, model, name);
+            MinestomBoneEntity entity = new MinestomBoneEntity(EntityType.ITEM_DISPLAY, model, name);
             this.stand = entity;
             entity.editEntityMeta(ItemDisplayMeta.class, meta -> {
                 meta.setViewRange(10000);
@@ -72,8 +72,8 @@ public class ModelBoneEmote extends ModelBoneImpl<Player> implements ModelBoneVi
     }
 
     @Override
-    public BoneEntity getEntity() {
-        return (BoneEntity) super.getEntity();
+    public MinestomBoneEntity getEntity() {
+        return (MinestomBoneEntity) super.getEntity();
     }
 
     @Override
@@ -81,7 +81,7 @@ public class ModelBoneEmote extends ModelBoneImpl<Player> implements ModelBoneVi
         this.children.forEach(ModelBone::draw);
         if (this.offset == null) return;
 
-        BoneEntity entity = this.getEntity();
+        MinestomBoneEntity entity = this.getEntity();
         
         if (entity != null) {
             var scale = calculateScale();
@@ -154,25 +154,25 @@ public class ModelBoneEmote extends ModelBoneImpl<Player> implements ModelBoneVi
 
     @Override
     public void addViewer(Player player) {
-        BoneEntity entity = this.getEntity();
+        MinestomBoneEntity entity = this.getEntity();
         if (entity != null) entity.addViewer(player);
     }
 
     @Override
     public void removeViewer(Player player) {
-        BoneEntity entity = this.getEntity();
+        MinestomBoneEntity entity = this.getEntity();
         if (entity != null) entity.removeViewer(player);
     }
 
     @Override
     public void removeGlowing() {
-        BoneEntity entity = this.getEntity();
+        MinestomBoneEntity entity = this.getEntity();
         if (entity != null) entity.setGlowing(false);
     }
 
     @Override
     public void setGlowing(RGBLike color) {
-        BoneEntity entity = this.getEntity();
+        MinestomBoneEntity entity = this.getEntity();
         if (entity != null) entity.setGlowing(true);
     }
 

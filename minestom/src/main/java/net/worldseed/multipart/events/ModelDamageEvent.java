@@ -5,13 +5,13 @@ import net.minestom.server.event.entity.EntityDamageEvent;
 import net.minestom.server.event.trait.CancellableEvent;
 import net.minestom.server.sound.SoundEvent;
 import net.worldseed.multipart.MinestomModel;
-import net.worldseed.multipart.model_bones.BoneEntity;
+import net.worldseed.multipart.model_bones.MinestomBoneEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ModelDamageEvent implements ModelEvent, CancellableEvent {
     private final MinestomModel model;
-    private final BoneEntity hitBone;
+    private final MinestomBoneEntity hitBone;
     private final Damage damage;
     private SoundEvent sound;
 
@@ -23,7 +23,7 @@ public class ModelDamageEvent implements ModelEvent, CancellableEvent {
         this(model, event, null);
     }
     
-    public ModelDamageEvent(MinestomModel model, EntityDamageEvent event, @Nullable BoneEntity hitBone) {
+    public ModelDamageEvent(MinestomModel model, EntityDamageEvent event, @Nullable MinestomBoneEntity hitBone) {
         this.model = model;
         this.hitBone = hitBone;
         this.damage = event.getDamage();
@@ -83,7 +83,7 @@ public class ModelDamageEvent implements ModelEvent, CancellableEvent {
      *
      * @return the hitbox bone that has been hit, or null if it was an EmotePlayer
      */
-    public @Nullable BoneEntity getBone() {
+    public @Nullable MinestomBoneEntity getBone() {
         return hitBone;
     }
 

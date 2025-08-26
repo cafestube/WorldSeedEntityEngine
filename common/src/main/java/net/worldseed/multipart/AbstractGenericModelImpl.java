@@ -9,19 +9,17 @@ import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.PositionParser;
-import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.model_bones.*;
 import net.worldseed.multipart.model_bones.bone_types.HeadBone;
 import net.worldseed.multipart.model_bones.bone_types.NametagBone;
 import net.worldseed.multipart.model_bones.display_entity.ModelBoneHeadDisplay;
 import net.worldseed.multipart.model_bones.display_entity.ModelBonePartDisplay;
-import net.worldseed.multipart.model_bones.entity.AbstractBoneEntity;
+import net.worldseed.multipart.model_bones.entity.BoneEntity;
+import net.worldseed.multipart.model_bones.entity.RootBoneEntity;
 import net.worldseed.multipart.model_bones.misc.*;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.security.cert.CertificateNotYetValidException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -37,7 +35,7 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
     protected Pos position;
     private double globalRotation;
     private double pitch;
-    private final AbstractBoneEntity<TViewer> rootEntity;
+    private final RootBoneEntity<TViewer> rootEntity;
 
     protected record ModelBoneInfo(String name, Point pivot, Point rotation, JsonArray cubes, float scale) {
     }
@@ -92,7 +90,7 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
     }
 
     @Override
-    public AbstractBoneEntity<TViewer> getModelRoot() {
+    public RootBoneEntity<TViewer> getModelRoot() {
         return this.rootEntity;
     }
 

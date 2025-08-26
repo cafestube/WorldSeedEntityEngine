@@ -7,8 +7,8 @@ import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.model_bones.*;
-import net.worldseed.multipart.model_bones.entity.AbstractBoneEntity;
-import net.worldseed.multipart.model_bones.entity.AbstractItemDisplayBoneEntity;
+import net.worldseed.multipart.model_bones.entity.BoneEntity;
+import net.worldseed.multipart.model_bones.entity.ItemDisplayBoneEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class ModelBonePartDisplay<TViewer> extends ModelBoneImpl<TViewer> implem
         super(pivot, name, rotation, model, scale);
 
         if (this.offset != null) {
-            AbstractItemDisplayBoneEntity<TViewer> entity = model.getEntityFactory().createItemDisplayBoneEntity(model, name);
+            ItemDisplayBoneEntity<TViewer> entity = model.getEntityFactory().createItemDisplayBoneEntity(model, name);
             this.stand = entity;
 
             entity.setScale(new Vec(scale, scale, scale));
@@ -33,14 +33,14 @@ public class ModelBonePartDisplay<TViewer> extends ModelBoneImpl<TViewer> implem
 
     @Override
     public void addViewer(TViewer player) {
-        AbstractBoneEntity<TViewer> entity = this.getEntity();
+        BoneEntity<TViewer> entity = this.getEntity();
         if (entity != null) entity.addViewer(player);
         this.attached.forEach(model -> model.addViewer(player));
     }
 
     @Override
     public void removeGlowing() {
-        AbstractBoneEntity<TViewer> entity = this.getEntity();
+        BoneEntity<TViewer> entity = this.getEntity();
         if (entity != null) {
             entity.setGlowing(false);
         }
@@ -50,8 +50,8 @@ public class ModelBonePartDisplay<TViewer> extends ModelBoneImpl<TViewer> implem
 
     @Override
     public void setGlowing(RGBLike color) {
-        AbstractBoneEntity<TViewer> entity = this.getEntity();
-        if (entity instanceof AbstractItemDisplayBoneEntity<TViewer> display) {
+        BoneEntity<TViewer> entity = this.getEntity();
+        if (entity instanceof ItemDisplayBoneEntity<TViewer> display) {
             display.setGlowing(color);
         }
 
@@ -60,7 +60,7 @@ public class ModelBonePartDisplay<TViewer> extends ModelBoneImpl<TViewer> implem
 
     @Override
     public void removeGlowing(TViewer player) {
-        AbstractBoneEntity<TViewer> entity = this.getEntity();
+        BoneEntity<TViewer> entity = this.getEntity();
         if (entity == null)
             return;
 
@@ -71,8 +71,8 @@ public class ModelBonePartDisplay<TViewer> extends ModelBoneImpl<TViewer> implem
 
     @Override
     public void setGlowing(TViewer player, RGBLike color) {
-        AbstractBoneEntity<TViewer> entity = this.getEntity();
-        if (!(entity instanceof AbstractItemDisplayBoneEntity<TViewer> display))
+        BoneEntity<TViewer> entity = this.getEntity();
+        if (!(entity instanceof ItemDisplayBoneEntity<TViewer> display))
             return;
 
         display.setGlowing(player, color);
@@ -97,7 +97,7 @@ public class ModelBonePartDisplay<TViewer> extends ModelBoneImpl<TViewer> implem
 
     @Override
     public void setGlobalRotation(double yaw, double pitch) {
-        AbstractBoneEntity<TViewer> entity = this.getEntity();
+        BoneEntity<TViewer> entity = this.getEntity();
         if (entity != null) {
             var correctYaw = (180 + yaw + 360) % 360;
             var correctPitch = (pitch + 360) % 360;
@@ -107,7 +107,7 @@ public class ModelBonePartDisplay<TViewer> extends ModelBoneImpl<TViewer> implem
 
     @Override
     public void removeViewer(TViewer player) {
-        AbstractBoneEntity<TViewer> entity = this.getEntity();
+        BoneEntity<TViewer> entity = this.getEntity();
         if (entity != null) entity.removeViewer(player);
         this.attached.forEach(model -> model.removeViewer(player));
     }
@@ -144,8 +144,8 @@ public class ModelBonePartDisplay<TViewer> extends ModelBoneImpl<TViewer> implem
         this.children.forEach(ModelBone::draw);
         if (this.offset == null) return;
 
-        AbstractBoneEntity<TViewer> entity = this.getEntity();
-        if (entity instanceof AbstractItemDisplayBoneEntity<TViewer> display) {
+        BoneEntity<TViewer> entity = this.getEntity();
+        if (entity instanceof ItemDisplayBoneEntity<TViewer> display) {
             var position = calculatePositionInternal();
             var scale = calculateScale();
 
@@ -170,8 +170,8 @@ public class ModelBonePartDisplay<TViewer> extends ModelBoneImpl<TViewer> implem
 
     @Override
     public void setState(String state) {
-        AbstractBoneEntity<TViewer> entity = this.getEntity();
-        if (entity instanceof AbstractItemDisplayBoneEntity<TViewer> display) {
+        BoneEntity<TViewer> entity = this.getEntity();
+        if (entity instanceof ItemDisplayBoneEntity<TViewer> display) {
             if (state.equals("invisible")) {
                 display.clearItem();
                 return;

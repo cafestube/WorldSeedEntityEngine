@@ -1,7 +1,6 @@
 package net.worldseed.multipart;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.ServerProcess;
 import net.minestom.server.collision.BoundingBox;
@@ -22,8 +21,8 @@ import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.model_bones.*;
 import net.worldseed.multipart.model_bones.bone_types.RideableBone;
-import net.worldseed.multipart.model_bones.display_entity.RootBoneEntity;
-import net.worldseed.multipart.model_bones.entity.AbstractBoneEntity;
+import net.worldseed.multipart.model_bones.display_entity.MinestomRootBoneEntity;
+import net.worldseed.multipart.model_bones.entity.BoneEntity;
 import net.worldseed.multipart.model_bones.misc.*;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -57,8 +56,8 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
     }
 
     @Override
-    public RootBoneEntity getModelRoot() {
-        return (RootBoneEntity) super.getModelRoot();
+    public MinestomRootBoneEntity getModelRoot() {
+        return (MinestomRootBoneEntity) super.getModelRoot();
     }
 
     public void setPosition(net.minestom.server.coordinate.Pos position) {
@@ -98,14 +97,14 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
 
         //TODO: Make this behave like the original implementation
         for (ModelBone<Player> modelBonePart : this.parts.values()) {
-            AbstractBoneEntity<Player> entity = modelBonePart.getEntity();
-            if(entity instanceof BoneEntity be) {
+            BoneEntity<Player> entity = modelBonePart.getEntity();
+            if(entity instanceof MinestomBoneEntity be) {
                 be.setInstance(instance, modelBonePart.calculatePosition()).join();
             }
 
             for (ModelBone<Player> child : modelBonePart.getChildren()) {
-                AbstractBoneEntity<Player> childEntity = child.getEntity();
-                if(childEntity instanceof BoneEntity be) {
+                BoneEntity<Player> childEntity = child.getEntity();
+                if(childEntity instanceof MinestomBoneEntity be) {
                     be.setInstance(instance, child.calculatePosition()).join();
                 }
             }
@@ -115,8 +114,8 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
 
         this.getParts().stream()
                 .map(ModelBone::getEntity)
-                .filter(e -> e instanceof BoneEntity b && (b.getEntityType() == EntityType.ITEM_DISPLAY || b.getEntityType() == EntityType.TEXT_DISPLAY))
-                .forEach(playerAbstractBoneEntity -> getModelRoot().addPassenger((BoneEntity) playerAbstractBoneEntity));
+                .filter(e -> e instanceof MinestomBoneEntity b && (b.getEntityType() == EntityType.ITEM_DISPLAY || b.getEntityType() == EntityType.TEXT_DISPLAY))
+                .forEach(playerAbstractBoneEntity -> getModelRoot().addPassenger((MinestomBoneEntity) playerAbstractBoneEntity));
     }
 
     protected void registerBoneSuppliers() {
@@ -160,7 +159,7 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
         for (ModelBone<Player> bone : this.parts.values()) {
             for (var part : bone.getChildren()) {
                 var entity = part.getEntity();
-                if(!(entity instanceof BoneEntity boneEntity)) continue;
+                if(!(entity instanceof MinestomBoneEntity boneEntity)) continue;
 
                 var absoluteStart = boneEntity.relativeStart().add(boneEntity.getPosition());
 
@@ -181,7 +180,7 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
         for (var bone : this.parts.values()) {
             for (var part : bone.getChildren()) {
                 var entity = part.getEntity();
-                if(!(entity instanceof BoneEntity boneEntity)) continue;
+                if(!(entity instanceof MinestomBoneEntity boneEntity)) continue;
                 var absoluteStart = boneEntity.relativeEnd().add(boneEntity.getPosition());
 
                 if (p.x() < absoluteStart.x()) p = p.withX(absoluteStart.x());
@@ -199,8 +198,8 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
 
         for (var bone : this.parts.values()) {
             for (var part : bone.getChildren()) {
-                AbstractBoneEntity<Player> entity = part.getEntity();
-                if (entity instanceof BoneEntity boneEntity && boundingBox.intersectEntity(pos.sub(point), boneEntity)) return true;
+                BoneEntity<Player> entity = part.getEntity();
+                if (entity instanceof MinestomBoneEntity boneEntity && boundingBox.intersectEntity(pos.sub(point), boneEntity)) return true;
             }
         }
         return false;
