@@ -10,14 +10,12 @@ import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
 import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.ModelRegistry;
 import net.worldseed.multipart.PositionConversion;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Quaternion;
-import net.worldseed.multipart.model_bones.BoneEntity;
-import net.worldseed.multipart.model_bones.ModelBone;
-import net.worldseed.multipart.model_bones.ModelBoneImpl;
-import net.worldseed.multipart.model_bones.ModelBoneViewable;
+import net.worldseed.multipart.model_bones.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,8 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class ModelBonePartDisplay extends ModelBoneImpl implements ModelBoneViewable {
+public class ModelBonePartDisplay extends AbstractModelBoneImpl<Player, GenericModel, ModelBone> implements ModelBone, ModelBoneViewable {
     private final List<GenericModel> attached = new ArrayList<>();
+    protected final HashMap<String, ItemStack> items;
 
     public ModelBonePartDisplay(Point pivot, String name, Point rotation, GenericModel model, float scale) {
         super(pivot, name, rotation, model, scale);
@@ -34,7 +33,7 @@ public class ModelBonePartDisplay extends ModelBoneImpl implements ModelBoneView
         if (this.offset != null) {
             this.stand = new BoneEntity(EntityType.ITEM_DISPLAY, model, name);
 
-            var itemMeta = (ItemDisplayMeta) this.stand.getEntityMeta();
+            var itemMeta = (ItemDisplayMeta) this.getEntity().getEntityMeta();
 
             itemMeta.setScale(new Vec(scale, scale, scale));
             itemMeta.setDisplayContext(ItemDisplayMeta.DisplayContext.FIXED);
@@ -42,18 +41,28 @@ public class ModelBonePartDisplay extends ModelBoneImpl implements ModelBoneView
             itemMeta.setPosRotInterpolationDuration(2);
             itemMeta.setViewRange(1000);
         }
+
+        ModelRegistry modelRegistry = model.getModelRegistry();
+        this.items = modelRegistry != null ? modelRegistry.getItems(model.getId(), name) : new HashMap<>();
+    }
+
+    @Override
+    public BoneEntity getEntity() {
+        return (BoneEntity) super.getEntity();
     }
 
     @Override
     public void addViewer(Player player) {
-        if (this.stand != null) this.stand.addViewer(player);
+        BoneEntity entity = this.getEntity();
+        if (entity != null) entity.addViewer(player);
         this.attached.forEach(model -> model.addViewer(player));
     }
 
     @Override
     public void removeGlowing() {
-        if (this.stand != null) {
-            var meta = (ItemDisplayMeta) this.stand.getEntityMeta();
+        BoneEntity entity = this.getEntity();
+        if (entity != null) {
+            var meta = (ItemDisplayMeta) entity.getEntityMeta();
             meta.setHasGlowingEffect(false);
         }
 
@@ -62,13 +71,14 @@ public class ModelBonePartDisplay extends ModelBoneImpl implements ModelBoneView
 
     @Override
     public void setGlowing(RGBLike color) {
-        if (this.stand != null) {
+        BoneEntity entity = this.getEntity();
+        if (entity != null) {
             int rgb = 0;
             rgb |= color.red() << 16;
             rgb |= color.green() << 8;
             rgb |= color.blue();
 
-            var meta = (ItemDisplayMeta) this.stand.getEntityMeta();
+            var meta = (ItemDisplayMeta) entity.getEntityMeta();
             meta.setHasGlowingEffect(true);
             meta.setGlowColorOverride(rgb);
         }
@@ -78,10 +88,11 @@ public class ModelBonePartDisplay extends ModelBoneImpl implements ModelBoneView
 
     @Override
     public void removeGlowing(Player player) {
-        if (this.stand == null)
+        BoneEntity entity = this.getEntity();
+        if (entity == null)
             return;
 
-        EntityMetaDataPacket oldMetadataPacket = this.stand.getMetadataPacket();
+        EntityMetaDataPacket oldMetadataPacket = entity.getMetadataPacket();
         Map<Integer, Metadata.Entry<?>> oldEntries = oldMetadataPacket.entries();
         byte previousFlags = oldEntries.containsKey(0)
                 ? (byte) oldEntries.get(0).value()
@@ -91,13 +102,14 @@ public class ModelBonePartDisplay extends ModelBoneImpl implements ModelBoneView
         entries.put(0, Metadata.Byte((byte) (previousFlags & ~0x40)));
         entries.put(22, Metadata.VarInt(-1));
 
-        player.sendPacket(new EntityMetaDataPacket(this.stand.getEntityId(), entries));
+        player.sendPacket(new EntityMetaDataPacket(entity.getEntityId(), entries));
         this.attached.forEach(model -> model.removeGlowing(player));
     }
 
     @Override
     public void setGlowing(Player player, RGBLike color) {
-        if (this.stand == null)
+        BoneEntity entity = this.getEntity();
+        if (entity == null)
             return;
 
         int rgb = 0;
@@ -105,7 +117,7 @@ public class ModelBonePartDisplay extends ModelBoneImpl implements ModelBoneView
         rgb |= color.green() << 8;
         rgb |= color.blue();
 
-        EntityMetaDataPacket oldMetadataPacket = this.stand.getMetadataPacket();
+        EntityMetaDataPacket oldMetadataPacket = entity.getMetadataPacket();
         Map<Integer, Metadata.Entry<?>> oldEntries = oldMetadataPacket.entries();
         byte previousFlags = oldEntries.containsKey(0)
                 ? (byte) oldEntries.get(0).value()
@@ -115,7 +127,7 @@ public class ModelBonePartDisplay extends ModelBoneImpl implements ModelBoneView
         entries.put(0, Metadata.Byte((byte) (previousFlags | 0x40)));
         entries.put(22, Metadata.VarInt(rgb));
 
-        player.sendPacket(new EntityMetaDataPacket(this.stand.getEntityId(), entries));
+        player.sendPacket(new EntityMetaDataPacket(entity.getEntityId(), entries));
         this.attached.forEach(model -> model.setGlowing(player, color));
     }
 
@@ -136,16 +148,18 @@ public class ModelBonePartDisplay extends ModelBoneImpl implements ModelBoneView
 
     @Override
     public void setGlobalRotation(double yaw, double pitch) {
-        if (this.stand != null) {
+        BoneEntity entity = this.getEntity();
+        if (entity != null) {
             var correctYaw = (180 + yaw + 360) % 360;
             var correctPitch = (pitch + 360) % 360;
-            this.stand.setView((float) correctYaw, (float) correctPitch);
+            entity.setView((float) correctYaw, (float) correctPitch);
         }
     }
 
     @Override
     public void removeViewer(Player player) {
-        if (this.stand != null) this.stand.removeViewer(player);
+        BoneEntity entity = this.getEntity();
+        if (entity != null) entity.removeViewer(player);
         this.attached.forEach(model -> model.removeViewer(player));
     }
 
@@ -181,11 +195,12 @@ public class ModelBonePartDisplay extends ModelBoneImpl implements ModelBoneView
         this.children.forEach(ModelBone::draw);
         if (this.offset == null) return;
 
-        if (this.stand != null) {
+        BoneEntity entity = this.getEntity();
+        if (entity != null) {
             var position = calculatePositionInternal();
             var scale = calculateScale();
 
-            if (this.stand.getEntityMeta() instanceof ItemDisplayMeta meta) {
+            if (entity.getEntityMeta() instanceof ItemDisplayMeta meta) {
                 Quaternion q = calculateFinalAngle(new Quaternion(getPropogatedRotation()));
 
                 meta.setNotifyAboutChanges(false);
@@ -206,13 +221,21 @@ public class ModelBonePartDisplay extends ModelBoneImpl implements ModelBoneView
 
     @Override
     public CompletableFuture<Void> spawn(Instance instance, Pos position) {
-        var correctLocation = (180 + this.model.getGlobalRotation() + 360) % 360;
-        return super.spawn(instance, new Pos(position).withYaw((float) correctLocation));
+        var correctLocation = new Pos(position).withYaw((float) (180 + this.model.getGlobalRotation() + 360) % 360);
+
+        BoneEntity entity = this.getEntity();
+        if (this.offset != null && entity != null) {
+            entity.setNoGravity(true);
+            entity.setSilent(true);
+            return entity.setInstance(instance, correctLocation);
+        }
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
     public void setState(String state) {
-        if (this.stand != null && this.stand.getEntityMeta() instanceof ItemDisplayMeta meta) {
+        BoneEntity entity = this.getEntity();
+        if (entity != null && entity.getEntityMeta() instanceof ItemDisplayMeta meta) {
             if (state.equals("invisible")) {
                 meta.setItemStack(ItemStack.AIR);
                 return;

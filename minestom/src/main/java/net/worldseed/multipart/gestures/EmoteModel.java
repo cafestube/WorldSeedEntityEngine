@@ -11,7 +11,6 @@ import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.model_bones.ModelBone;
-import net.worldseed.multipart.model_bones.ModelBoneImpl;
 import net.worldseed.multipart.model_bones.ModelBoneViewable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -112,7 +111,7 @@ public class EmoteModel extends GenericModelImpl {
 
         for (ModelBone modelBonePart : this.parts.values()) {
             if (modelBonePart instanceof ModelBoneViewable)
-                viewableBones.add((ModelBoneImpl) modelBonePart);
+                viewableBones.add(modelBonePart);
 
             modelBonePart.spawn(instance, modelBonePart.calculatePosition()).join();
         }

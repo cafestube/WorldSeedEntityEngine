@@ -44,7 +44,7 @@ import java.util.function.Predicate;
 
 public class GenericModelImpl implements GenericModel {
     protected final LinkedHashMap<String, ModelBone> parts = new LinkedHashMap<>();
-    protected final Set<ModelBoneImpl> viewableBones = new LinkedHashSet<>();
+    protected final Set<ModelBone> viewableBones = new LinkedHashSet<>();
 
     private final Collection<ModelBone> additionalBones = new ArrayList<>();
     private final Set<Player> viewers = ConcurrentHashMap.newKeySet();
@@ -172,7 +172,7 @@ public class GenericModelImpl implements GenericModel {
 
         for (ModelBone modelBonePart : this.parts.values()) {
             if (modelBonePart instanceof ModelBoneViewable)
-                viewableBones.add((ModelBoneImpl) modelBonePart);
+                viewableBones.add(modelBonePart);
 
             modelBonePart.spawn(instance, modelBonePart.calculatePosition()).join();
         }
@@ -270,7 +270,7 @@ public class GenericModelImpl implements GenericModel {
     }
 
     public void setState(String state) {
-        for (ModelBoneImpl part : viewableBones) {
+        for (ModelBone part : viewableBones) {
             part.setState(state);
         }
     }
@@ -481,7 +481,7 @@ public class GenericModelImpl implements GenericModel {
 
     @Override
     public void removeGlowing() {
-        this.viewableBones.forEach(ModelBoneImpl::removeGlowing);
+        this.viewableBones.forEach(ModelBone::removeGlowing);
     }
 
     @Override

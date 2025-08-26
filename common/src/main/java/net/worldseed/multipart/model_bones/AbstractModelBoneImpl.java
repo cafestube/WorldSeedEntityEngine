@@ -1,32 +1,28 @@
 package net.worldseed.multipart.model_bones;
 
-import net.minestom.server.instance.Instance;
-import net.minestom.server.item.ItemStack;
-import net.worldseed.multipart.*;
-import net.worldseed.multipart.animations.AnimationLoader.AnimationType;
+import net.worldseed.multipart.AbstractGenericModel;
+import net.worldseed.multipart.animations.AnimationLoader;
 import net.worldseed.multipart.animations.BoneAnimation;
 import net.worldseed.multipart.math.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public abstract class ModelBoneImpl implements ModelBone {
-    protected final HashMap<String, ItemStack> items;
+public abstract class AbstractModelBoneImpl<TViewer, TModel extends AbstractGenericModel<TViewer, ?, ?>, TBone extends AbstractModelBone<TViewer, TModel, TBone>> implements AbstractModelBone<TViewer, TModel, TBone> {
     protected final Point pivot;
     protected final String name;
     protected final List<BoneAnimation> allAnimations = new ArrayList<>();
-    protected final ArrayList<ModelBone> children = new ArrayList<>();
-    protected final GenericModel model;
+    protected final ArrayList<TBone> children = new ArrayList<>();
+    protected final TModel model;
     protected Point diff;
     protected float scale;
     protected Point offset;
     protected Point rotation;
-    protected BoneEntity stand;
-    private ModelBone parent;
+    protected AbstractBoneEntity stand;
+    private TBone parent;
 
-    public ModelBoneImpl(Point pivot, String name, Point rotation, GenericModel model, float scale) {
+    public AbstractModelBoneImpl(Point pivot, String name, Point rotation, TModel model, float scale) {
         this.name = name;
         this.rotation = rotation;
         this.model = model;
@@ -37,23 +33,21 @@ public abstract class ModelBoneImpl implements ModelBone {
         if (this.diff != null) this.pivot = pivot.add(this.diff);
         else this.pivot = pivot;
 
-        ModelRegistry modelRegistry = model.getModelRegistry();
-        this.items = modelRegistry != null ? modelRegistry.getItems(model.getId(), name) : new HashMap<>();
         this.scale = scale;
     }
 
     @Override
-    public BoneEntity getEntity() {
+    public AbstractBoneEntity getEntity() {
         return stand;
     }
 
     @Override
-    public ModelBone getParent() {
+    public TBone getParent() {
         return parent;
     }
 
     @Override
-    public void setParent(ModelBone parent) {
+    public void setParent(TBone parent) {
         this.parent = parent;
     }
 
@@ -95,7 +89,7 @@ public abstract class ModelBoneImpl implements ModelBone {
 
         for (BoneAnimation currentAnimation : this.allAnimations) {
             if (currentAnimation != null && currentAnimation.isPlaying()) {
-                if (currentAnimation.getType() == AnimationType.TRANSLATION) {
+                if (currentAnimation.getType() == AnimationLoader.AnimationType.TRANSLATION) {
                     var calculatedTransform = currentAnimation.getTransform();
                     endPos = endPos.add(calculatedTransform);
                 }
@@ -114,7 +108,7 @@ public abstract class ModelBoneImpl implements ModelBone {
 
         for (BoneAnimation currentAnimation : this.allAnimations) {
             if (currentAnimation != null && currentAnimation.isPlaying()) {
-                if (currentAnimation.getType() == AnimationType.ROTATION) {
+                if (currentAnimation.getType() == AnimationLoader.AnimationType.ROTATION) {
                     Point calculatedTransform = currentAnimation.getTransform();
                     netTransform = netTransform.add(calculatedTransform);
                 }
@@ -130,7 +124,7 @@ public abstract class ModelBoneImpl implements ModelBone {
 
         for (BoneAnimation currentAnimation : this.allAnimations) {
             if (currentAnimation != null && currentAnimation.isPlaying()) {
-                if (currentAnimation.getType() == AnimationType.SCALE) {
+                if (currentAnimation.getType() == AnimationLoader.AnimationType.SCALE) {
                     Point calculatedTransform = currentAnimation.getTransform();
                     netTransform = netTransform.mul(calculatedTransform);
                 }
@@ -163,27 +157,18 @@ public abstract class ModelBoneImpl implements ModelBone {
         this.allAnimations.add(animation);
     }
 
-    public void addChild(ModelBone child) {
+    public void addChild(TBone child) {
         this.children.add(child);
     }
 
     @Override
     public void destroy() {
-        this.children.forEach(ModelBone::destroy);
+        this.children.forEach(TBone::destroy);
         this.children.clear();
 
         if (this.stand != null) {
             this.stand.remove();
         }
-    }
-
-    public CompletableFuture<Void> spawn(Instance instance, Pos position) {
-        if (this.offset != null && this.stand != null) {
-            this.stand.setNoGravity(true);
-            this.stand.setSilent(true);
-            return this.stand.setInstance(instance, position);
-        }
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override

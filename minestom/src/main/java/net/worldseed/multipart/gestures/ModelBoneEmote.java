@@ -17,17 +17,14 @@ import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Quaternion;
-import net.worldseed.multipart.model_bones.BoneEntity;
-import net.worldseed.multipart.model_bones.ModelBone;
-import net.worldseed.multipart.model_bones.ModelBoneImpl;
-import net.worldseed.multipart.model_bones.ModelBoneViewable;
+import net.worldseed.multipart.model_bones.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class ModelBoneEmote extends ModelBoneImpl implements ModelBoneViewable {
+public class ModelBoneEmote extends AbstractModelBoneImpl<Player, GenericModel, ModelBone> implements ModelBoneViewable, ModelBone {
     private final Double verticalOffset;
 
     public ModelBoneEmote(Point pivot, String name, Point rotation, GenericModel model, int translation, Double verticalOffset, PlayerSkin skin) {
@@ -36,8 +33,9 @@ public class ModelBoneEmote extends ModelBoneImpl implements ModelBoneViewable {
         this.verticalOffset = verticalOffset;
 
         if (this.offset != null) {
-            this.stand = new BoneEntity(EntityType.ITEM_DISPLAY, model, name);
-            this.stand.editEntityMeta(ItemDisplayMeta.class, meta -> {
+            BoneEntity entity = new BoneEntity(EntityType.ITEM_DISPLAY, model, name);
+            this.stand = entity;
+            entity.editEntityMeta(ItemDisplayMeta.class, meta -> {
                 meta.setViewRange(10000);
                 meta.setTransformationInterpolationDuration(2);
                 meta.setPosRotInterpolationDuration(2);
@@ -75,25 +73,36 @@ public class ModelBoneEmote extends ModelBoneImpl implements ModelBoneViewable {
     }
 
     @Override
-    public CompletableFuture<Void> spawn(Instance instance, Pos position) {
-        var correctLocation = (180 + this.model.getGlobalRotation() + 360) % 360;
-        return super.spawn(instance, Pos.fromPoint(position).withYaw((float) correctLocation)).whenCompleteAsync((v, e) -> {
-            if (e != null) {
-                e.printStackTrace();
-            }
-        });
+    public BoneEntity getEntity() {
+        return (BoneEntity) super.getEntity();
     }
+
+    @Override
+    public CompletableFuture<Void> spawn(Instance instance, Pos position) {
+        var correctLocation = new Pos(position).withYaw((float) (180 + this.model.getGlobalRotation() + 360) % 360);
+
+        BoneEntity entity = this.getEntity();
+        if (this.offset != null && entity != null) {
+            entity.setNoGravity(true);
+            entity.setSilent(true);
+            return entity.setInstance(instance, correctLocation);
+        }
+        return CompletableFuture.completedFuture(null);
+    }
+
 
     @Override
     public void draw() {
         this.children.forEach(ModelBone::draw);
         if (this.offset == null) return;
 
-        if (this.stand != null) {
+        BoneEntity entity = this.getEntity();
+        
+        if (entity != null) {
             var scale = calculateScale();
             var position = calculatePosition();
 
-            if (this.stand.getEntityMeta() instanceof ItemDisplayMeta meta) {
+            if (entity.getEntityMeta() instanceof ItemDisplayMeta meta) {
                 Quaternion q = new Quaternion(calculateRotation());
 
                 meta.setNotifyAboutChanges(false);
@@ -102,7 +111,7 @@ public class ModelBoneEmote extends ModelBoneImpl implements ModelBoneViewable {
                 meta.setRightRotation(new float[]{(float) q.x(), (float) q.y(), (float) q.z(), (float) q.w()});
                 meta.setNotifyAboutChanges(true);
 
-                this.stand.teleport(PositionConversion.asMinestom(position.withView((float) 0, 0)));
+                entity.teleport(PositionConversion.asMinestom(position.withView((float) 0, 0)));
             }
         }
     }
@@ -160,22 +169,26 @@ public class ModelBoneEmote extends ModelBoneImpl implements ModelBoneViewable {
 
     @Override
     public void addViewer(Player player) {
-        if (this.stand != null) this.stand.addViewer(player);
+        BoneEntity entity = this.getEntity();
+        if (entity != null) entity.addViewer(player);
     }
 
     @Override
     public void removeViewer(Player player) {
-        if (this.stand != null) this.stand.removeViewer(player);
+        BoneEntity entity = this.getEntity();
+        if (entity != null) entity.removeViewer(player);
     }
 
     @Override
     public void removeGlowing() {
-        if (this.stand != null) this.stand.setGlowing(false);
+        BoneEntity entity = this.getEntity();
+        if (entity != null) entity.setGlowing(false);
     }
 
     @Override
     public void setGlowing(RGBLike color) {
-        if (this.stand != null) this.stand.setGlowing(true);
+        BoneEntity entity = this.getEntity();
+        if (entity != null) entity.setGlowing(true);
     }
 
     @Override

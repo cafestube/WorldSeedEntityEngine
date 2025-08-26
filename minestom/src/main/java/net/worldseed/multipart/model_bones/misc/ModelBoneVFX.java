@@ -7,21 +7,33 @@ import net.worldseed.multipart.GenericModel;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
+import net.worldseed.multipart.model_bones.AbstractModelBoneImpl;
+import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
-import net.worldseed.multipart.model_bones.ModelBoneImpl;
 import net.worldseed.multipart.model_bones.bone_types.VFXBone;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class ModelBoneVFX extends ModelBoneImpl implements VFXBone<Player, ModelBone, GenericModel> {
+public class ModelBoneVFX extends AbstractModelBoneImpl<Player, GenericModel, ModelBone> implements VFXBone<Player, ModelBone, GenericModel>, ModelBone {
     private final List<GenericModel> attached = new ArrayList<>();
     private Pos position = Pos.ZERO;
 
     public ModelBoneVFX(Point pivot, String name, Point rotation, GenericModel model, float scale) {
         super(pivot, name, rotation, model, scale);
         this.stand = null;
+    }
+
+    @Override
+    public BoneEntity getEntity() {
+        return (BoneEntity) super.getEntity();
+    }
+
+    @Override
+    public CompletableFuture<Void> spawn(@Nullable Instance instance, Pos pos) {
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

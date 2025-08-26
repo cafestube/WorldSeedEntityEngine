@@ -17,9 +17,9 @@ import net.worldseed.multipart.animations.BoneAnimation;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
+import net.worldseed.multipart.model_bones.AbstractModelBoneImpl;
 import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
-import net.worldseed.multipart.model_bones.ModelBoneImpl;
 import net.worldseed.multipart.model_bones.bone_types.HitboxBone;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +29,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ModelBoneHitbox extends ModelBoneImpl implements HitboxBone<Player, ModelBone, GenericModel> {
+public class ModelBoneHitbox extends AbstractModelBoneImpl<Player, GenericModel, ModelBone> implements HitboxBone<Player, ModelBone, GenericModel>, ModelBone {
     private static final int INTERPOLATE_TICKS = 2;
     private static final Tag<String> WSEE = Tag.String("WSEE");
     private final JsonArray cubes;
@@ -48,7 +48,7 @@ public class ModelBoneHitbox extends ModelBoneImpl implements HitboxBone<Player,
             this.offset = null;
         } else {
             if (this.offset != null) {
-                this.stand = new BoneEntity(EntityType.INTERACTION, model, name) {
+                BoneEntity entity = new BoneEntity(EntityType.INTERACTION, model, name) {
                     @Override
                     public void updateNewViewer(@NotNull Player player) {
                         super.updateNewViewer(player);
@@ -62,26 +62,34 @@ public class ModelBoneHitbox extends ModelBoneImpl implements HitboxBone<Player,
                         super.updateOldViewer(player);
                     }
                 };
+                this.stand = entity;
 
-                this.stand.setTag(WSEE, "hitbox");
+                entity.setTag(WSEE, "hitbox");
                 this.offset = newOffset;
 
-                InteractionMeta meta = (InteractionMeta) this.stand.getEntityMeta();
+                InteractionMeta meta = (InteractionMeta) entity.getEntityMeta();
                 meta.setHeight((float) (sizeY / 4f) * scale);
                 meta.setWidth((float) (sizeX / 4f) * scale);
 
-                this.stand.setBoundingBox(sizeX / 4f * scale, sizeY / 4f * scale, sizeX / 4f * scale);
+                entity.setBoundingBox(sizeX / 4f * scale, sizeY / 4f * scale, sizeX / 4f * scale);
             }
         }
     }
 
+    @Override
+    public BoneEntity getEntity() {
+        return (BoneEntity) super.getEntity();
+    }
+
     public void addViewer(Player player) {
-        if (this.stand != null) this.stand.addViewer(player);
+        BoneEntity entity = this.getEntity();
+        if (entity != null) entity.addViewer(player);
         illegitimateChildren.forEach(modelBone -> modelBone.addViewer(player));
     }
 
     public void removeViewer(Player player) {
-        if (this.stand != null) this.stand.removeViewer(player);
+        BoneEntity entity = this.getEntity();
+        if (entity != null) entity.removeViewer(player);
         illegitimateChildren.forEach(modelBone -> modelBone.removeViewer(player));
     }
 
@@ -186,7 +194,7 @@ public class ModelBoneHitbox extends ModelBoneImpl implements HitboxBone<Player,
 
     @Override
     public Point getPosition() {
-        return PositionConversion.fromMinestom(stand.getPosition());
+        return PositionConversion.fromMinestom(getEntity().getPosition());
     }
 
     @Override
@@ -201,7 +209,14 @@ public class ModelBoneHitbox extends ModelBoneImpl implements HitboxBone<Player,
             modelBone.spawn(instance, modelBone.calculatePosition().add(model.getPosition()));
             MinecraftServer.getSchedulerManager().scheduleNextTick(modelBone::draw);
         });
-        return super.spawn(instance, position);
+
+        BoneEntity entity = this.getEntity();
+        if (this.offset != null && entity != null) {
+            entity.setNoGravity(true);
+            entity.setSilent(true);
+            return entity.setInstance(instance, position);
+        }
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
@@ -252,21 +267,22 @@ public class ModelBoneHitbox extends ModelBoneImpl implements HitboxBone<Player,
             this.illegitimateChildren.forEach(ModelBone::draw);
         }
 
-        if (this.offset == null || this.stand == null) return;
+        BoneEntity entity = this.getEntity();
+        if (this.offset == null || entity == null) return;
 
         var finalPosition = PositionConversion.asMinestom(calculatePosition().add(model.getPosition()));
         if (this.positionTask != null) this.positionTask.cancel();
 
-        net.minestom.server.coordinate.Pos currentPos = stand.getPosition();
+        net.minestom.server.coordinate.Pos currentPos = entity.getPosition();
         var diff = finalPosition.sub(currentPos).div(INTERPOLATE_TICKS);
         AtomicInteger ticks = new AtomicInteger(1);
 
         this.positionTask = MinecraftServer.getSchedulerManager().submitTask(() -> {
             var t = ticks.getAndIncrement();
-            if (stand.isRemoved()) return TaskSchedule.stop();
+            if (entity.isRemoved()) return TaskSchedule.stop();
 
             var newPos = currentPos.add(diff.mul(t));
-            if (stand.getDistanceSquared(newPos) > 0.005) stand.teleport(newPos);
+            if (entity.getDistanceSquared(newPos) > 0.005) entity.teleport(newPos);
 
             if (t >= INTERPOLATE_TICKS) {
                 this.positionTask = null;

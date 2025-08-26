@@ -1,7 +1,6 @@
 package net.worldseed.multipart.model_bones.misc;
 
 import net.kyori.adventure.util.RGBLike;
-import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
@@ -13,39 +12,60 @@ import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.math.Vec;
+import net.worldseed.multipart.model_bones.AbstractModelBoneImpl;
 import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
-import net.worldseed.multipart.model_bones.ModelBoneImpl;
 import net.worldseed.multipart.model_bones.bone_types.RideableBone;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-public class ModelBoneSeat extends ModelBoneImpl implements RideableBone<Player, ModelBone, GenericModel> {
+public class ModelBoneSeat extends AbstractModelBoneImpl<Player, GenericModel, ModelBone> implements RideableBone<Player, ModelBone, GenericModel>, ModelBone {
 
     public ModelBoneSeat(Point pivot, String name, Point rotation, GenericModel model, float scale) {
         super(pivot, name, rotation, model, scale);
 
         if (this.offset != null) {
             this.stand = new BoneEntity(EntityType.ARMOR_STAND, model, name);
-            this.stand.editEntityMeta(ArmorStandMeta.class, meta -> {
+
+            BoneEntity entity = this.getEntity();
+            entity.editEntityMeta(ArmorStandMeta.class, meta -> {
                 meta.setMarker(true);
             });
 
-            this.stand.setTag(Tag.String("WSEE"), "seat");
-            stand.setInvisible(true);
+            entity.setTag(Tag.String("WSEE"), "seat");
+            entity.setInvisible(true);
         }
     }
 
     @Override
+    public CompletableFuture<Void> spawn(@Nullable Instance instance, Pos pos) {
+        if (this.offset != null) {
+            BoneEntity entity = this.getEntity();
+            entity.setInvisible(true);
+            entity.setNoGravity(true);
+            entity.setSilent(true);
+            return entity.setInstance(instance, pos);
+        }
+        return CompletableFuture.completedFuture(null);
+    }
+
+    @Override
+    public BoneEntity getEntity() {
+        return (BoneEntity) super.getEntity();
+    }
+
+    @Override
     public void addViewer(Player player) {
-        if (this.stand != null) this.stand.addViewer(player);
+        BoneEntity entity = this.getEntity();
+        if (entity != null) entity.addViewer(player);
     }
 
     @Override
     public void removeViewer(Player player) {
-        if (this.stand != null) this.stand.removeViewer(player);
+        BoneEntity entity = this.getEntity();
+        if (entity != null) entity.removeViewer(player);
     }
 
     @Override
@@ -97,16 +117,6 @@ public class ModelBoneSeat extends ModelBoneImpl implements RideableBone<Player,
         return calculatePosition();
     }
 
-    public CompletableFuture<Void> spawn(Instance instance, Point position) {
-        if (this.offset != null) {
-            this.stand.setInvisible(true);
-            this.stand.setNoGravity(true);
-            this.stand.setSilent(true);
-            return this.stand.setInstance(instance, position);
-        }
-        return CompletableFuture.completedFuture(null);
-    }
-
     @Override
     public Pos calculatePosition() {
         if (this.offset == null) return Pos.ZERO;
@@ -140,24 +150,25 @@ public class ModelBoneSeat extends ModelBoneImpl implements RideableBone<Player,
         if (this.offset == null) return;
 
         Pos found = calculatePosition();
-
+        BoneEntity entity = this.getEntity();
+        
         // TODO: needed by minestom?
-        stand.setView(found.yaw(), found.pitch());
-        stand.teleport(PositionConversion.asMinestom(found));
+        entity.setView(found.yaw(), found.pitch());
+        entity.teleport(PositionConversion.asMinestom(found));
     }
 
 //    @Override
 //    public void addPassenger(Entity entity) {
-//        this.stand.addPassenger(entity);
+//        entity.addPassenger(entity);
 //    }
 //
 //    @Override
 //    public void removePassenger(Entity entity) {
-//        this.stand.removePassenger(entity);
+//        entity.removePassenger(entity);
 //    }
 //
 //    @Override
 //    public Set<Entity> getPassengers() {
-//        return this.stand.getPassengers();
+//        return entity.getPassengers();
 //    }
 }

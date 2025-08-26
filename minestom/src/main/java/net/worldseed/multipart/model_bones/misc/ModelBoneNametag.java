@@ -6,31 +6,52 @@ import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.metadata.display.AbstractDisplayMeta;
 import net.minestom.server.entity.metadata.display.TextDisplayMeta;
+import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.GenericModel;
 import net.worldseed.multipart.PositionConversion;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
+import net.worldseed.multipart.model_bones.AbstractModelBoneImpl;
 import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
-import net.worldseed.multipart.model_bones.ModelBoneImpl;
 import net.worldseed.multipart.model_bones.bone_types.NametagBone;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-public class ModelBoneNametag extends ModelBoneImpl implements NametagBone<Player, ModelBone, GenericModel> {
+public class ModelBoneNametag extends AbstractModelBoneImpl<Player, GenericModel, ModelBone> implements NametagBone<Player, ModelBone, GenericModel>, ModelBone {
     public ModelBoneNametag(Point pivot, String name, Point rotation, GenericModel model, float scale) {
         super(pivot, name, rotation, model, scale);
     }
 
     @Override
+    public CompletableFuture<Void> spawn(@Nullable Instance instance, Pos pos) {
+        BoneEntity entity = this.getEntity();
+        if (this.offset != null && entity != null) {
+            entity.setNoGravity(true);
+            entity.setSilent(true);
+            return entity.setInstance(instance, pos);
+        }
+        return CompletableFuture.completedFuture(null);
+    }
+
+    @Override
+    public BoneEntity getEntity() {
+        return (BoneEntity) super.getEntity();
+    }
+    
+    @Override
     public void addViewer(Player player) {
-        if (this.stand != null) this.stand.addViewer(player);
+        BoneEntity entity = this.getEntity();
+        if (entity != null) entity.addViewer(player);
     }
 
     @Override
     public void removeViewer(Player player) {
-        if (this.stand != null) this.stand.removeViewer(player);
+        BoneEntity entity = this.getEntity();
+        if (entity != null) entity.removeViewer(player);
     }
 
     @Override
@@ -78,16 +99,17 @@ public class ModelBoneNametag extends ModelBoneImpl implements NametagBone<Playe
     }
 
     public void draw() {
+        BoneEntity entity = this.getEntity();
         if (this.offset == null || stand == null) return;
-
-        this.stand.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
+        
+        entity.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
             textDisplayMeta.setTranslation(PositionConversion.asMinestom(calculatePositionInternal()));
         });
     }
 
     @Override
     public Pos calculatePosition() {
-        if (this.stand == null) return Pos.ZERO;
+        if (stand == null) return Pos.ZERO;
         if (this.offset == null) return Pos.ZERO;
 
         Point p = this.offset;
@@ -126,30 +148,32 @@ public class ModelBoneNametag extends ModelBoneImpl implements NametagBone<Playe
             this.stand = null;
             return;
         }
-
-        if(this.stand != null && (this.stand.isActive() || this.model.getInstance() == null)) {
-            this.stand.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
+        
+        BoneEntity entity = this.getEntity();
+        if(entity != null && (entity.isActive() || this.model.getInstance() == null)) {
+            entity.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
                 textDisplayMeta.setText(component);
             });
             return;
         }
 
-        this.stand = new BoneEntity(EntityType.TEXT_DISPLAY, this.model, this.name);
-        this.stand.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
+        this.stand = entity = new BoneEntity(EntityType.TEXT_DISPLAY, this.model, this.name);
+        entity.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
             textDisplayMeta.setText(component);
             textDisplayMeta.setTranslation(PositionConversion.asMinestom(calculatePositionInternal()));
             textDisplayMeta.setBillboardRenderConstraints(AbstractDisplayMeta.BillboardConstraints.VERTICAL);
         });
 
         if(this.model.getInstance() != null) {
-            this.stand.setInstance(model.getInstance(), model.getPosition());
-            this.model.getModelRoot().addPassenger(this.stand);
+            entity.setInstance(model.getInstance(), model.getPosition());
+            this.model.getModelRoot().addPassenger(entity);
         }
     }
 
     @Override
     public Component getNametag() {
-        if(this.stand == null) return null;
-        return ((TextDisplayMeta) this.stand.getEntityMeta()).getText();
+        BoneEntity entity = this.getEntity();
+        if(entity == null) return null;
+        return ((TextDisplayMeta) entity.getEntityMeta()).getText();
     }
 }
