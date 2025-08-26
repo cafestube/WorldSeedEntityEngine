@@ -26,6 +26,7 @@ import net.worldseed.multipart.math.PositionParser;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.model_bones.*;
 import net.worldseed.multipart.model_bones.bone_types.HeadBone;
+import net.worldseed.multipart.model_bones.bone_types.RideableBone;
 import net.worldseed.multipart.model_bones.display_entity.ModelBoneHeadDisplay;
 import net.worldseed.multipart.model_bones.display_entity.ModelBonePartDisplay;
 import net.worldseed.multipart.model_bones.display_entity.RootBoneEntity;
@@ -532,17 +533,17 @@ public class GenericModelImpl implements MinestomModel {
 
     @Override
     public void mountEntity(String name, Entity entity) {
-//        if (this.parts.get(name) instanceof RideableBone rideable) rideable.addPassenger(entity);
+        if (this.parts.get(name) instanceof RideableBone rideable) rideable.addPassenger(entity);
     }
 
     @Override
     public void dismountEntity(String name, Entity entity) {
-//        if (this.parts.get(name) instanceof RideableBone rideable) rideable.removePassenger(entity);
+        if (this.parts.get(name) instanceof RideableBone rideable) rideable.removePassenger(entity);
     }
 
     @Override
     public Set<Entity> getPassengers(String name) {
-//        if (this.parts.get(name) instanceof RideableBone rideable) return rideable.getPassengers();
+        if (this.parts.get(name) instanceof RideableBone rideable) return rideable.getPassengers();
         return Collections.emptySet();
     }
 

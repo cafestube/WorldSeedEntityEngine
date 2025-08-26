@@ -1,10 +1,12 @@
 package net.worldseed.multipart.model_bones.misc;
 
 import net.kyori.adventure.util.RGBLike;
+import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.tag.Tag;
+import net.worldseed.multipart.GenericModel;
 import net.worldseed.multipart.MinestomModel;
 import net.worldseed.multipart.PositionConversion;
 import net.worldseed.multipart.math.Point;
@@ -17,8 +19,9 @@ import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.model_bones.bone_types.RideableBone;
 
 import java.util.List;
+import java.util.Set;
 
-public class ModelBoneSeat extends ModelBoneImpl<Player, MinestomModel> implements RideableBone<Player, MinestomModel> {
+public class ModelBoneSeat extends ModelBoneImpl<Player> implements RideableBone {
 
     public ModelBoneSeat(Point pivot, String name, Point rotation, MinestomModel model, float scale) {
         super(pivot, name, rotation, model, scale);
@@ -74,17 +77,17 @@ public class ModelBoneSeat extends ModelBoneImpl<Player, MinestomModel> implemen
     }
 
     @Override
-    public void attachModel(MinestomModel model) {
+    public void attachModel(GenericModel<Player> model) {
         throw new UnsupportedOperationException("Cannot attach a model to a seat");
     }
 
     @Override
-    public List<MinestomModel> getAttachedModels() {
+    public List<GenericModel<Player>> getAttachedModels() {
         return List.of();
     }
 
     @Override
-    public void detachModel(MinestomModel model) {
+    public void detachModel(GenericModel<Player> model) {
         throw new UnsupportedOperationException("Cannot detach a model from a seat");
     }
 
@@ -142,18 +145,18 @@ public class ModelBoneSeat extends ModelBoneImpl<Player, MinestomModel> implemen
         entity.teleport(PositionConversion.asMinestom(found));
     }
 
-//    @Override
-//    public void addPassenger(Entity entity) {
-//        entity.addPassenger(entity);
-//    }
-//
-//    @Override
-//    public void removePassenger(Entity entity) {
-//        entity.removePassenger(entity);
-//    }
-//
-//    @Override
-//    public Set<Entity> getPassengers() {
-//        return entity.getPassengers();
-//    }
+    @Override
+    public void addPassenger(Entity entity) {
+        this.getEntity().addPassenger(entity);
+    }
+
+    @Override
+    public void removePassenger(Entity entity) {
+        this.getEntity().removePassenger(entity);
+    }
+
+    @Override
+    public Set<Entity> getPassengers() {
+        return this.getEntity().getPassengers();
+    }
 }
