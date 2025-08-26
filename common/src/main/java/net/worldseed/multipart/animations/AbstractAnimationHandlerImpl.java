@@ -1,10 +1,6 @@
 package net.worldseed.multipart.animations;
 
-import net.minestom.server.MinecraftServer;
-import net.minestom.server.timer.ExecutionType;
-import net.minestom.server.timer.Task;
-import net.minestom.server.timer.TaskSchedule;
-import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.AbstractGenericModel;
 import net.worldseed.multipart.animations.data.AnimatedBoneData;
 import net.worldseed.multipart.animations.data.AnimationData;
 import net.worldseed.multipart.animations.data.BoneAnimationData;
@@ -14,7 +10,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractAnimationHandlerImpl implements AnimationHandler {
-    private final GenericModel model;
+    private final AbstractGenericModel model;
 
     private final Map<String, ModelAnimation> animations = new ConcurrentHashMap<>();
     private final TreeMap<Integer, ModelAnimation> repeating = new TreeMap<>();
@@ -23,7 +19,7 @@ public abstract class AbstractAnimationHandlerImpl implements AnimationHandler {
     private final Map<String, Runnable> callbacks = new ConcurrentHashMap<>();
     private final Map<String, Integer> callbackTimers = new ConcurrentHashMap<>();
 
-    public AbstractAnimationHandlerImpl(GenericModel model) {
+    public AbstractAnimationHandlerImpl(AbstractGenericModel model) {
         this.model = model;
         loadDefaultAnimations();
     }

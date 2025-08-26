@@ -1,6 +1,5 @@
 package net.worldseed.multipart.events;
 
-import net.minestom.server.event.player.PlayerMoveEvent;
 import net.minestom.server.network.packet.client.play.ClientInputPacket;
 import net.worldseed.multipart.GenericModel;
 import org.jetbrains.annotations.NotNull;

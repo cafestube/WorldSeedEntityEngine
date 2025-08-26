@@ -1,6 +1,5 @@
 package demo_models.minimal;
 
-import net.kyori.adventure.key.Key;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.GenericModelImpl;

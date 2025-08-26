@@ -4,14 +4,14 @@ import com.google.gson.JsonObject;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.KeyPattern;
 import net.minestom.server.component.DataComponents;
-import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Pos;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.component.CustomModelData;
 import net.worldseed.multipart.animations.AnimationLoader;
 import net.worldseed.multipart.animations.data.AnimationData;
 import net.worldseed.multipart.data.ModelProvider;
+import net.worldseed.multipart.math.Point;
+import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.PositionParser;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ModelRegistry {
+public class ModelRegistry implements AbstractModelRegistry {
 
     private final ModelProvider geometryProvider;
     private final @KeyPattern.Namespace String namespace;

@@ -1,8 +1,6 @@
 package net.worldseed.multipart.model_bones.display_entity;
 
 import net.kyori.adventure.util.RGBLike;
-import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Metadata;
@@ -12,6 +10,9 @@ import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
 import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.PositionConversion;
+import net.worldseed.multipart.math.Point;
+import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
@@ -191,7 +192,7 @@ public class ModelBonePartDisplay extends ModelBoneImpl implements ModelBoneView
                 meta.setTransformationInterpolationStartDelta(0);
                 meta.setScale(new Vec(scale.x() * this.scale, scale.y() * this.scale, scale.z() * this.scale));
                 meta.setRightRotation(new float[]{(float) q.x(), (float) q.y(), (float) q.z(), (float) q.w()});
-                meta.setTranslation(position);
+                meta.setTranslation(PositionConversion.asMinestom(position));
                 meta.setNotifyAboutChanges(true);
 
                 attached.forEach(model -> {

@@ -2,9 +2,6 @@ package net.worldseed.multipart.gestures;
 
 import net.kyori.adventure.util.RGBLike;
 import net.minestom.server.component.DataComponents;
-import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Pos;
-import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerSkin;
@@ -15,6 +12,10 @@ import net.minestom.server.item.Material;
 import net.minestom.server.item.component.CustomModelData;
 import net.minestom.server.item.component.HeadProfile;
 import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.PositionConversion;
+import net.worldseed.multipart.math.Point;
+import net.worldseed.multipart.math.Vec;
+import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
@@ -40,7 +41,7 @@ public class ModelBoneEmote extends ModelBoneImpl implements ModelBoneViewable {
                 meta.setViewRange(10000);
                 meta.setTransformationInterpolationDuration(2);
                 meta.setPosRotInterpolationDuration(2);
-                meta.setTranslation(new Vec(0, translation, 0));
+                meta.setTranslation(new net.minestom.server.coordinate.Vec(0, translation, 0));
                 meta.setDisplayContext(ItemDisplayMeta.DisplayContext.THIRDPERSON_RIGHT_HAND);
 
                 meta.setItemStack(ItemStack.builder(Material.PLAYER_HEAD)
@@ -97,11 +98,11 @@ public class ModelBoneEmote extends ModelBoneImpl implements ModelBoneViewable {
 
                 meta.setNotifyAboutChanges(false);
                 meta.setTransformationInterpolationStartDelta(0);
-                meta.setScale(new Vec(scale.x() * this.scale, scale.y() * this.scale, scale.z() * this.scale));
+                meta.setScale(new net.minestom.server.coordinate.Vec(scale.x() * this.scale, scale.y() * this.scale, scale.z() * this.scale));
                 meta.setRightRotation(new float[]{(float) q.x(), (float) q.y(), (float) q.z(), (float) q.w()});
                 meta.setNotifyAboutChanges(true);
 
-                this.stand.teleport(position.withView((float) 0, 0));
+                this.stand.teleport(PositionConversion.asMinestom(position.withView((float) 0, 0)));
             }
         }
     }

@@ -1,15 +1,11 @@
 package net.worldseed.multipart.model_bones;
 
-import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Pos;
-import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemStack;
 import net.worldseed.multipart.*;
 import net.worldseed.multipart.animations.AnimationLoader.AnimationType;
 import net.worldseed.multipart.animations.BoneAnimation;
-import net.worldseed.multipart.math.ModelMath;
-import net.worldseed.multipart.math.Quaternion;
+import net.worldseed.multipart.math.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;

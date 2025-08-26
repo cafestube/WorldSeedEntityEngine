@@ -7,8 +7,10 @@ import net.minestom.server.event.EventDispatcher;
 import net.minestom.server.event.entity.EntityDamageEvent;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import net.minestom.server.instance.Instance;
+import net.worldseed.multipart.PositionConversion;
 import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.animations.AbstractAnimationHandlerImpl;
+import net.worldseed.multipart.animations.AnimationHandlerImpl;
 import net.worldseed.multipart.animations.data.AnimationData;
 import net.worldseed.multipart.events.ModelDamageEvent;
 import net.worldseed.multipart.events.ModelInteractEvent;
@@ -28,9 +30,9 @@ public abstract class EmotePlayer extends EntityCreature {
         Entity self = this;
         this.model = new EmoteModel(skin) {
             @Override
-            public void setPosition(Pos pos) {
+            public void setPosition(net.worldseed.multipart.math.Pos pos) {
                 super.setPosition(pos);
-                if (self.getInstance() != null) self.teleport(pos);
+                if (self.getInstance() != null) self.teleport(PositionConversion.asMinestom(pos));
             }
         };
 
@@ -41,7 +43,7 @@ public abstract class EmotePlayer extends EntityCreature {
         this.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.001f);
         this.setInstance(instance, pos).join();
 
-        this.animationHandler = new AbstractAnimationHandlerImpl(model) {
+        this.animationHandler = new AnimationHandlerImpl(model) {
             @Override
             protected void loadDefaultAnimations() {
             }
@@ -88,7 +90,7 @@ public abstract class EmotePlayer extends EntityCreature {
         var position = this.getPosition();
         super.tick(time);
         if (position.equals(this.getPosition())) return;
-        this.model.setPosition(this.getPosition());
+        this.model.setPosition(PositionConversion.fromMinestom(this.getPosition()));
     }
 
     public void setRotation(float yaw) {

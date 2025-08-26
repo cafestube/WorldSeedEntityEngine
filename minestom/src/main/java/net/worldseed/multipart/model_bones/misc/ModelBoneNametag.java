@@ -2,26 +2,23 @@ package net.worldseed.multipart.model_bones.misc;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.RGBLike;
-import net.minestom.server.component.DataComponents;
-import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Pos;
-import net.minestom.server.coordinate.Vec;
-import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.metadata.display.AbstractDisplayMeta;
 import net.minestom.server.entity.metadata.display.TextDisplayMeta;
-import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.PositionConversion;
+import net.worldseed.multipart.math.Point;
+import net.worldseed.multipart.math.Pos;
+import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.model_bones.BoneEntity;
+import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.model_bones.ModelBoneImpl;
 import net.worldseed.multipart.model_bones.bone_types.NametagBone;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
-public class ModelBoneNametag extends ModelBoneImpl implements NametagBone {
+public class ModelBoneNametag extends ModelBoneImpl implements NametagBone<Player, ModelBone, GenericModel> {
     public ModelBoneNametag(Point pivot, String name, Point rotation, GenericModel model, float scale) {
         super(pivot, name, rotation, model, scale);
     }
@@ -84,7 +81,7 @@ public class ModelBoneNametag extends ModelBoneImpl implements NametagBone {
         if (this.offset == null || stand == null) return;
 
         this.stand.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
-            textDisplayMeta.setTranslation(calculatePositionInternal());
+            textDisplayMeta.setTranslation(PositionConversion.asMinestom(calculatePositionInternal()));
         });
     }
 
@@ -140,7 +137,7 @@ public class ModelBoneNametag extends ModelBoneImpl implements NametagBone {
         this.stand = new BoneEntity(EntityType.TEXT_DISPLAY, this.model, this.name);
         this.stand.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
             textDisplayMeta.setText(component);
-            textDisplayMeta.setTranslation(calculatePositionInternal());
+            textDisplayMeta.setTranslation(PositionConversion.asMinestom(calculatePositionInternal()));
             textDisplayMeta.setBillboardRenderConstraints(AbstractDisplayMeta.BillboardConstraints.VERTICAL);
         });
 

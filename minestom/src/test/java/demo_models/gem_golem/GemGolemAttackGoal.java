@@ -1,7 +1,6 @@
 package demo_models.gem_golem;
 
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.ai.GoalSelector;
@@ -11,6 +10,7 @@ import net.minestom.server.timer.ExecutionType;
 import net.minestom.server.timer.TaskSchedule;
 import net.worldseed.multipart.GenericModel;
 import net.worldseed.multipart.animations.AnimationHandler;
+import net.worldseed.multipart.math.Point;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;

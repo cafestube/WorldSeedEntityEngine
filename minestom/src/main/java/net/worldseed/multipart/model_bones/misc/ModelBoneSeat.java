@@ -1,9 +1,6 @@
 package net.worldseed.multipart.model_bones.misc;
 
 import net.kyori.adventure.util.RGBLike;
-import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Pos;
-import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
@@ -11,7 +8,11 @@ import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.tag.Tag;
 import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.PositionConversion;
+import net.worldseed.multipart.math.Point;
+import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Quaternion;
+import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.model_bones.ModelBoneImpl;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-public class ModelBoneSeat extends ModelBoneImpl implements RideableBone {
+public class ModelBoneSeat extends ModelBoneImpl implements RideableBone<Player, ModelBone, GenericModel> {
 
     public ModelBoneSeat(Point pivot, String name, Point rotation, GenericModel model, float scale) {
         super(pivot, name, rotation, model, scale);
@@ -142,21 +143,21 @@ public class ModelBoneSeat extends ModelBoneImpl implements RideableBone {
 
         // TODO: needed by minestom?
         stand.setView(found.yaw(), found.pitch());
-        stand.teleport(found);
+        stand.teleport(PositionConversion.asMinestom(found));
     }
 
-    @Override
-    public void addPassenger(Entity entity) {
-        this.stand.addPassenger(entity);
-    }
-
-    @Override
-    public void removePassenger(Entity entity) {
-        this.stand.removePassenger(entity);
-    }
-
-    @Override
-    public Set<Entity> getPassengers() {
-        return this.stand.getPassengers();
-    }
+//    @Override
+//    public void addPassenger(Entity entity) {
+//        this.stand.addPassenger(entity);
+//    }
+//
+//    @Override
+//    public void removePassenger(Entity entity) {
+//        this.stand.removePassenger(entity);
+//    }
+//
+//    @Override
+//    public Set<Entity> getPassengers() {
+//        return this.stand.getPassengers();
+//    }
 }

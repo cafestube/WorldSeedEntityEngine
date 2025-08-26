@@ -3,9 +3,6 @@ package net.worldseed.multipart.model_bones.misc;
 import com.google.gson.JsonArray;
 import net.kyori.adventure.util.RGBLike;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Pos;
-import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.metadata.other.InteractionMeta;
@@ -15,7 +12,11 @@ import net.minestom.server.tag.Tag;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
 import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.PositionConversion;
 import net.worldseed.multipart.animations.BoneAnimation;
+import net.worldseed.multipart.math.Point;
+import net.worldseed.multipart.math.Pos;
+import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.model_bones.ModelBoneImpl;
@@ -28,7 +29,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ModelBoneHitbox extends ModelBoneImpl implements HitboxBone {
+public class ModelBoneHitbox extends ModelBoneImpl implements HitboxBone<Player, ModelBone, GenericModel> {
     private static final int INTERPOLATE_TICKS = 2;
     private static final Tag<String> WSEE = Tag.String("WSEE");
     private final JsonArray cubes;
@@ -52,7 +53,7 @@ public class ModelBoneHitbox extends ModelBoneImpl implements HitboxBone {
                     public void updateNewViewer(@NotNull Player player) {
                         super.updateNewViewer(player);
 
-                        EntityTeleportPacket packet = new EntityTeleportPacket(this.getEntityId(), this.position, Vec.ZERO, 0, false);
+                        EntityTeleportPacket packet = new EntityTeleportPacket(this.getEntityId(), this.position, net.minestom.server.coordinate.Vec.ZERO, 0, false);
                         player.getPlayerConnection().sendPacket(packet);
                     }
 
@@ -185,7 +186,7 @@ public class ModelBoneHitbox extends ModelBoneImpl implements HitboxBone {
 
     @Override
     public Point getPosition() {
-        return stand.getPosition();
+        return PositionConversion.fromMinestom(stand.getPosition());
     }
 
     @Override
@@ -253,10 +254,10 @@ public class ModelBoneHitbox extends ModelBoneImpl implements HitboxBone {
 
         if (this.offset == null || this.stand == null) return;
 
-        var finalPosition = calculatePosition().add(model.getPosition());
+        var finalPosition = PositionConversion.asMinestom(calculatePosition().add(model.getPosition()));
         if (this.positionTask != null) this.positionTask.cancel();
 
-        Pos currentPos = stand.getPosition();
+        net.minestom.server.coordinate.Pos currentPos = stand.getPosition();
         var diff = finalPosition.sub(currentPos).div(INTERPOLATE_TICKS);
         AtomicInteger ticks = new AtomicInteger(1);
 

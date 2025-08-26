@@ -3,7 +3,6 @@ package net.worldseed.multipart;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.RGBLike;
 import net.minestom.server.MinecraftServer;
@@ -11,9 +10,6 @@ import net.minestom.server.ServerProcess;
 import net.minestom.server.collision.BoundingBox;
 import net.minestom.server.collision.Shape;
 import net.minestom.server.collision.SweepResult;
-import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Pos;
-import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
@@ -21,15 +17,15 @@ import net.minestom.server.event.EventFilter;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.BlockFace;
-import net.minestom.server.network.packet.server.SendablePacket;
-import net.worldseed.multipart.animations.AbstractAnimationHandlerImpl;
 import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.events.AnimationCompleteEvent;
 import net.worldseed.multipart.events.ModelEvent;
+import net.worldseed.multipart.math.Point;
+import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.PositionParser;
+import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.model_bones.*;
 import net.worldseed.multipart.model_bones.bone_types.HeadBone;
-import net.worldseed.multipart.model_bones.bone_types.RideableBone;
 import net.worldseed.multipart.model_bones.display_entity.RootBoneEntity;
 import net.worldseed.multipart.model_bones.display_entity.ModelBoneHeadDisplay;
 import net.worldseed.multipart.model_bones.display_entity.ModelBonePartDisplay;
@@ -46,7 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class GenericModelImpl implements GenericModel {
+public class GenericModelImpl implements GenericModel {
     protected final LinkedHashMap<String, ModelBone> parts = new LinkedHashMap<>();
     protected final Set<ModelBoneImpl> viewableBones = new LinkedHashSet<>();
 
@@ -59,6 +55,10 @@ public abstract class GenericModelImpl implements GenericModel {
     private double globalRotation;
     private double pitch;
     private BoneEntity rootEntity;
+
+    public void setPosition(net.minestom.server.coordinate.Pos position) {
+        setPosition(PositionConversion.fromMinestom(position));
+    }
 
     protected record ModelBoneInfo(String name, Point pivot, Point rotation, JsonArray cubes, GenericModel model,
                                    float scale) {
@@ -113,6 +113,7 @@ public abstract class GenericModelImpl implements GenericModel {
 
         this.viewableBones.forEach(part -> {
             part.setGlobalRotation(yaw, pitch);
+            part.setGlobalRotation(yaw, pitch);
         });
     }
 
@@ -123,7 +124,7 @@ public abstract class GenericModelImpl implements GenericModel {
 
     public void setPosition(Pos pos) {
         this.position = pos;
-        this.rootEntity.teleport(new Pos(position.withView(0, 0)));
+        this.rootEntity.teleport(PositionConversion.asMinestom(position.withView(0, 0)));
         this.parts.values().forEach(part -> part.teleport(pos));
     }
 
@@ -148,6 +149,15 @@ public abstract class GenericModelImpl implements GenericModel {
     @Override
     public String getId() {
         return this.modelId;
+    }
+
+
+    public void init(Instance instance, net.minestom.server.coordinate.Pos pos) {
+        init(instance, PositionConversion.fromMinestom(pos));
+    }
+
+    public void init(Instance instance, net.minestom.server.coordinate.Pos pos, float scale) {
+        init(instance, PositionConversion.fromMinestom(pos), scale);
     }
 
     public void init(@Nullable Instance instance, @NotNull Pos position, float scale) {
@@ -323,51 +333,51 @@ public abstract class GenericModelImpl implements GenericModel {
     public Point getOffset(String boneName) {
         return modelRegistry.offsetMappings.get(getId() + "/" + boneName);
     }
-
-    @Override
-    public boolean isViewer(@NotNull Player player) {
-        return this.viewers.contains(player);
-    }
-
-    @Override
-    public void sendPacketToViewers(@NotNull SendablePacket packet) {
-        for (Player viewer : this.viewers) {
-            viewer.sendPacket(packet);
-        }
-    }
-
-    @Override
-    public void sendPacketsToViewers(@NotNull Collection<SendablePacket> packets) {
-        for (Player viewer : this.viewers) {
-            for (SendablePacket packet : packets) {
-                viewer.sendPacket(packet);
-            }
-        }
-    }
-
-    @Override
-    public void sendPacketsToViewers(@NotNull SendablePacket... packets) {
-        for (Player viewer : this.viewers) {
-            for (SendablePacket packet : packets) {
-                viewer.sendPacket(packet);
-            }
-        }
-    }
-
-    @Override
-    public void sendPacketToViewersAndSelf(@NotNull SendablePacket packet) {
-        sendPacketToViewers(packet);
-    }
-
-    @Override
-    public @NotNull Audience getViewersAsAudience() {
-        return Audience.audience(viewers);
-    }
-
-    @Override
-    public @NotNull Iterable<? extends Audience> getViewersAsAudiences() {
-        return List.of(getViewersAsAudience());
-    }
+//
+//    @Override
+//    public boolean isViewer(@NotNull Player player) {
+//        return this.viewers.contains(player);
+//    }
+//
+//    @Override
+//    public void sendPacketToViewers(@NotNull SendablePacket packet) {
+//        for (Player viewer : this.viewers) {
+//            viewer.sendPacket(packet);
+//        }
+//    }
+//
+//    @Override
+//    public void sendPacketsToViewers(@NotNull Collection<SendablePacket> packets) {
+//        for (Player viewer : this.viewers) {
+//            for (SendablePacket packet : packets) {
+//                viewer.sendPacket(packet);
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void sendPacketsToViewers(@NotNull SendablePacket... packets) {
+//        for (Player viewer : this.viewers) {
+//            for (SendablePacket packet : packets) {
+//                viewer.sendPacket(packet);
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void sendPacketToViewersAndSelf(@NotNull SendablePacket packet) {
+//        sendPacketToViewers(packet);
+//    }
+//
+//    @Override
+//    public @NotNull Audience getViewersAsAudience() {
+//        return Audience.audience(viewers);
+//    }
+//
+//    @Override
+//    public @NotNull Iterable<? extends Audience> getViewersAsAudiences() {
+//        return List.of(getViewersAsAudience());
+//    }
 
     @Override
     public boolean addViewer(@NotNull Player player) {
@@ -405,14 +415,16 @@ public abstract class GenericModelImpl implements GenericModel {
     }
 
     @Override
-    public @NotNull Point relativeStart() {
-        Pos currentPosition = getPosition();
-        Point p = currentPosition;
+    public net.minestom.server.coordinate.Point relativeStart() {
+        net.minestom.server.coordinate.Pos currentPosition = PositionConversion.asMinestom(getPosition());
+        net.minestom.server.coordinate.Point p = currentPosition;
 
         for (ModelBone bone : this.parts.values()) {
             for (var part : bone.getChildren()) {
                 var entity = part.getEntity();
-                var absoluteStart = entity.relativeStart().add(entity.getPosition());
+                if(!(entity instanceof BoneEntity boneEntity)) continue;
+
+                var absoluteStart = boneEntity.relativeStart().add(boneEntity.getPosition());
 
                 if (p.x() > absoluteStart.x()) p = p.withX(absoluteStart.x());
                 if (p.y() > absoluteStart.y()) p = p.withY(absoluteStart.y());
@@ -424,14 +436,15 @@ public abstract class GenericModelImpl implements GenericModel {
     }
 
     @Override
-    public @NotNull Point relativeEnd() {
-        Pos currentPosition = getPosition();
-        Point p = currentPosition;
+    public @NotNull net.minestom.server.coordinate.Point relativeEnd() {
+        net.minestom.server.coordinate.Pos currentPosition = PositionConversion.asMinestom(getPosition());
+        net.minestom.server.coordinate.Point p = currentPosition;
 
         for (var bone : this.parts.values()) {
             for (var part : bone.getChildren()) {
                 var entity = part.getEntity();
-                var absoluteStart = entity.relativeEnd().add(entity.getPosition());
+                if(!(entity instanceof BoneEntity boneEntity)) continue;
+                var absoluteStart = boneEntity.relativeEnd().add(boneEntity.getPosition());
 
                 if (p.x() < absoluteStart.x()) p = p.withX(absoluteStart.x());
                 if (p.y() < absoluteStart.y()) p = p.withY(absoluteStart.y());
@@ -443,12 +456,13 @@ public abstract class GenericModelImpl implements GenericModel {
     }
 
     @Override
-    public boolean intersectBox(@NotNull Point point, @NotNull BoundingBox boundingBox) {
-        var pos = getPosition();
+    public boolean intersectBox(@NotNull net.minestom.server.coordinate.Point point, @NotNull BoundingBox boundingBox) {
+        var pos = PositionConversion.asMinestom(getPosition());
 
         for (var bone : this.parts.values()) {
             for (var part : bone.getChildren()) {
-                if (boundingBox.intersectEntity(pos.sub(point), part.getEntity())) return true;
+                AbstractBoneEntity entity = part.getEntity();
+                if (entity instanceof BoneEntity boneEntity && boundingBox.intersectEntity(pos.sub(point), boneEntity)) return true;
             }
         }
         return false;
@@ -456,7 +470,7 @@ public abstract class GenericModelImpl implements GenericModel {
 
     @Override
     @ApiStatus.Experimental
-    public boolean intersectBoxSwept(@NotNull Point rayStart, @NotNull Point rayDirection, @NotNull Point shapePos, @NotNull BoundingBox moving, @NotNull SweepResult finalResult) {
+    public boolean intersectBoxSwept(@NotNull net.minestom.server.coordinate.Point rayStart, @NotNull net.minestom.server.coordinate.Point rayDirection, @NotNull net.minestom.server.coordinate.Point shapePos, @NotNull BoundingBox moving, @NotNull SweepResult finalResult) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
@@ -505,17 +519,17 @@ public abstract class GenericModelImpl implements GenericModel {
 
     @Override
     public void mountEntity(String name, Entity entity) {
-        if (this.parts.get(name) instanceof RideableBone rideable) rideable.addPassenger(entity);
+//        if (this.parts.get(name) instanceof RideableBone rideable) rideable.addPassenger(entity);
     }
 
     @Override
     public void dismountEntity(String name, Entity entity) {
-        if (this.parts.get(name) instanceof RideableBone rideable) rideable.removePassenger(entity);
+//        if (this.parts.get(name) instanceof RideableBone rideable) rideable.removePassenger(entity);
     }
 
     @Override
     public Set<Entity> getPassengers(String name) {
-        if (this.parts.get(name) instanceof RideableBone rideable) return rideable.getPassengers();
+//        if (this.parts.get(name) instanceof RideableBone rideable) return rideable.getPassengers();
         return Collections.emptySet();
     }
 

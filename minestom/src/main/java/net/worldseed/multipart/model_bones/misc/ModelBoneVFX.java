@@ -1,12 +1,12 @@
 package net.worldseed.multipart.model_bones.misc;
 
 import net.kyori.adventure.util.RGBLike;
-import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Pos;
-import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.math.Point;
+import net.worldseed.multipart.math.Pos;
+import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.model_bones.ModelBoneImpl;
 import net.worldseed.multipart.model_bones.bone_types.VFXBone;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class ModelBoneVFX extends ModelBoneImpl implements VFXBone {
+public class ModelBoneVFX extends ModelBoneImpl implements VFXBone<Player, ModelBone, GenericModel> {
     private final List<GenericModel> attached = new ArrayList<>();
     private Pos position = Pos.ZERO;
 

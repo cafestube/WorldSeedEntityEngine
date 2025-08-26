@@ -9,6 +9,14 @@ public record Pos(double x, double y, double z, float yaw, float pitch) implemen
         return new Pos(p.x(), p.y(), p.z(), 0, 0);
     }
 
+    public Pos(Point point, float yaw, float pitch) {
+        this(point.x(), point.y(), point.z(), yaw, pitch);
+    }
+
+    public Pos(Point point) {
+        this(point, 0, 0);
+    }
+
     @Override
     public Pos mul(double x, double y, double z) {
         return new Pos(this.x * x, this.y * y, this.z * z, yaw, pitch);
