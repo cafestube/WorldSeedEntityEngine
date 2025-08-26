@@ -15,7 +15,9 @@ import net.worldseed.multipart.model_bones.bone_types.NametagBone;
 import net.worldseed.multipart.model_bones.display_entity.ModelBoneHeadDisplay;
 import net.worldseed.multipart.model_bones.display_entity.ModelBonePartDisplay;
 import net.worldseed.multipart.model_bones.entity.BoneEntity;
+import net.worldseed.multipart.model_bones.entity.ItemDisplayBoneEntity;
 import net.worldseed.multipart.model_bones.entity.RootBoneEntity;
+import net.worldseed.multipart.model_bones.entity.TextDisplayBoneEntity;
 import net.worldseed.multipart.model_bones.misc.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -119,16 +121,27 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
             if (modelBonePart instanceof ModelBoneViewable)
                 viewableBones.add(modelBonePart);
 
-            //TODO:?
+            BoneEntity<TViewer> entity = modelBonePart.getEntity();
+            if(entity != null) {
+                //TODO: Not too happy with that spawn method. We might need to rewrite this init stuff
+                getEntityFactory().spawn(this, entity, modelBonePart.calculatePosition());
+            }
+
+            for (ModelBone<TViewer> child : modelBonePart.getChildren()) {
+                BoneEntity<TViewer> childEntity = child.getEntity();
+                if(childEntity != null) {
+                    getEntityFactory().spawn(this, childEntity, child.calculatePosition());
+                }
+            }
         }
+
+        getEntityFactory().spawn(this, this.rootEntity, this.position);
         draw();
 
-        //TODO: ?
-        //
-//        this.getParts().stream()
-//                .map(ModelBone::getEntity)
-//                .filter(e -> e instanceof BoneEntity b && (b.getEntityType() == EntityType.ITEM_DISPLAY || b.getEntityType() == EntityType.TEXT_DISPLAY))
-//                .forEach(playerAbstractBoneEntity -> rootEntity.addPassenger((BoneEntity) playerAbstractBoneEntity));
+        this.getParts().stream()
+                .map(ModelBone::getEntity)
+                .filter(e -> e instanceof ItemDisplayBoneEntity<TViewer> || e instanceof TextDisplayBoneEntity<TViewer>)
+                .forEach(rootEntity::attachEntity);
 
         this.setState("normal");
     }

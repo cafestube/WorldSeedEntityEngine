@@ -94,28 +94,6 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
     public void init(@Nullable Instance instance, @NotNull Pos position, float scale) {
         this.instance = instance;
         super.init(position, scale);
-
-        //TODO: Make this behave like the original implementation
-        for (ModelBone<Player> modelBonePart : this.parts.values()) {
-            BoneEntity<Player> entity = modelBonePart.getEntity();
-            if(entity instanceof MinestomBoneEntity be) {
-                be.setInstance(instance, modelBonePart.calculatePosition()).join();
-            }
-
-            for (ModelBone<Player> child : modelBonePart.getChildren()) {
-                BoneEntity<Player> childEntity = child.getEntity();
-                if(childEntity instanceof MinestomBoneEntity be) {
-                    be.setInstance(instance, child.calculatePosition()).join();
-                }
-            }
-        }
-        this.getModelRoot().setInstance(instance, position);
-        draw();
-
-        this.getParts().stream()
-                .map(ModelBone::getEntity)
-                .filter(e -> e instanceof MinestomBoneEntity b && (b.getEntityType() == EntityType.ITEM_DISPLAY || b.getEntityType() == EntityType.TEXT_DISPLAY))
-                .forEach(playerAbstractBoneEntity -> getModelRoot().addPassenger((MinestomBoneEntity) playerAbstractBoneEntity));
     }
 
     protected void registerBoneSuppliers() {
