@@ -1,16 +1,17 @@
 package net.worldseed.multipart.model_bones.display_entity;
 
-import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.AbstractGenericModel;
 import net.worldseed.multipart.animations.AnimationLoader;
 import net.worldseed.multipart.animations.BoneAnimation;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Vec;
-import net.worldseed.multipart.model_bones.ModelBoneViewable;
+import net.worldseed.multipart.model_bones.AbstractModelBone;
+import net.worldseed.multipart.model_bones.bone_types.HeadBone;
 
-public class ModelBoneHeadDisplay extends ModelBonePartDisplay implements ModelBoneViewable {
+public class ModelBoneHeadDisplay<TViewer, TModel extends AbstractGenericModel<TViewer, TBone, TModel>, TBone extends AbstractModelBone<TViewer, TModel, TBone>> extends ModelBonePartDisplay<TViewer, TModel, TBone> implements HeadBone<TViewer, TBone, TModel> {
     private double headRotation;
 
-    public ModelBoneHeadDisplay(Point pivot, String name, Point rotation, GenericModel model, float scale) {
+    public ModelBoneHeadDisplay(Point pivot, String name, Point rotation, TModel model, float scale) {
         super(pivot, name, rotation, model, scale);
     }
 

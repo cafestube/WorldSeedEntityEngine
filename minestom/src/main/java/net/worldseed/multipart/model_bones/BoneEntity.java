@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-public class BoneEntity extends LivingEntity implements AbstractBoneEntity {
+public class BoneEntity extends LivingEntity implements AbstractBoneEntity<Player> {
     private final GenericModel model;
     private final String name;
 
@@ -65,5 +65,15 @@ public class BoneEntity extends LivingEntity implements AbstractBoneEntity {
 
     public CompletableFuture<Void> setInstance(Instance instance, net.worldseed.multipart.math.Point position) {
         return super.setInstance(instance, PositionConversion.asMinestom(position));
+    }
+
+    @Override
+    public void setGlowing(Player player, boolean b) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setRotation(float yaw, float pitch) {
+        setView(yaw, pitch);
     }
 }

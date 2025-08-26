@@ -18,7 +18,7 @@ public abstract class AbstractModelBoneImpl<TViewer, TModel extends AbstractGene
     protected float scale;
     protected Point offset;
     protected Point rotation;
-    protected AbstractBoneEntity stand;
+    protected AbstractBoneEntity<TViewer> stand;
     private TBone parent;
 
     public AbstractModelBoneImpl(Point pivot, String name, Point rotation, TModel model, float scale) {
@@ -36,7 +36,7 @@ public abstract class AbstractModelBoneImpl<TViewer, TModel extends AbstractGene
     }
 
     @Override
-    public AbstractBoneEntity getEntity() {
+    public AbstractBoneEntity<TViewer> getEntity() {
         return stand;
     }
 

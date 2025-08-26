@@ -14,7 +14,6 @@ import java.util.List;
 
 @ApiStatus.Internal
 public interface AbstractModelBone<TViewer, TModel extends AbstractGenericModel<TViewer, ?, ?>, TBone extends AbstractModelBone<TViewer, TModel, TBone>> {
-//    CompletableFuture<Void> spawn(Instance instance, Pos position);
 
     Point applyTransform(Point p);
 
@@ -26,7 +25,7 @@ public interface AbstractModelBone<TViewer, TModel extends AbstractGenericModel<
 
     String getName();
 
-    AbstractBoneEntity getEntity();
+    AbstractBoneEntity<TViewer> getEntity();
 
     Point getOffset();
 

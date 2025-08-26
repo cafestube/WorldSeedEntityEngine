@@ -7,6 +7,7 @@ import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.model_bones.AbstractBoneEntity;
 import net.worldseed.multipart.model_bones.AbstractModelBone;
+import net.worldseed.multipart.model_bones.EntityFactory;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +23,8 @@ public interface AbstractGenericModel<TViewer, TBone extends AbstractModelBone<T
      * @return the model ID
      */
     String getId();
+
+    EntityFactory<TViewer> getEntityFactory();
 
     AbstractModelRegistry getModelRegistry();
 

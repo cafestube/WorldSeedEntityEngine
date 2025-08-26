@@ -1,0 +1,187 @@
+package net.worldseed.multipart.model_bones.display_entity;
+
+import net.kyori.adventure.util.RGBLike;
+import net.worldseed.multipart.AbstractGenericModel;
+import net.worldseed.multipart.math.Point;
+import net.worldseed.multipart.math.Pos;
+import net.worldseed.multipart.math.Quaternion;
+import net.worldseed.multipart.math.Vec;
+import net.worldseed.multipart.model_bones.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ModelBonePartDisplay<TViewer, TModel extends AbstractGenericModel<TViewer, ?, ?>, TBone extends AbstractModelBone<TViewer, TModel, TBone>> extends AbstractModelBoneImpl<TViewer, TModel, TBone> implements ModelBoneViewable {
+    private final List<TModel> attached = new ArrayList<>();
+
+    public ModelBonePartDisplay(Point pivot, String name, Point rotation, TModel model, float scale) {
+        super(pivot, name, rotation, model, scale);
+
+        if (this.offset != null) {
+            AbstractItemDisplayBoneEntity<TViewer> entity = model.getEntityFactory().createItemDisplayBoneEntity(model, name);
+            this.stand = entity;
+
+            entity.setScale(new Vec(scale, scale, scale));
+            entity.setFixedContext();
+            entity.setTransformationInterpolationDuration(2);
+            entity.setPosRotInterpolationDuration(2);
+            entity.setViewRange(1000);
+        }
+    }
+
+    @Override
+    public void addViewer(TViewer player) {
+        AbstractBoneEntity<TViewer> entity = this.getEntity();
+        if (entity != null) entity.addViewer(player);
+        this.attached.forEach(model -> model.addViewer(player));
+    }
+
+    @Override
+    public void removeGlowing() {
+        AbstractBoneEntity<TViewer> entity = this.getEntity();
+        if (entity != null) {
+            entity.setGlowing(false);
+        }
+
+        this.attached.forEach(TModel::removeGlowing);
+    }
+
+    @Override
+    public void setGlowing(RGBLike color) {
+        AbstractBoneEntity<TViewer> entity = this.getEntity();
+        if (entity instanceof AbstractItemDisplayBoneEntity<TViewer> display) {
+            display.setGlowing(color);
+        }
+
+        this.attached.forEach(model -> model.setGlowing(color));
+    }
+
+    @Override
+    public void removeGlowing(TViewer player) {
+        AbstractBoneEntity<TViewer> entity = this.getEntity();
+        if (entity == null)
+            return;
+
+        entity.setGlowing(player, false);
+
+        this.attached.forEach(model -> model.removeGlowing(player));
+    }
+
+    @Override
+    public void setGlowing(TViewer player, RGBLike color) {
+        AbstractBoneEntity<TViewer> entity = this.getEntity();
+        if (!(entity instanceof AbstractItemDisplayBoneEntity<TViewer> display))
+            return;
+
+        display.setGlowing(player, color);
+
+        this.attached.forEach(model -> model.setGlowing(player, color));
+    }
+
+    @Override
+    public void attachModel(TModel model) {
+        attached.add(model);
+    }
+
+    @Override
+    public List<TModel> getAttachedModels() {
+        return attached;
+    }
+
+    @Override
+    public void detachModel(TModel model) {
+        attached.remove(model);
+    }
+
+    @Override
+    public void setGlobalRotation(double yaw, double pitch) {
+        AbstractBoneEntity<TViewer> entity = this.getEntity();
+        if (entity != null) {
+            var correctYaw = (180 + yaw + 360) % 360;
+            var correctPitch = (pitch + 360) % 360;
+            entity.setRotation((float) correctYaw, (float) correctPitch);
+        }
+    }
+
+    @Override
+    public void removeViewer(TViewer player) {
+        AbstractBoneEntity<TViewer> entity = this.getEntity();
+        if (entity != null) entity.removeViewer(player);
+        this.attached.forEach(model -> model.removeViewer(player));
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+    }
+
+    @Override
+    public Pos calculatePosition() {
+        return new Pos(model.getPosition()).withView(0, 0);
+    }
+
+    private Pos calculatePositionInternal() {
+        if (this.offset == null) return Pos.ZERO;
+        Point p = this.offset;
+        p = applyTransform(p);
+        return new Pos(p).div(4).mul(scale).withView(0, 0);
+    }
+
+    @Override
+    public Point calculateRotation() {
+        Quaternion q = calculateFinalAngle(new Quaternion(getPropogatedRotation()));
+        return q.toEuler();
+    }
+
+    @Override
+    public Point calculateScale() {
+        return calculateFinalScale(getPropogatedScale());
+    }
+
+    public void draw() {
+        this.children.forEach(TBone::draw);
+        if (this.offset == null) return;
+
+        AbstractBoneEntity<TViewer> entity = this.getEntity();
+        if (entity instanceof AbstractItemDisplayBoneEntity<TViewer> display) {
+            var position = calculatePositionInternal();
+            var scale = calculateScale();
+
+            Quaternion q = calculateFinalAngle(new Quaternion(getPropogatedRotation()));
+
+//                meta.setNotifyAboutChanges(false);
+            //TODO: Notify changes?
+
+            display.setTransformationInterpolationStartDelta(0);
+            display.setScale(new Vec(scale.x() * this.scale, scale.y() * this.scale, scale.z() * this.scale));
+            display.setRightRotation(new float[]{(float) q.x(), (float) q.y(), (float) q.z(), (float) q.w()});
+            display.setTranslation(position);
+//                meta.setNotifyAboutChanges(true);
+
+            attached.forEach(model -> {
+                model.setPosition(this.model.getPosition().add(calculateGlobalRotation(position)));
+                model.setGlobalRotation(-q.toEuler().x() + this.model.getGlobalRotation());
+                model.draw();
+            });
+        }
+    }
+
+    @Override
+    public void setState(String state) {
+        AbstractBoneEntity<TViewer> entity = this.getEntity();
+        if (entity instanceof AbstractItemDisplayBoneEntity<TViewer> display) {
+            if (state.equals("invisible")) {
+                display.clearItem();
+                return;
+            }
+
+            display.setItemState(state);
+        }
+    }
+
+
+    @Override
+    public Point getPosition() {
+        return calculatePositionInternal().add(model.getPosition());
+    }
+}

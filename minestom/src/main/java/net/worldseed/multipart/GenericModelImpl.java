@@ -26,9 +26,9 @@ import net.worldseed.multipart.math.PositionParser;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.model_bones.*;
 import net.worldseed.multipart.model_bones.bone_types.HeadBone;
+import net.worldseed.multipart.model_bones.display_entity.MinestomModelBonePartDisplay;
 import net.worldseed.multipart.model_bones.display_entity.RootBoneEntity;
-import net.worldseed.multipart.model_bones.display_entity.ModelBoneHeadDisplay;
-import net.worldseed.multipart.model_bones.display_entity.ModelBonePartDisplay;
+import net.worldseed.multipart.model_bones.display_entity.MinestomModelBoneHeadDisplay;
 import net.worldseed.multipart.model_bones.misc.ModelBoneHitbox;
 import net.worldseed.multipart.model_bones.misc.ModelBoneNametag;
 import net.worldseed.multipart.model_bones.misc.ModelBoneSeat;
@@ -65,7 +65,7 @@ public class GenericModelImpl implements GenericModel {
     }
 
     protected final Map<Predicate<String>, Function<ModelBoneInfo, @Nullable ModelBone>> boneSuppliers = new LinkedHashMap<>();
-    Function<ModelBoneInfo, ModelBone> defaultBoneSupplier = (info) -> new ModelBonePartDisplay(info.pivot, info.name, info.rotation, info.model, info.scale);
+    Function<ModelBoneInfo, ModelBone> defaultBoneSupplier = (info) -> new MinestomModelBonePartDisplay(info.pivot, info.name, info.rotation, info.model, info.scale);
 
     private static final EventFilter<ModelEvent, GenericModel> MODEL_FILTER = EventFilter.from(ModelEvent.class, GenericModel.class, ModelEvent::model);
 
@@ -151,6 +151,11 @@ public class GenericModelImpl implements GenericModel {
         return this.modelId;
     }
 
+    @Override
+    public EntityFactory<Player> getEntityFactory() {
+        return MinestomEntityFactory.INSTANCE;
+    }
+
 
     public void init(Instance instance, net.minestom.server.coordinate.Pos pos) {
         init(instance, PositionConversion.fromMinestom(pos));
@@ -211,7 +216,7 @@ public class GenericModelImpl implements GenericModel {
         });
         boneSuppliers.put(name -> name.contains("vfx"), (info) -> new ModelBoneVFX(info.pivot, info.name, info.rotation, info.model, info.scale));
         boneSuppliers.put(name -> name.contains("seat"), (info) -> new ModelBoneSeat(info.pivot, info.name, info.rotation, info.model, info.scale));
-        boneSuppliers.put(name -> name.equals("head"), (info) -> new ModelBoneHeadDisplay(info.pivot, info.name, info.rotation, info.model, info.scale));
+        boneSuppliers.put(name -> name.equals("head"), (info) -> new MinestomModelBoneHeadDisplay(info.pivot, info.name, info.rotation, info.model, info.scale));
     }
 
     protected void loadBones(JsonObject loadedModel, float scale) {
