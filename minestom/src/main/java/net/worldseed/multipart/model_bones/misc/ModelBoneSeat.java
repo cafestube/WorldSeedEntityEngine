@@ -4,26 +4,23 @@ import net.kyori.adventure.util.RGBLike;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
-import net.minestom.server.instance.Instance;
 import net.minestom.server.tag.Tag;
-import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.MinestomModel;
 import net.worldseed.multipart.PositionConversion;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.math.Vec;
-import net.worldseed.multipart.model_bones.AbstractModelBoneImpl;
+import net.worldseed.multipart.model_bones.ModelBoneImpl;
 import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.model_bones.bone_types.RideableBone;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-public class ModelBoneSeat extends AbstractModelBoneImpl<Player, GenericModel> implements RideableBone<Player, GenericModel> {
+public class ModelBoneSeat extends ModelBoneImpl<Player, MinestomModel> implements RideableBone<Player, MinestomModel> {
 
-    public ModelBoneSeat(Point pivot, String name, Point rotation, GenericModel model, float scale) {
+    public ModelBoneSeat(Point pivot, String name, Point rotation, MinestomModel model, float scale) {
         super(pivot, name, rotation, model, scale);
 
         if (this.offset != null) {
@@ -77,17 +74,17 @@ public class ModelBoneSeat extends AbstractModelBoneImpl<Player, GenericModel> i
     }
 
     @Override
-    public void attachModel(GenericModel model) {
+    public void attachModel(MinestomModel model) {
         throw new UnsupportedOperationException("Cannot attach a model to a seat");
     }
 
     @Override
-    public List<GenericModel> getAttachedModels() {
+    public List<MinestomModel> getAttachedModels() {
         return List.of();
     }
 
     @Override
-    public void detachModel(GenericModel model) {
+    public void detachModel(MinestomModel model) {
         throw new UnsupportedOperationException("Cannot detach a model from a seat");
     }
 

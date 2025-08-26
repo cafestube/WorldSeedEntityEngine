@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.instance.Instance;
-import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.MinestomModel;
 import net.worldseed.multipart.GenericModelImpl;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
@@ -112,7 +112,7 @@ public class EmoteModel extends GenericModelImpl {
             e.printStackTrace();
         }
 
-        for (ModelBone<Player, GenericModel> modelBonePart : this.parts.values()) {
+        for (ModelBone<Player> modelBonePart : this.parts.values()) {
             if (modelBonePart instanceof ModelBoneViewable)
                 viewableBones.add(modelBonePart);
 
@@ -121,7 +121,7 @@ public class EmoteModel extends GenericModelImpl {
                 be.setInstance(instance, modelBonePart.calculatePosition()).join();
             }
 
-            for (ModelBone<Player, GenericModel> child : modelBonePart.getChildren()) {
+            for (ModelBone<Player> child : modelBonePart.getChildren()) {
                 AbstractBoneEntity<Player> childEntity = child.getEntity();
                 if(childEntity instanceof BoneEntity be) {
                     be.setInstance(instance, child.calculatePosition()).join();

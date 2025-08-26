@@ -6,12 +6,12 @@ import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.entity.metadata.display.ItemDisplayMeta;
-import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.component.CustomModelData;
 import net.minestom.server.item.component.HeadProfile;
 import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.MinestomModel;
 import net.worldseed.multipart.PositionConversion;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Vec;
@@ -22,12 +22,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-public class ModelBoneEmote extends AbstractModelBoneImpl<Player, GenericModel> implements ModelBoneViewable {
+public class ModelBoneEmote extends ModelBoneImpl<Player> implements ModelBoneViewable {
     private final Double verticalOffset;
 
-    public ModelBoneEmote(Point pivot, String name, Point rotation, GenericModel model, int translation, Double verticalOffset, PlayerSkin skin) {
+    public ModelBoneEmote(Point pivot, String name, Point rotation, MinestomModel model, int translation, Double verticalOffset, PlayerSkin skin) {
         super(pivot, name, rotation, model, 1);
 
         this.verticalOffset = verticalOffset;
@@ -188,22 +187,22 @@ public class ModelBoneEmote extends AbstractModelBoneImpl<Player, GenericModel> 
     }
 
     @Override
-    public void attachModel(GenericModel model) {
+    public void attachModel(GenericModel<Player> model) {
         throw new UnsupportedOperationException("Cannot attach a model to this bone type");
     }
 
     @Override
-    public List<GenericModel> getAttachedModels() {
+    public List<GenericModel<Player>> getAttachedModels() {
         return List.of();
     }
 
     @Override
-    public void detachModel(GenericModel model) {
+    public void detachModel(GenericModel<Player> model) {
         throw new UnsupportedOperationException("Cannot detach a model from this bone type");
     }
 
     @Override
-    public @NotNull Collection<ModelBone<Player, GenericModel>> getChildren() {
+    public @NotNull Collection<ModelBone<Player>> getChildren() {
         return List.of();
     }
 

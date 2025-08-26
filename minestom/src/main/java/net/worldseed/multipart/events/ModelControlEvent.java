@@ -1,17 +1,17 @@
 package net.worldseed.multipart.events;
 
 import net.minestom.server.network.packet.client.play.ClientInputPacket;
-import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.MinestomModel;
 import org.jetbrains.annotations.NotNull;
 
-public record ModelControlEvent(GenericModel model, ClientInputPacket packet) implements ModelEvent {
-    public ModelControlEvent(@NotNull GenericModel model, ClientInputPacket packet) {
+public record ModelControlEvent(MinestomModel model, ClientInputPacket packet) implements ModelEvent {
+    public ModelControlEvent(@NotNull MinestomModel model, ClientInputPacket packet) {
         this.model = model;
         this.packet = packet;
     }
 
     @Override
-    public @NotNull GenericModel model() {
+    public @NotNull MinestomModel model() {
         return model;
     }
 

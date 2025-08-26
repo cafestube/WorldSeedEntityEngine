@@ -1,6 +1,6 @@
 package net.worldseed.multipart.model_bones;
 
-import net.worldseed.multipart.AbstractGenericModel;
+import net.worldseed.multipart.GenericModel;
 import net.worldseed.multipart.animations.AnimationLoader;
 import net.worldseed.multipart.animations.BoneAnimation;
 import net.worldseed.multipart.math.*;
@@ -9,20 +9,20 @@ import net.worldseed.multipart.model_bones.entity.AbstractBoneEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractModelBoneImpl<TViewer, TModel extends AbstractGenericModel<TViewer, ?>> implements ModelBone<TViewer, TModel> {
+public abstract class ModelBoneImpl<TViewer> implements ModelBone<TViewer> {
     protected final Point pivot;
     protected final String name;
     protected final List<BoneAnimation> allAnimations = new ArrayList<>();
-    protected final ArrayList<ModelBone<TViewer, TModel>> children = new ArrayList<>();
-    protected final TModel model;
+    protected final ArrayList<ModelBone<TViewer>> children = new ArrayList<>();
+    protected final GenericModel<TViewer> model;
     protected Point diff;
     protected float scale;
     protected Point offset;
     protected Point rotation;
     protected AbstractBoneEntity<TViewer> stand;
-    private ModelBone<TViewer, TModel> parent;
+    private ModelBone<TViewer> parent;
 
-    public AbstractModelBoneImpl(Point pivot, String name, Point rotation, TModel model, float scale) {
+    public ModelBoneImpl(Point pivot, String name, Point rotation, GenericModel<TViewer> model, float scale) {
         this.name = name;
         this.rotation = rotation;
         this.model = model;
@@ -42,12 +42,12 @@ public abstract class AbstractModelBoneImpl<TViewer, TModel extends AbstractGene
     }
 
     @Override
-    public ModelBone<TViewer, TModel> getParent() {
+    public ModelBone<TViewer> getParent() {
         return parent;
     }
 
     @Override
-    public void setParent(ModelBone<TViewer, TModel> parent) {
+    public void setParent(ModelBone<TViewer> parent) {
         this.parent = parent;
     }
 
@@ -157,7 +157,7 @@ public abstract class AbstractModelBoneImpl<TViewer, TModel extends AbstractGene
         this.allAnimations.add(animation);
     }
 
-    public void addChild(ModelBone<TViewer, TModel> child) {
+    public void addChild(ModelBone<TViewer> child) {
         this.children.add(child);
     }
 

@@ -8,7 +8,7 @@ import net.minestom.server.network.packet.server.play.ParticlePacket;
 import net.minestom.server.particle.Particle;
 import net.minestom.server.timer.ExecutionType;
 import net.minestom.server.timer.TaskSchedule;
-import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.MinestomModel;
 import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.math.Point;
 import org.jetbrains.annotations.NotNull;
@@ -21,11 +21,11 @@ import static demo_models.gem_golem.GemGolemMob.SEAT;
 public class GemGolemAttackGoal extends GoalSelector {
     private final AnimationHandler animationHandler;
     private final Duration attackDuration = Duration.ofSeconds(6);
-    private final GenericModel model;
+    private final MinestomModel model;
     private long lastUpdateTime;
     private int attackIndex = 0;
 
-    public GemGolemAttackGoal(@NotNull EntityCreature entityCreature, AnimationHandler handler, GenericModel model) {
+    public GemGolemAttackGoal(@NotNull EntityCreature entityCreature, AnimationHandler handler, MinestomModel model) {
         super(entityCreature);
         this.animationHandler = handler;
         this.model = model;

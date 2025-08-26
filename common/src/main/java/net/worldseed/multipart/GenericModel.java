@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public interface AbstractGenericModel<TViewer, TModel extends AbstractGenericModel<TViewer, TModel>> {
+public interface GenericModel<TViewer> {
     /**
      * Get the ID of the model
      *
@@ -112,7 +112,7 @@ public interface AbstractGenericModel<TViewer, TModel extends AbstractGenericMod
     Point getVFX(String name);
 
     @ApiStatus.Internal
-    ModelBone<TViewer, TModel> getPart(String boneName);
+    ModelBone<TViewer> getPart(String boneName);
 
     @ApiStatus.Internal
     void draw();
@@ -125,7 +125,7 @@ public interface AbstractGenericModel<TViewer, TModel extends AbstractGenericMod
      */
     void setHeadRotation(String name, double rotation);
 
-    @NotNull List<ModelBone<TViewer, TModel>> getParts();
+    @NotNull List<ModelBone<TViewer>> getParts();
 
 
     Point getOffset(String bone);
@@ -144,11 +144,11 @@ public interface AbstractGenericModel<TViewer, TModel extends AbstractGenericMod
 
     void setGlowing(TViewer player, RGBLike color);
 
-    void attachModel(TModel model, String boneName);
+    void attachModel(GenericModel<TViewer> model, String boneName);
 
-    Map<String, List<TModel>> getAttachedModels();
+    Map<String, List<GenericModel<TViewer>>> getAttachedModels();
 
-    void detachModel(TModel model, String boneName);
+    void detachModel(GenericModel<TViewer> model, String boneName);
 
     AbstractBoneEntity<TViewer> getModelRoot();
 

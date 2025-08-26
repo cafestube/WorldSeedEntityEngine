@@ -37,15 +37,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class GenericModelImpl implements GenericModel {
-    protected final LinkedHashMap<String, ModelBone<Player, GenericModel>> parts = new LinkedHashMap<>();
-    protected final Set<ModelBone<Player, GenericModel>> viewableBones = new LinkedHashSet<>();
+public class GenericModelImpl implements MinestomModel {
+    protected final LinkedHashMap<String, ModelBone<Player>> parts = new LinkedHashMap<>();
+    protected final Set<ModelBone<Player>> viewableBones = new LinkedHashSet<>();
 
-    private final Collection<ModelBone<Player, GenericModel>> additionalBones = new ArrayList<>();
+    private final Collection<ModelBone<Player>> additionalBones = new ArrayList<>();
     private final Set<Player> viewers = ConcurrentHashMap.newKeySet();
     private final EventNode<ModelEvent> eventNode;
     private final Map<Player, RGBLike> playerGlowColors = Collections.synchronizedMap(new WeakHashMap<>());
@@ -59,14 +58,14 @@ public class GenericModelImpl implements GenericModel {
         setPosition(PositionConversion.fromMinestom(position));
     }
 
-    protected record ModelBoneInfo(String name, Point pivot, Point rotation, JsonArray cubes, GenericModel model,
+    protected record ModelBoneInfo(String name, Point pivot, Point rotation, JsonArray cubes, MinestomModel model,
                                    float scale) {
     }
 
-    protected final Map<Predicate<String>, Function<ModelBoneInfo, @Nullable ModelBone<Player, GenericModel>>> boneSuppliers = new LinkedHashMap<>();
-    Function<ModelBoneInfo, ModelBone<Player, GenericModel>> defaultBoneSupplier = (info) -> new ModelBonePartDisplay<>(info.pivot, info.name, info.rotation, info.model, info.scale);
+    protected final Map<Predicate<String>, Function<ModelBoneInfo, @Nullable ModelBone<Player>>> boneSuppliers = new LinkedHashMap<>();
+    Function<ModelBoneInfo, ModelBone<Player>> defaultBoneSupplier = (info) -> new ModelBonePartDisplay<>(info.pivot, info.name, info.rotation, info.model, info.scale);
 
-    private static final EventFilter<ModelEvent, GenericModel> MODEL_FILTER = EventFilter.from(ModelEvent.class, GenericModel.class, ModelEvent::model);
+    private static final EventFilter<ModelEvent, MinestomModel> MODEL_FILTER = EventFilter.from(ModelEvent.class, MinestomModel.class, ModelEvent::model);
 
     private final ModelRegistry modelRegistry;
     private final String modelId;
@@ -174,7 +173,7 @@ public class GenericModelImpl implements GenericModel {
 
         loadBones(loadedModel, scale);
 
-        for (ModelBone<Player, GenericModel> modelBonePart : this.parts.values()) {
+        for (ModelBone<Player> modelBonePart : this.parts.values()) {
             if (modelBonePart instanceof ModelBoneViewable)
                 viewableBones.add(modelBonePart);
 
@@ -183,7 +182,7 @@ public class GenericModelImpl implements GenericModel {
                 be.setInstance(instance, modelBonePart.calculatePosition()).join();
             }
 
-            for (ModelBone<Player, GenericModel> child : modelBonePart.getChildren()) {
+            for (ModelBone<Player> child : modelBonePart.getChildren()) {
                 AbstractBoneEntity<Player> childEntity = child.getEntity();
                 if(childEntity instanceof BoneEntity be) {
                     be.setInstance(instance, child.calculatePosition()).join();
@@ -238,7 +237,7 @@ public class GenericModelImpl implements GenericModel {
             Point pivotPos = PositionParser.getPos(pivot).orElse(Pos.ZERO).mul(-1, 1, 1);
 
             boolean found = false;
-            for (Map.Entry<Predicate<String>, Function<ModelBoneInfo, @Nullable ModelBone<Player, GenericModel>>> entry : this.boneSuppliers.entrySet()) {
+            for (Map.Entry<Predicate<String>, Function<ModelBoneInfo, @Nullable ModelBone<Player>>> entry : this.boneSuppliers.entrySet()) {
                 var predicate = entry.getKey();
                 var supplier = entry.getValue();
 
@@ -268,10 +267,10 @@ public class GenericModelImpl implements GenericModel {
             String parentString = parent == null ? null : parent.getAsString();
 
             if (parentString != null) {
-                ModelBone<Player, GenericModel> child = this.parts.get(name);
+                ModelBone<Player> child = this.parts.get(name);
 
                 if (child == null) continue;
-                ModelBone<Player, GenericModel> parentBone = this.parts.get(parentString);
+                ModelBone<Player> parentBone = this.parts.get(parentString);
 
                 child.setParent(parentBone);
                 parentBone.addChild(child);
@@ -284,24 +283,24 @@ public class GenericModelImpl implements GenericModel {
     }
 
     public void setState(String state) {
-        for (ModelBone<Player, GenericModel> part : viewableBones) {
+        for (ModelBone<Player> part : viewableBones) {
             part.setState(state);
         }
     }
 
-    public ModelBone<Player, GenericModel> getPart(String boneName) {
+    public ModelBone<Player> getPart(String boneName) {
         return this.parts.get(boneName);
     }
 
     public void draw() {
-        for (ModelBone<Player, GenericModel> modelBonePart : this.parts.values()) {
+        for (ModelBone<Player> modelBonePart : this.parts.values()) {
             if (modelBonePart.getParent() == null)
                 modelBonePart.draw();
         }
     }
 
     public void destroy() {
-        for (ModelBone<Player, GenericModel> modelBonePart : this.parts.values()) {
+        for (ModelBone<Player> modelBonePart : this.parts.values()) {
             modelBonePart.destroy();
         }
         this.rootEntity.remove();
@@ -312,19 +311,19 @@ public class GenericModelImpl implements GenericModel {
 
     @Override
     public Point getVFX(String name) {
-        ModelBone<Player, GenericModel> found = this.parts.get(name);
+        ModelBone<Player> found = this.parts.get(name);
         if (found == null) return null;
         return found.getPosition();
     }
 
     @Override
     public void setHeadRotation(String name, double rotation) {
-        ModelBone<Player, GenericModel> found = this.parts.get(name);
-        if (found instanceof HeadBone<Player, GenericModel> head) head.setRotation(rotation);
+        ModelBone<Player> found = this.parts.get(name);
+        if (found instanceof HeadBone<Player> head) head.setRotation(rotation);
     }
 
-    public @NotNull List<ModelBone<Player, GenericModel>> getParts() {
-        ArrayList<ModelBone<Player, GenericModel>> res = this.parts.values().stream()
+    public @NotNull List<ModelBone<Player>> getParts() {
+        ArrayList<ModelBone<Player>> res = this.parts.values().stream()
                 .filter(Objects::nonNull)
                 .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
 
@@ -433,7 +432,7 @@ public class GenericModelImpl implements GenericModel {
         net.minestom.server.coordinate.Pos currentPosition = PositionConversion.asMinestom(getPosition());
         net.minestom.server.coordinate.Point p = currentPosition;
 
-        for (ModelBone<Player, GenericModel> bone : this.parts.values()) {
+        for (ModelBone<Player> bone : this.parts.values()) {
             for (var part : bone.getChildren()) {
                 var entity = part.getEntity();
                 if(!(entity instanceof BoneEntity boneEntity)) continue;
@@ -511,21 +510,21 @@ public class GenericModelImpl implements GenericModel {
     }
 
     @Override
-    public void attachModel(GenericModel model, String boneName) {
-        ModelBone<Player, GenericModel> bone = this.parts.get(boneName);
+    public void attachModel(GenericModel<Player> model, String boneName) {
+        ModelBone<Player> bone = this.parts.get(boneName);
         if (bone != null) bone.attachModel(model);
     }
 
     @Override
-    public void detachModel(GenericModel model, String boneName) {
-        ModelBone<Player, GenericModel> bone = this.parts.get(boneName);
+    public void detachModel(GenericModel<Player> model, String boneName) {
+        ModelBone<Player> bone = this.parts.get(boneName);
         if (bone != null) bone.detachModel(model);
     }
 
     @Override
-    public Map<String, List<GenericModel>> getAttachedModels() {
-        Map<String, List<GenericModel>> attached = new HashMap<>();
-        for (ModelBone<Player, GenericModel> part : this.parts.values()) {
+    public Map<String, List<GenericModel<Player>>> getAttachedModels() {
+        Map<String, List<GenericModel<Player>>> attached = new HashMap<>();
+        for (ModelBone<Player> part : this.parts.values()) {
             attached.put(part.getName(), part.getAttachedModels());
         }
         return attached;

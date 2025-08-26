@@ -5,12 +5,12 @@ import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.gestures.EmoteModel;
-import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.MinestomModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ModelInteractEvent implements ModelEvent {
-    private final GenericModel model;
+    private final MinestomModel model;
     private final Player interactor;
     private final BoneEntity interactedBone;
     private final PlayerHand hand;
@@ -19,7 +19,7 @@ public class ModelInteractEvent implements ModelEvent {
         this(model, event, null);
     }
     
-    public ModelInteractEvent(@NotNull GenericModel model, PlayerEntityInteractEvent event, @Nullable BoneEntity interactedBone) {
+    public ModelInteractEvent(@NotNull MinestomModel model, PlayerEntityInteractEvent event, @Nullable BoneEntity interactedBone) {
         this.model = model;
         this.hand = event.getHand();
         this.interactor = event.getPlayer();
@@ -27,7 +27,7 @@ public class ModelInteractEvent implements ModelEvent {
     }
 
     @Override
-    public @NotNull GenericModel model() {
+    public @NotNull MinestomModel model() {
         return model;
     }
 

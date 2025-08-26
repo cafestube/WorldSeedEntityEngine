@@ -4,13 +4,13 @@ import net.minestom.server.entity.damage.Damage;
 import net.minestom.server.event.entity.EntityDamageEvent;
 import net.minestom.server.event.trait.CancellableEvent;
 import net.minestom.server.sound.SoundEvent;
-import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.MinestomModel;
 import net.worldseed.multipart.model_bones.BoneEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ModelDamageEvent implements ModelEvent, CancellableEvent {
-    private final GenericModel model;
+    private final MinestomModel model;
     private final BoneEntity hitBone;
     private final Damage damage;
     private SoundEvent sound;
@@ -19,11 +19,11 @@ public class ModelDamageEvent implements ModelEvent, CancellableEvent {
 
     private boolean cancelled;
 
-    public ModelDamageEvent(GenericModel model, EntityDamageEvent event) {
+    public ModelDamageEvent(MinestomModel model, EntityDamageEvent event) {
         this(model, event, null);
     }
     
-    public ModelDamageEvent(GenericModel model, EntityDamageEvent event, @Nullable BoneEntity hitBone) {
+    public ModelDamageEvent(MinestomModel model, EntityDamageEvent event, @Nullable BoneEntity hitBone) {
         this.model = model;
         this.hitBone = hitBone;
         this.damage = event.getDamage();
@@ -98,7 +98,7 @@ public class ModelDamageEvent implements ModelEvent, CancellableEvent {
     }
 
     @Override
-    public GenericModel model() {
+    public MinestomModel model() {
         return model;
     }
 }

@@ -1,6 +1,6 @@
 package net.worldseed.multipart.animations;
 
-import net.worldseed.multipart.AbstractGenericModel;
+import net.worldseed.multipart.GenericModel;
 import net.worldseed.multipart.animations.data.AnimatedBoneData;
 import net.worldseed.multipart.animations.data.AnimationData;
 import net.worldseed.multipart.animations.data.BoneAnimationData;
@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractAnimationHandlerImpl implements AnimationHandler {
-    private final AbstractGenericModel model;
+    private final GenericModel model;
 
     private final Map<String, ModelAnimation> animations = new ConcurrentHashMap<>();
     private final TreeMap<Integer, ModelAnimation> repeating = new TreeMap<>();
@@ -19,7 +19,7 @@ public abstract class AbstractAnimationHandlerImpl implements AnimationHandler {
     private final Map<String, Runnable> callbacks = new ConcurrentHashMap<>();
     private final Map<String, Integer> callbackTimers = new ConcurrentHashMap<>();
 
-    public AbstractAnimationHandlerImpl(AbstractGenericModel model) {
+    public AbstractAnimationHandlerImpl(GenericModel model) {
         this.model = model;
         loadDefaultAnimations();
     }

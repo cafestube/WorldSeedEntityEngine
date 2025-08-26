@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-public interface GenericModel extends AbstractGenericModel<Player, GenericModel>, Shape, EventHandler<@NotNull ModelEvent> {
+public interface MinestomModel extends GenericModel<Player>, Shape, EventHandler<@NotNull ModelEvent> {
 
     @Override
     ModelRegistry getModelRegistry();

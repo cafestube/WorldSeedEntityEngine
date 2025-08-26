@@ -1,7 +1,7 @@
 package net.worldseed.multipart.model_bones.display_entity;
 
 import net.kyori.adventure.util.RGBLike;
-import net.worldseed.multipart.AbstractGenericModel;
+import net.worldseed.multipart.GenericModel;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Quaternion;
@@ -13,10 +13,10 @@ import net.worldseed.multipart.model_bones.entity.AbstractItemDisplayBoneEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ModelBonePartDisplay<TViewer, TModel extends AbstractGenericModel<TViewer, ?>> extends AbstractModelBoneImpl<TViewer, TModel> implements ModelBoneViewable {
-    private final List<TModel> attached = new ArrayList<>();
+public class ModelBonePartDisplay<TViewer> extends ModelBoneImpl<TViewer> implements ModelBoneViewable {
+    private final List<GenericModel<TViewer>> attached = new ArrayList<>();
 
-    public ModelBonePartDisplay(Point pivot, String name, Point rotation, TModel model, float scale) {
+    public ModelBonePartDisplay(Point pivot, String name, Point rotation, GenericModel<TViewer> model, float scale) {
         super(pivot, name, rotation, model, scale);
 
         if (this.offset != null) {
@@ -45,7 +45,7 @@ public class ModelBonePartDisplay<TViewer, TModel extends AbstractGenericModel<T
             entity.setGlowing(false);
         }
 
-        this.attached.forEach(TModel::removeGlowing);
+        this.attached.forEach(GenericModel::removeGlowing);
     }
 
     @Override
@@ -81,17 +81,17 @@ public class ModelBonePartDisplay<TViewer, TModel extends AbstractGenericModel<T
     }
 
     @Override
-    public void attachModel(TModel model) {
+    public void attachModel(GenericModel<TViewer> model) {
         attached.add(model);
     }
 
     @Override
-    public List<TModel> getAttachedModels() {
+    public List<GenericModel<TViewer>> getAttachedModels() {
         return attached;
     }
 
     @Override
-    public void detachModel(TModel model) {
+    public void detachModel(GenericModel<TViewer> model) {
         attached.remove(model);
     }
 

@@ -1,7 +1,7 @@
 package net.worldseed.multipart.model_bones;
 
 import net.kyori.adventure.util.RGBLike;
-import net.worldseed.multipart.AbstractGenericModel;
+import net.worldseed.multipart.GenericModel;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Quaternion;
@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.List;
 
 @ApiStatus.Internal
-public interface ModelBone<TViewer, TModel extends AbstractGenericModel<TViewer, ?>> {
+public interface ModelBone<TViewer> {
 
     Point applyTransform(Point p);
 
@@ -32,9 +32,9 @@ public interface ModelBone<TViewer, TModel extends AbstractGenericModel<TViewer,
 
     Point getPosition();
 
-    ModelBone<TViewer, TModel> getParent();
+    ModelBone<TViewer> getParent();
 
-    void setParent(ModelBone<TViewer, TModel> parent);
+    void setParent(ModelBone<TViewer> parent);
 
     Point getPropogatedRotation();
 
@@ -54,7 +54,7 @@ public interface ModelBone<TViewer, TModel extends AbstractGenericModel<TViewer,
 
     Quaternion calculateFinalAngle(Quaternion q);
 
-    void addChild(ModelBone<TViewer, TModel> child);
+    void addChild(ModelBone<TViewer> child);
 
     void addAnimation(BoneAnimation animation);
 
@@ -72,17 +72,17 @@ public interface ModelBone<TViewer, TModel extends AbstractGenericModel<TViewer,
 
     void setGlowing(TViewer player, RGBLike color);
 
-    void attachModel(TModel model);
+    void attachModel(GenericModel<TViewer> model);
 
-    List<TModel> getAttachedModels();
+    List<GenericModel<TViewer>> getAttachedModels();
 
-    void detachModel(TModel model);
+    void detachModel(GenericModel<TViewer> model);
 
     void setGlobalRotation(double yaw, double pitch);
 
     default void teleport(Point position) {}
 
-    default @NotNull Collection<ModelBone<TViewer, TModel>> getChildren() {
+    default @NotNull Collection<ModelBone<TViewer>> getChildren() {
         return List.of();
     };
 }

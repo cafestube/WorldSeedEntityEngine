@@ -7,7 +7,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.entity.metadata.display.ItemDisplayMeta;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
-import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.MinestomModel;
 import net.worldseed.multipart.PositionConversion;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
@@ -20,7 +20,7 @@ public class ItemDisplayBoneEntity extends BoneEntity implements AbstractItemDis
 
     protected final HashMap<String, ItemStack> items;
 
-    public ItemDisplayBoneEntity(GenericModel model, String name) {
+    public ItemDisplayBoneEntity(MinestomModel model, String name) {
         super(EntityType.ITEM_DISPLAY, model, name);
 
         this.items = model.getModelRegistry().getItems(model.getId(), name);

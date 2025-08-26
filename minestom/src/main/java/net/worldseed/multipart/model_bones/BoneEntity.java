@@ -8,7 +8,7 @@ import net.minestom.server.instance.Instance;
 import net.minestom.server.network.packet.server.LazyPacket;
 import net.minestom.server.network.packet.server.play.SpawnEntityPacket;
 import net.minestom.server.tag.Tag;
-import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.MinestomModel;
 import net.worldseed.multipart.PositionConversion;
 import net.worldseed.multipart.model_bones.entity.AbstractBoneEntity;
 import org.jetbrains.annotations.NotNull;
@@ -17,10 +17,10 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class BoneEntity extends LivingEntity implements AbstractBoneEntity<Player> {
-    private final GenericModel model;
+    private final MinestomModel model;
     private final String name;
 
-    public BoneEntity(@NotNull EntityType entityType, GenericModel model, String name) {
+    public BoneEntity(@NotNull EntityType entityType, MinestomModel model, String name) {
         super(entityType);
         this.setAutoViewable(false);
         setTag(Tag.String("WSEE"), "part");
@@ -37,7 +37,7 @@ public class BoneEntity extends LivingEntity implements AbstractBoneEntity<Playe
         return model.getViewers();
     }
 
-    public GenericModel getModel() {
+    public MinestomModel getModel() {
         return model;
     }
 

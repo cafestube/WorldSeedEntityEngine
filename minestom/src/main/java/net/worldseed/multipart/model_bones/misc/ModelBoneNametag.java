@@ -6,22 +6,21 @@ import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.metadata.display.AbstractDisplayMeta;
 import net.minestom.server.entity.metadata.display.TextDisplayMeta;
-import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.MinestomModel;
 import net.worldseed.multipart.PositionConversion;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
-import net.worldseed.multipart.model_bones.AbstractModelBoneImpl;
+import net.worldseed.multipart.model_bones.ModelBoneImpl;
 import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.model_bones.bone_types.NametagBone;
-import org.jetbrains.annotations.Nullable;
+import net.worldseed.multipart.model_bones.display_entity.RootBoneEntity;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-public class ModelBoneNametag extends AbstractModelBoneImpl<Player, GenericModel> implements NametagBone<Player, GenericModel> {
-    public ModelBoneNametag(Point pivot, String name, Point rotation, GenericModel model, float scale) {
+public class ModelBoneNametag extends ModelBoneImpl<Player> implements NametagBone<Player> {
+    public ModelBoneNametag(Point pivot, String name, Point rotation, MinestomModel model, float scale) {
         super(pivot, name, rotation, model, scale);
     }
 
@@ -59,17 +58,17 @@ public class ModelBoneNametag extends AbstractModelBoneImpl<Player, GenericModel
     }
 
     @Override
-    public void attachModel(GenericModel model) {
+    public void attachModel(GenericModel<Player> model) {
         throw new UnsupportedOperationException("Cannot attach a model to a nametag");
     }
 
     @Override
-    public List<GenericModel> getAttachedModels() {
+    public List<GenericModel<Player>> getAttachedModels() {
         return List.of();
     }
 
     @Override
-    public void detachModel(GenericModel model) {
+    public void detachModel(GenericModel<Player> model) {
         throw new UnsupportedOperationException("Cannot detach a model from a nametag");
     }
 
@@ -129,6 +128,8 @@ public class ModelBoneNametag extends AbstractModelBoneImpl<Player, GenericModel
 
     @Override
     public void setNametag(Component component) {
+        MinestomModel model = (MinestomModel) this.model;
+
         if(component == null && this.stand == null) return;
 
         if(component == null) {
@@ -138,23 +139,23 @@ public class ModelBoneNametag extends AbstractModelBoneImpl<Player, GenericModel
         }
         
         BoneEntity entity = this.getEntity();
-        if(entity != null && (entity.isActive() || this.model.getInstance() == null)) {
+        if(entity != null && (entity.isActive() || model.getInstance() == null)) {
             entity.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
                 textDisplayMeta.setText(component);
             });
             return;
         }
 
-        this.stand = entity = new BoneEntity(EntityType.TEXT_DISPLAY, this.model, this.name);
+        this.stand = entity = new BoneEntity(EntityType.TEXT_DISPLAY, model, this.name);
         entity.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
             textDisplayMeta.setText(component);
             textDisplayMeta.setTranslation(PositionConversion.asMinestom(calculatePositionInternal()));
             textDisplayMeta.setBillboardRenderConstraints(AbstractDisplayMeta.BillboardConstraints.VERTICAL);
         });
 
-        if(this.model.getInstance() != null) {
+        if(model.getInstance() != null) {
             entity.setInstance(model.getInstance(), model.getPosition());
-            this.model.getModelRoot().addPassenger(entity);
+            ((RootBoneEntity) this.model.getModelRoot()).addPassenger(entity);
         }
     }
 

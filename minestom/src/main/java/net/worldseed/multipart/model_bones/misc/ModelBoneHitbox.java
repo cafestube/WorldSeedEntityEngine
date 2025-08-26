@@ -6,18 +6,18 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.metadata.other.InteractionMeta;
-import net.minestom.server.instance.Instance;
 import net.minestom.server.network.packet.server.play.EntityTeleportPacket;
 import net.minestom.server.tag.Tag;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
 import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.MinestomModel;
 import net.worldseed.multipart.PositionConversion;
 import net.worldseed.multipart.animations.BoneAnimation;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
-import net.worldseed.multipart.model_bones.AbstractModelBoneImpl;
+import net.worldseed.multipart.model_bones.ModelBoneImpl;
 import net.worldseed.multipart.model_bones.BoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.model_bones.bone_types.HitboxBone;
@@ -25,19 +25,18 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ModelBoneHitbox extends AbstractModelBoneImpl<Player, GenericModel> implements HitboxBone<Player, GenericModel> {
+public class ModelBoneHitbox extends ModelBoneImpl<Player> implements HitboxBone<Player> {
     private static final int INTERPOLATE_TICKS = 2;
     private static final Tag<String> WSEE = Tag.String("WSEE");
     private final JsonArray cubes;
-    private final Collection<ModelBone<Player, GenericModel>> illegitimateChildren = new ConcurrentLinkedDeque<>();
+    private final Collection<ModelBone<Player>> illegitimateChildren = new ConcurrentLinkedDeque<>();
     private final Point orgPivot;
     private Task positionTask;
 
-    public ModelBoneHitbox(Point pivot, String name, Point rotation, GenericModel model, Point newOffset, double sizeX, double sizeY, JsonArray cubes, boolean parent, float scale) {
+    public ModelBoneHitbox(Point pivot, String name, Point rotation, MinestomModel model, Point newOffset, double sizeX, double sizeY, JsonArray cubes, boolean parent, float scale) {
         super(pivot, name, rotation, model, scale);
 
         this.orgPivot = pivot;
@@ -100,9 +99,9 @@ public class ModelBoneHitbox extends AbstractModelBoneImpl<Player, GenericModel>
         illegitimateChildren.forEach(ModelBone::destroy);
         this.illegitimateChildren.clear();
 
-        generateStands(this.cubes, orgPivot, this.name, this.rotation, this.model);
+        generateStands(this.cubes, orgPivot, this.name, this.rotation, (MinestomModel) this.model);
         this.illegitimateChildren.forEach(modelBone -> {
-            ((BoneEntity) modelBone.getEntity()).setInstance(model.getInstance(), model.getPosition());
+            ((BoneEntity) modelBone.getEntity()).setInstance(((MinestomModel)model).getInstance(), model.getPosition());
             modelBone.setParent(getParent());
             model.getViewers().forEach(modelBone::addViewer);
         });
@@ -125,17 +124,17 @@ public class ModelBoneHitbox extends AbstractModelBoneImpl<Player, GenericModel>
     }
 
     @Override
-    public void attachModel(GenericModel model) {
+    public void attachModel(GenericModel<Player> model) {
         throw new UnsupportedOperationException("Cannot attach a model to a hitbox");
     }
 
     @Override
-    public List<GenericModel> getAttachedModels() {
+    public List<GenericModel<Player>> getAttachedModels() {
         return List.of();
     }
 
     @Override
-    public void detachModel(GenericModel model) {
+    public void detachModel(GenericModel<Player> model) {
         throw new UnsupportedOperationException("Cannot detach a model from a hitbox");
     }
 
@@ -143,7 +142,7 @@ public class ModelBoneHitbox extends AbstractModelBoneImpl<Player, GenericModel>
     public void setGlobalRotation(double yaw, double pitch) {
     }
 
-    public void generateStands(JsonArray cubes, Point pivotPos, String name, Point boneRotation, GenericModel genericModel) {
+    public void generateStands(JsonArray cubes, Point pivotPos, String name, Point boneRotation, MinestomModel genericModel) {
         for (var cube : cubes) {
             JsonArray sizeArray = cube.getAsJsonObject().get("size").getAsJsonArray();
             JsonArray origin = cube.getAsJsonObject().get("origin").getAsJsonArray();
@@ -187,7 +186,7 @@ public class ModelBoneHitbox extends AbstractModelBoneImpl<Player, GenericModel>
     }
 
     @Override
-    public void setParent(ModelBone<Player, GenericModel> parent) {
+    public void setParent(ModelBone<Player> parent) {
         super.setParent(parent);
         this.illegitimateChildren.forEach(modelBone -> modelBone.setParent(parent));
     }
@@ -198,7 +197,7 @@ public class ModelBoneHitbox extends AbstractModelBoneImpl<Player, GenericModel>
     }
 
     @Override
-    public @NotNull Collection<ModelBone<Player, GenericModel>> getChildren() {
+    public @NotNull Collection<ModelBone<Player>> getChildren() {
         if (this.illegitimateChildren == null) return List.of();
         return this.illegitimateChildren;
     }

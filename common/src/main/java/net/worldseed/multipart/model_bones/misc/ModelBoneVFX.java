@@ -1,38 +1,38 @@
 package net.worldseed.multipart.model_bones.misc;
 
 import net.kyori.adventure.util.RGBLike;
-import net.worldseed.multipart.AbstractGenericModel;
+import net.worldseed.multipart.GenericModel;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.model_bones.ModelBone;
-import net.worldseed.multipart.model_bones.AbstractModelBoneImpl;
+import net.worldseed.multipart.model_bones.ModelBoneImpl;
 import net.worldseed.multipart.model_bones.bone_types.VFXBone;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ModelBoneVFX<TViewer, TModel extends AbstractGenericModel<TViewer, TModel>> extends AbstractModelBoneImpl<TViewer, TModel> implements VFXBone<TViewer, TModel> {
-    private final List<TModel> attached = new ArrayList<>();
+public class ModelBoneVFX<TViewer> extends ModelBoneImpl<TViewer> implements VFXBone<TViewer> {
+    private final List<GenericModel<TViewer>> attached = new ArrayList<>();
     private Pos position = Pos.ZERO;
 
-    public ModelBoneVFX(Point pivot, String name, Point rotation, TModel model, float scale) {
+    public ModelBoneVFX(Point pivot, String name, Point rotation, GenericModel<TViewer> model, float scale) {
         super(pivot, name, rotation, model, scale);
         this.stand = null;
     }
 
     @Override
-    public void attachModel(TModel model) {
+    public void attachModel(GenericModel<TViewer> model) {
         attached.add(model);
     }
 
     @Override
-    public List<TModel> getAttachedModels() {
+    public List<GenericModel<TViewer>> getAttachedModels() {
         return attached;
     }
 
     @Override
-    public void detachModel(TModel model) {
+    public void detachModel(GenericModel<TViewer> model) {
         attached.remove(model);
     }
 
@@ -103,7 +103,7 @@ public class ModelBoneVFX<TViewer, TModel extends AbstractGenericModel<TViewer, 
 
     @Override
     public void removeGlowing() {
-        this.attached.forEach(TModel::removeGlowing);
+        this.attached.forEach(GenericModel::removeGlowing);
     }
 
     @Override
