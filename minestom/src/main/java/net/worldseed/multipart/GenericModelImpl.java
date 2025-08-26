@@ -30,10 +30,7 @@ import net.worldseed.multipart.model_bones.display_entity.MinestomModelBonePartD
 import net.worldseed.multipart.model_bones.display_entity.RootBoneEntity;
 import net.worldseed.multipart.model_bones.display_entity.MinestomModelBoneHeadDisplay;
 import net.worldseed.multipart.model_bones.entity.AbstractBoneEntity;
-import net.worldseed.multipart.model_bones.misc.ModelBoneHitbox;
-import net.worldseed.multipart.model_bones.misc.ModelBoneNametag;
-import net.worldseed.multipart.model_bones.misc.ModelBoneSeat;
-import net.worldseed.multipart.model_bones.misc.ModelBoneVFX;
+import net.worldseed.multipart.model_bones.misc.*;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -215,7 +212,7 @@ public class GenericModelImpl implements GenericModel {
             var newOffset = pivotPoint.mul(-1, 1, 1);
             return new ModelBoneHitbox(info.pivot, info.name, info.rotation, info.model, newOffset, sizePoint.x(), sizePoint.y(), info.cubes, true, info.scale);
         });
-        boneSuppliers.put(name -> name.contains("vfx"), (info) -> new ModelBoneVFX(info.pivot, info.name, info.rotation, info.model, info.scale));
+        boneSuppliers.put(name -> name.contains("vfx"), (info) -> new MinestomModelBoneVFX(info.pivot, info.name, info.rotation, info.model, info.scale));
         boneSuppliers.put(name -> name.contains("seat"), (info) -> new ModelBoneSeat(info.pivot, info.name, info.rotation, info.model, info.scale));
         boneSuppliers.put(name -> name.equals("head"), (info) -> new MinestomModelBoneHeadDisplay(info.pivot, info.name, info.rotation, info.model, info.scale));
     }

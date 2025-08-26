@@ -1,15 +1,12 @@
 package net.worldseed.multipart.model_bones.misc;
 
 import net.kyori.adventure.util.RGBLike;
-import net.minestom.server.entity.Player;
-import net.minestom.server.instance.Instance;
-import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.AbstractGenericModel;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
+import net.worldseed.multipart.model_bones.AbstractModelBone;
 import net.worldseed.multipart.model_bones.AbstractModelBoneImpl;
-import net.worldseed.multipart.model_bones.BoneEntity;
-import net.worldseed.multipart.model_bones.ModelBone;
 import net.worldseed.multipart.model_bones.bone_types.VFXBone;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,37 +14,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class ModelBoneVFX extends AbstractModelBoneImpl<Player, GenericModel, ModelBone> implements VFXBone<Player, ModelBone, GenericModel>, ModelBone {
-    private final List<GenericModel> attached = new ArrayList<>();
+public class ModelBoneVFX<TViewer, TModel extends AbstractGenericModel<TViewer, TBone, TModel>, TBone extends AbstractModelBone<TViewer, TModel, TBone>> extends AbstractModelBoneImpl<TViewer, TModel, TBone> implements VFXBone<TViewer, TBone, TModel> {
+    private final List<TModel> attached = new ArrayList<>();
     private Pos position = Pos.ZERO;
 
-    public ModelBoneVFX(Point pivot, String name, Point rotation, GenericModel model, float scale) {
+    public ModelBoneVFX(Point pivot, String name, Point rotation, TModel model, float scale) {
         super(pivot, name, rotation, model, scale);
         this.stand = null;
     }
 
     @Override
-    public BoneEntity getEntity() {
-        return (BoneEntity) super.getEntity();
-    }
-
-    @Override
-    public CompletableFuture<Void> spawn(@Nullable Instance instance, Pos pos) {
-        return CompletableFuture.completedFuture(null);
-    }
-
-    @Override
-    public void attachModel(GenericModel model) {
+    public void attachModel(TModel model) {
         attached.add(model);
     }
 
     @Override
-    public List<GenericModel> getAttachedModels() {
+    public List<TModel> getAttachedModels() {
         return attached;
     }
 
     @Override
-    public void detachModel(GenericModel model) {
+    public void detachModel(TModel model) {
         attached.remove(model);
     }
 
@@ -62,10 +49,6 @@ public class ModelBoneVFX extends AbstractModelBoneImpl<Player, GenericModel, Mo
 
     @Override
     public void setState(String state) {
-    }
-
-    public CompletableFuture<Void> spawn(Instance instance, Point position) {
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override
@@ -94,7 +77,7 @@ public class ModelBoneVFX extends AbstractModelBoneImpl<Player, GenericModel, Mo
     }
 
     public void draw() {
-        this.children.forEach(ModelBone::draw);
+        this.children.forEach(TBone::draw);
         if (this.offset == null) return;
 
         this.position = calculatePosition();
@@ -111,18 +94,18 @@ public class ModelBoneVFX extends AbstractModelBoneImpl<Player, GenericModel, Mo
     }
 
     @Override
-    public void addViewer(Player player) {
+    public void addViewer(TViewer player) {
         this.attached.forEach(model -> model.addViewer(player));
     }
 
     @Override
-    public void removeViewer(Player player) {
+    public void removeViewer(TViewer player) {
         this.attached.forEach(model -> model.removeViewer(player));
     }
 
     @Override
     public void removeGlowing() {
-        this.attached.forEach(GenericModel::removeGlowing);
+        this.attached.forEach(TModel::removeGlowing);
     }
 
     @Override
@@ -131,12 +114,12 @@ public class ModelBoneVFX extends AbstractModelBoneImpl<Player, GenericModel, Mo
     }
 
     @Override
-    public void removeGlowing(Player player) {
+    public void removeGlowing(TViewer player) {
         this.attached.forEach(model -> model.removeGlowing(player));
     }
 
     @Override
-    public void setGlowing(Player player, RGBLike color) {
+    public void setGlowing(TViewer player, RGBLike color) {
         this.attached.forEach(model -> model.setGlowing(player, color));
     }
 
