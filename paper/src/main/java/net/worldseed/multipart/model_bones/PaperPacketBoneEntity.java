@@ -92,8 +92,8 @@ public class PaperPacketBoneEntity implements BoneEntity<Player> {
         ArrayList<Packet<? super ClientGamePacketListener>> packets = new ArrayList<>();
 
         packets.add(new ClientboundAddEntityPacket(this.entityId, this.uuid, this.pos.x(), this.pos.y(), this.pos.z(),
-                this.pos.yaw(), this.pos.pitch(), CraftEntityType.bukkitToMinecraft(this.entityType),
-                0, Vec3.ZERO, 0));
+                0f, this.pos.yaw(), CraftEntityType.bukkitToMinecraft(this.entityType),
+                0, Vec3.ZERO, this.pos.yaw()));
         packets.add(new ClientboundSetEntityDataPacket(this.entityId, dataWatcher.packAll()));
         return packets;
     }
