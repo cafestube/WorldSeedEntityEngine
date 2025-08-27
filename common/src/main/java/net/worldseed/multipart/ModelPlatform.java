@@ -1,13 +1,12 @@
-package net.worldseed.multipart.model_bones;
+package net.worldseed.multipart;
 
-import net.worldseed.multipart.GenericModel;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.model_bones.entity.BoneEntity;
 import net.worldseed.multipart.model_bones.entity.ItemDisplayBoneEntity;
 import net.worldseed.multipart.model_bones.entity.RootBoneEntity;
 import net.worldseed.multipart.model_bones.entity.TextDisplayBoneEntity;
 
-public interface EntityFactory<TViewer> {
+public interface ModelPlatform<TViewer> {
 
     ItemDisplayBoneEntity<TViewer> createItemDisplayBoneEntity(GenericModel<TViewer> model, String name);
 

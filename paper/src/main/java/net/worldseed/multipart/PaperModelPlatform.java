@@ -1,20 +1,18 @@
 package net.worldseed.multipart;
 
 import net.worldseed.multipart.math.Pos;
-import net.worldseed.multipart.model_bones.PaperPacketBoneEntity;
 import net.worldseed.multipart.model_bones.PaperItemDisplayBoneEntity;
 import net.worldseed.multipart.model_bones.PaperTextDisplayBoneEntity;
 import net.worldseed.multipart.model_bones.PaperRootBoneEntity;
 import net.worldseed.multipart.model_bones.entity.BoneEntity;
 import net.worldseed.multipart.model_bones.entity.ItemDisplayBoneEntity;
-import net.worldseed.multipart.model_bones.EntityFactory;
 import net.worldseed.multipart.model_bones.entity.RootBoneEntity;
 import net.worldseed.multipart.model_bones.entity.TextDisplayBoneEntity;
 import org.bukkit.entity.Player;
 
-public class PaperEntityFactory implements EntityFactory<Player> {
+public class PaperModelPlatform implements ModelPlatform<Player> {
 
-    public static PaperEntityFactory INSTANCE = new PaperEntityFactory();
+    public static PaperModelPlatform INSTANCE = new PaperModelPlatform();
 
     @Override
     public ItemDisplayBoneEntity<Player> createItemDisplayBoneEntity(GenericModel<Player> model, String name) {

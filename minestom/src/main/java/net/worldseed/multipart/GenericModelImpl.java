@@ -7,7 +7,6 @@ import net.minestom.server.collision.BoundingBox;
 import net.minestom.server.collision.Shape;
 import net.minestom.server.collision.SweepResult;
 import net.minestom.server.entity.Entity;
-import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventFilter;
 import net.minestom.server.event.EventNode;
@@ -78,8 +77,8 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
     }
 
     @Override
-    public EntityFactory<Player> getEntityFactory() {
-        return MinestomEntityFactory.INSTANCE;
+    public ModelPlatform<Player> getModelPlatform() {
+        return MinestomModelPlatform.INSTANCE;
     }
 
 

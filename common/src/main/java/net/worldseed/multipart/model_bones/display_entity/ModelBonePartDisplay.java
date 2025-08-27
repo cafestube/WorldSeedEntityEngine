@@ -20,7 +20,7 @@ public class ModelBonePartDisplay<TViewer> extends ModelBoneImpl<TViewer> implem
         super(pivot, name, rotation, model, scale);
 
         if (this.offset != null) {
-            ItemDisplayBoneEntity<TViewer> entity = model.getEntityFactory().createItemDisplayBoneEntity(model, name);
+            ItemDisplayBoneEntity<TViewer> entity = model.getModelPlatform().createItemDisplayBoneEntity(model, name);
             this.stand = entity;
 
             entity.setScale(new Vec(scale, scale, scale));

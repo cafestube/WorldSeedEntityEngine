@@ -3,7 +3,6 @@ package net.worldseed.multipart;
 import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.events.AnimationCompleteEvent;
 import net.worldseed.multipart.math.Pos;
-import net.worldseed.multipart.model_bones.*;
 import net.worldseed.multipart.model_bones.PaperRootBoneEntity;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -42,8 +41,8 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
     }
 
     @Override
-    public EntityFactory<Player> getEntityFactory() {
-        return PaperEntityFactory.INSTANCE;
+    public ModelPlatform<Player> getModelPlatform() {
+        return PaperModelPlatform.INSTANCE;
     }
 
 

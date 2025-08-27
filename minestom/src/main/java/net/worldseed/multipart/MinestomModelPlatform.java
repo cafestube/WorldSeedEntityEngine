@@ -8,13 +8,12 @@ import net.worldseed.multipart.model_bones.MinestomTextDisplayBoneEntity;
 import net.worldseed.multipart.model_bones.display_entity.MinestomRootBoneEntity;
 import net.worldseed.multipart.model_bones.entity.BoneEntity;
 import net.worldseed.multipart.model_bones.entity.ItemDisplayBoneEntity;
-import net.worldseed.multipart.model_bones.EntityFactory;
 import net.worldseed.multipart.model_bones.entity.RootBoneEntity;
 import net.worldseed.multipart.model_bones.entity.TextDisplayBoneEntity;
 
-public class MinestomEntityFactory implements EntityFactory<Player> {
+public class MinestomModelPlatform implements ModelPlatform<Player> {
 
-    public static MinestomEntityFactory INSTANCE = new MinestomEntityFactory();
+    public static MinestomModelPlatform INSTANCE = new MinestomModelPlatform();
 
     @Override
     public ItemDisplayBoneEntity<Player> createItemDisplayBoneEntity(GenericModel<Player> model, String name) {

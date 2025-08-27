@@ -53,7 +53,7 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
         this.modelId = modelId;
 
         registerBoneSuppliers();
-        this.rootEntity = getEntityFactory().createRootEntity(this);
+        this.rootEntity = getModelPlatform().createRootEntity(this);
     }
 
     @Override
@@ -124,18 +124,18 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
             BoneEntity<TViewer> entity = modelBonePart.getEntity();
             if(entity != null) {
                 //TODO: Not too happy with that spawn method. We might need to rewrite this init stuff
-                getEntityFactory().spawn(this, entity, modelBonePart.calculatePosition());
+                getModelPlatform().spawn(this, entity, modelBonePart.calculatePosition());
             }
 
             for (ModelBone<TViewer> child : modelBonePart.getChildren()) {
                 BoneEntity<TViewer> childEntity = child.getEntity();
                 if(childEntity != null) {
-                    getEntityFactory().spawn(this, childEntity, child.calculatePosition());
+                    getModelPlatform().spawn(this, childEntity, child.calculatePosition());
                 }
             }
         }
 
-        getEntityFactory().spawn(this, this.rootEntity, this.position);
+        getModelPlatform().spawn(this, this.rootEntity, this.position);
         draw();
 
         this.getParts().stream()

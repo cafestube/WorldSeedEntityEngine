@@ -5,9 +5,7 @@ import net.kyori.adventure.util.RGBLike;
 import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
-import net.worldseed.multipart.model_bones.entity.BoneEntity;
 import net.worldseed.multipart.model_bones.ModelBone;
-import net.worldseed.multipart.model_bones.EntityFactory;
 import net.worldseed.multipart.model_bones.entity.RootBoneEntity;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +23,7 @@ public interface GenericModel<TViewer> {
      */
     String getId();
 
-    EntityFactory<TViewer> getEntityFactory();
+    ModelPlatform<TViewer> getModelPlatform();
 
     AbstractModelRegistry getModelRegistry();
 
