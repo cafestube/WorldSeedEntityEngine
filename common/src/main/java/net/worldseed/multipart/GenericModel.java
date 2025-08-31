@@ -154,4 +154,6 @@ public interface GenericModel<TViewer> {
     void setNametag(String name, @Nullable Component nametag);
 
     @Nullable Component getNametag(String name);
+
+    boolean isSpawned();
 }

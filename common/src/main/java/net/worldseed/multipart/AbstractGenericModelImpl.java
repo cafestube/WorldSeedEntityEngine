@@ -155,7 +155,7 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
     }
 
     protected void registerBoneSuppliers() {
-//        boneSuppliers.put(name -> name.equals("nametag") || name.equals("tag_name"), (info) -> new ModelBoneNametag(info.pivot, info.name, info.rotation, info.model, info.scale));
+        boneSuppliers.put(name -> name.equals("nametag") || name.equals("tag_name"), (info) -> new ModelBoneNametag<>(info.pivot(), info.name(), info.rotation(), this, info.scale()));
         boneSuppliers.put(name -> name.contains("hitbox"), (info) -> {
             if (info.cubes.isEmpty()) return null;
 
@@ -170,7 +170,6 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
             return new ModelBoneHitbox<>(info.pivot, info.name, info.rotation, this, newOffset, sizePoint.x(), sizePoint.y(), info.cubes, true, info.scale);
         });
         boneSuppliers.put(name -> name.contains("vfx"), (info) -> new ModelBoneVFX<>(info.pivot, info.name, info.rotation, this, info.scale));
-//        boneSuppliers.put(name -> name.contains("seat"), (info) -> new ModelBoneSeat(info.pivot, info.name, info.rotation, info.model, info.scale));
         boneSuppliers.put(name -> name.equals("head"), (info) -> new ModelBoneHeadDisplay<>(info.pivot, info.name, info.rotation, this, info.scale));
     }
 

@@ -2,42 +2,35 @@ package net.worldseed.multipart.entity.misc;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.RGBLike;
-import net.minestom.server.entity.EntityType;
-import net.minestom.server.entity.Player;
-import net.minestom.server.entity.metadata.display.AbstractDisplayMeta;
-import net.minestom.server.entity.metadata.display.TextDisplayMeta;
 import net.worldseed.multipart.GenericModel;
-import net.worldseed.multipart.MinestomModel;
-import net.worldseed.multipart.PositionConversion;
+import net.worldseed.multipart.entity.entity.TextDisplayBoneEntity;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.entity.ModelBoneImpl;
-import net.worldseed.multipart.entity.MinestomBoneEntity;
 import net.worldseed.multipart.entity.bone_types.NametagBone;
-import net.worldseed.multipart.entity.display_entity.MinestomRootBoneEntity;
 
 import java.util.List;
 
-public class ModelBoneNametag extends ModelBoneImpl<Player> implements NametagBone<Player> {
-    public ModelBoneNametag(Point pivot, String name, Point rotation, MinestomModel model, float scale) {
+public class ModelBoneNametag<TViewer> extends ModelBoneImpl<TViewer> implements NametagBone<TViewer> {
+    public ModelBoneNametag(Point pivot, String name, Point rotation, GenericModel<TViewer> model, float scale) {
         super(pivot, name, rotation, model, scale);
     }
 
     @Override
-    public MinestomBoneEntity getEntity() {
-        return (MinestomBoneEntity) super.getEntity();
+    public TextDisplayBoneEntity<TViewer> getEntity() {
+        return (TextDisplayBoneEntity<TViewer>) super.getEntity();
     }
 
     @Override
-    public void addViewer(Player player) {
-        MinestomBoneEntity entity = this.getEntity();
+    public void addViewer(TViewer player) {
+        TextDisplayBoneEntity<TViewer> entity = this.getEntity();
         if (entity != null) entity.addViewer(player);
     }
 
     @Override
-    public void removeViewer(Player player) {
-        MinestomBoneEntity entity = this.getEntity();
+    public void removeViewer(TViewer player) {
+        TextDisplayBoneEntity<TViewer> entity = this.getEntity();
         if (entity != null) entity.removeViewer(player);
     }
 
@@ -50,25 +43,25 @@ public class ModelBoneNametag extends ModelBoneImpl<Player> implements NametagBo
     }
 
     @Override
-    public void removeGlowing(Player player) {
+    public void removeGlowing(TViewer player) {
     }
 
     @Override
-    public void setGlowing(Player player, RGBLike color) {
+    public void setGlowing(TViewer player, RGBLike color) {
     }
 
     @Override
-    public void attachModel(GenericModel<Player> model) {
+    public void attachModel(GenericModel<TViewer> model) {
         throw new UnsupportedOperationException("Cannot attach a model to a nametag");
     }
 
     @Override
-    public List<GenericModel<Player>> getAttachedModels() {
+    public List<GenericModel<TViewer>> getAttachedModels() {
         return List.of();
     }
 
     @Override
-    public void detachModel(GenericModel<Player> model) {
+    public void detachModel(GenericModel<TViewer> model) {
         throw new UnsupportedOperationException("Cannot detach a model from a nametag");
     }
 
@@ -86,12 +79,10 @@ public class ModelBoneNametag extends ModelBoneImpl<Player> implements NametagBo
     }
 
     public void draw() {
-        MinestomBoneEntity entity = this.getEntity();
+        TextDisplayBoneEntity<TViewer> entity = this.getEntity();
         if (this.offset == null || stand == null) return;
-        
-        entity.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
-            textDisplayMeta.setTranslation(PositionConversion.asMinestom(calculatePositionInternal()));
-        });
+
+        entity.setTranslation(calculatePositionInternal());
     }
 
     @Override
@@ -128,8 +119,6 @@ public class ModelBoneNametag extends ModelBoneImpl<Player> implements NametagBo
 
     @Override
     public void setNametag(Component component) {
-        MinestomModel model = (MinestomModel) this.model;
-
         if(component == null && this.stand == null) return;
 
         if(component == null) {
@@ -137,32 +126,28 @@ public class ModelBoneNametag extends ModelBoneImpl<Player> implements NametagBo
             this.stand = null;
             return;
         }
-        
-        MinestomBoneEntity entity = this.getEntity();
-        if(entity != null && (entity.isActive() || model.getInstance() == null)) {
-            entity.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
-                textDisplayMeta.setText(component);
-            });
+
+        TextDisplayBoneEntity<TViewer> entity = this.getEntity();
+        if(entity != null && (!entity.isRemoved() || model.isSpawned())) {
+            entity.setText(component);
             return;
         }
 
-        this.stand = entity = new MinestomBoneEntity(EntityType.TEXT_DISPLAY, model, this.name);
-        entity.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
-            textDisplayMeta.setText(component);
-            textDisplayMeta.setTranslation(PositionConversion.asMinestom(calculatePositionInternal()));
-            textDisplayMeta.setBillboardRenderConstraints(AbstractDisplayMeta.BillboardConstraints.VERTICAL);
-        });
+        this.stand = entity = model.getModelPlatform().createTextDisplayBoneEntity(model, this.name);
 
-        if(model.getInstance() != null) {
-            entity.setInstance(model.getInstance(), model.getPosition());
-            ((MinestomRootBoneEntity) this.model.getModelRoot()).addPassenger(entity);
+        entity.setTranslation(calculatePositionInternal());
+        entity.setText(component);
+
+        if(model.isSpawned()) {
+            model.getModelPlatform().spawn(model, entity, model.getPosition());
+            model.getModelRoot().attachEntity(entity);
         }
     }
 
     @Override
     public Component getNametag() {
-        MinestomBoneEntity entity = this.getEntity();
+        TextDisplayBoneEntity<TViewer> entity = this.getEntity();
         if(entity == null) return null;
-        return ((TextDisplayMeta) entity.getEntityMeta()).getText();
+        return entity.getText();
     }
 }

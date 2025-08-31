@@ -64,21 +64,12 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
 
     protected void registerBoneSuppliers() {
         super.registerBoneSuppliers();
-//        boneSuppliers.put(name -> name.equals("nametag") || name.equals("tag_name"), (info) -> new ModelBoneNametag(info.pivot(), info.name(), info.rotation(), this, info.scale()));
-//        boneSuppliers.put(name -> name.contains("hitbox"), (info) -> {
-//            if (info.cubes().isEmpty()) return null;
-//
-//            var cube = info.cubes().get(0);
-//            JsonArray sizeArray = cube.getAsJsonObject().get("size").getAsJsonArray();
-//            JsonArray p = cube.getAsJsonObject().get("pivot").getAsJsonArray();
-//
-//            Point sizePoint = new Vec(sizeArray.get(0).getAsFloat(), sizeArray.get(1).getAsFloat(), sizeArray.get(2).getAsFloat());
-//            Point pivotPoint = new Vec(p.get(0).getAsFloat(), p.get(1).getAsFloat(), p.get(2).getAsFloat());
-//
-//            var newOffset = pivotPoint.mul(-1, 1, 1);
-//            return new ModelBoneHitbox(info.pivot(), info.name(), info.rotation(), this, newOffset, sizePoint.x(), sizePoint.y(), info.cubes(), true, info.scale());
-//        });
 //        boneSuppliers.put(name -> name.contains("seat"), (info) -> new ModelBoneSeat(info.pivot(), info.name(), info.rotation(), this, info.scale()));
+    }
+
+    @Override
+    public boolean isSpawned() {
+        return getWorld() != null;
     }
 
     public World getWorld() {

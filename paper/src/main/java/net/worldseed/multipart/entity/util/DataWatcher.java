@@ -3,6 +3,7 @@ package net.worldseed.multipart.entity.util;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,13 @@ public class DataWatcher {
             item.value = value;
             item.dirty = true;
         }
+    }
+
+    public <T> @Nullable T get(EntityDataAccessor<T> accessor) {
+        @SuppressWarnings("unchecked") Item<T> item = (Item<T>) data.get(accessor.id());
+        if(item == null) return null;
+
+        return item.value;
     }
 
     public List<SynchedEntityData.DataValue<?>> packAll() {

@@ -7,7 +7,8 @@ public interface TextDisplayBoneEntity<TViewer> extends BoneEntity<TViewer> {
 
     void setText(Component text);
 
+    void setTranslation(Pos position);
+
     Component getText();
 
-    void setTranslation(Pos position);
 }

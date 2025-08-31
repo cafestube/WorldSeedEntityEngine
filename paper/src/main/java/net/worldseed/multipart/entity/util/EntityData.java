@@ -1,5 +1,6 @@
 package net.worldseed.multipart.entity.util;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.item.ItemStack;
@@ -15,6 +16,8 @@ public class EntityData {
     public static final EntityDataAccessor<Vector3f> DISPLAY_DATA_SCALE_ID = getEntityDataAccessor(Display.class, "DATA_SCALE_ID");
     public static final EntityDataAccessor<Quaternionf> DISPLAY_DATA_RIGHT_ROTATION_ID = getEntityDataAccessor(Display.class, "DATA_RIGHT_ROTATION_ID");
     public static final EntityDataAccessor<Byte> ITEM_DISPLAY_DATA_ITEM_DISPLAY_ID = getEntityDataAccessor(Display.ItemDisplay.class, "DATA_ITEM_DISPLAY_ID");
+    public static final EntityDataAccessor<Component> TEXT_DISPLAY_DATA_TEXT_ID = getEntityDataAccessor(Display.TextDisplay.class, "DATA_TEXT_ID");
+    public static final EntityDataAccessor<Byte> DISPLAY_DATA_BILLBOARD_RENDER_CONSTRAINTS_ID = getEntityDataAccessor(Display.class, "DATA_BILLBOARD_RENDER_CONSTRAINTS_ID");
 
     @SuppressWarnings("unchecked")
     private static <T> EntityDataAccessor<T> getEntityDataAccessor(Class<?> clazz, String id) {

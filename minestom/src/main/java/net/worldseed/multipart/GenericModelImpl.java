@@ -47,6 +47,11 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
     }
 
     @Override
+    public boolean isSpawned() {
+        return getInstance() != null;
+    }
+
+    @Override
     public ModelRegistry getModelRegistry() {
         return (ModelRegistry) super.getModelRegistry();
     }
@@ -94,7 +99,6 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
 
     protected void registerBoneSuppliers() {
         super.registerBoneSuppliers();
-        boneSuppliers.put(name -> name.equals("nametag") || name.equals("tag_name"), (info) -> new ModelBoneNametag(info.pivot(), info.name(), info.rotation(), this, info.scale()));
         boneSuppliers.put(name -> name.contains("seat"), (info) -> new ModelBoneSeat(info.pivot(), info.name(), info.rotation(), this, info.scale()));
     }
 
