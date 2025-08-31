@@ -16,6 +16,9 @@ import net.worldseed.multipart.model_bones.ModelBoneViewable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.Map;
 
@@ -69,7 +72,15 @@ public class EmoteModel extends GenericModelImpl {
     );
 
     static {
-        MODEL_JSON = GSON.fromJson(new StringReader(SteveModel.MODEL_STRING), JsonObject.class);
+        try(InputStream is = EmoteModel.class.getResourceAsStream("steve.model.geo.json")) {
+            if(is == null)
+                throw new RuntimeException("Could not find steve.model.geo.json");
+
+            MODEL_JSON = GSON.fromJson(new InputStreamReader(is), JsonObject.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load steve.model.geo.json", e);
+        }
+
     }
 
     private final PlayerSkin skin;
