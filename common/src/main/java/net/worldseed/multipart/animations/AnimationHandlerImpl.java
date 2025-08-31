@@ -4,13 +4,14 @@ import net.worldseed.multipart.GenericModel;
 import net.worldseed.multipart.animations.data.AnimatedBoneData;
 import net.worldseed.multipart.animations.data.AnimationData;
 import net.worldseed.multipart.animations.data.BoneAnimationData;
+import net.worldseed.multipart.scheduling.ScheduledTask;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class AbstractAnimationHandlerImpl implements AnimationHandler {
-    private final GenericModel model;
+public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
+    private final GenericModel<TViewer> model;
 
     private final Map<String, ModelAnimation> animations = new ConcurrentHashMap<>();
     private final TreeMap<Integer, ModelAnimation> repeating = new TreeMap<>();
@@ -18,10 +19,12 @@ public abstract class AbstractAnimationHandlerImpl implements AnimationHandler {
 
     private final Map<String, Runnable> callbacks = new ConcurrentHashMap<>();
     private final Map<String, Integer> callbackTimers = new ConcurrentHashMap<>();
+    private final ScheduledTask task;
 
-    public AbstractAnimationHandlerImpl(GenericModel model) {
+    public AnimationHandlerImpl(GenericModel<TViewer> model) {
         this.model = model;
         loadDefaultAnimations();
+        this.task = model.getModelPlatform().getScheduler(model).syncRepeating(this::tick, 0, 1);
     }
 
     protected void loadDefaultAnimations() {
@@ -228,7 +231,9 @@ public abstract class AbstractAnimationHandlerImpl implements AnimationHandler {
         }
     }
 
-    public abstract void destroy();
+    public void destroy() {
+        this.task.cancel();
+    }
 
     @Override
     public @Nullable String getPlaying() {

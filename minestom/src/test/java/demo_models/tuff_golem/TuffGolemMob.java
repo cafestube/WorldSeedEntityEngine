@@ -16,7 +16,6 @@ import net.minestom.server.registry.RegistryKey;
 import net.minestom.server.timer.Task;
 import net.minestom.server.utils.time.TimeUnit;
 import net.worldseed.multipart.animations.AnimationHandler;
-import net.worldseed.multipart.animations.AbstractAnimationHandlerImpl;
 import net.worldseed.multipart.animations.AnimationHandlerImpl;
 import org.jetbrains.annotations.NotNull;
 

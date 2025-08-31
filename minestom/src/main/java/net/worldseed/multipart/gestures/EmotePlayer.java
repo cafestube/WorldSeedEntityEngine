@@ -9,7 +9,6 @@ import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.PositionConversion;
 import net.worldseed.multipart.animations.AnimationHandler;
-import net.worldseed.multipart.animations.AbstractAnimationHandlerImpl;
 import net.worldseed.multipart.animations.AnimationHandlerImpl;
 import net.worldseed.multipart.animations.data.AnimationData;
 import net.worldseed.multipart.events.ModelDamageEvent;

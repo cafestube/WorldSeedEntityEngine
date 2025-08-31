@@ -7,7 +7,6 @@ import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.animations.AnimationHandler;
-import net.worldseed.multipart.animations.AbstractAnimationHandlerImpl;
 import net.worldseed.multipart.animations.AnimationHandlerImpl;
 import org.jetbrains.annotations.NotNull;
 

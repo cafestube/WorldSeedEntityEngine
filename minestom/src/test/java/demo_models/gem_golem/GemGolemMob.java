@@ -21,7 +21,6 @@ import net.minestom.server.timer.Task;
 import net.minestom.server.utils.position.PositionUtils;
 import net.minestom.server.utils.time.TimeUnit;
 import net.worldseed.multipart.animations.AnimationHandler;
-import net.worldseed.multipart.animations.AbstractAnimationHandlerImpl;
 import net.worldseed.multipart.animations.AnimationHandlerImpl;
 import net.worldseed.multipart.events.ModelControlEvent;
 import net.worldseed.multipart.events.ModelDamageEvent;
