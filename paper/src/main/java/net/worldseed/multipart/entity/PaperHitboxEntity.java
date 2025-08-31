@@ -16,14 +16,14 @@ public class PaperHitboxEntity implements HitboxEntity<Player> {
     private final PaperModel model;
 
     public PaperHitboxEntity(PaperModel model, String name) {
-        this.entity = new NMSHitboxEntity(model.getWorld());
+        this.entity = new NMSHitboxEntity(model.getWorld(), model);
         this.model = model;
     }
 
     public void spawnAt(Pos position) {
         entity.setPos(position.x(), position.y(), position.z());
         entity.setRot(position.yaw(), position.pitch());
-//        entity.visibleByDefault = false;
+        entity.visibleByDefault = false;
         entity.level().addFreshEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
     }
 
