@@ -3,19 +3,22 @@ package net.worldseed.multipart;
 import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.events.AnimationCompleteEvent;
 import net.worldseed.multipart.math.Pos;
-import net.worldseed.multipart.model_bones.PaperRootBoneEntity;
+import net.worldseed.multipart.entity.PaperRootBoneEntity;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class GenericModelImpl extends AbstractGenericModelImpl<Player> implements PaperModel {
 
     protected World world;
+    protected JavaPlugin plugin;
 
-    public GenericModelImpl(ModelRegistry registry, String modelId) {
+    public GenericModelImpl(ModelRegistry registry, String modelId, JavaPlugin plugin) {
         super(registry, modelId);
+        this.plugin = plugin;
     }
 
     @Override
@@ -80,6 +83,11 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
 
     public World getWorld() {
         return world;
+    }
+
+    @Override
+    public JavaPlugin getPlugin() {
+        return this.plugin;
     }
 
 }

@@ -1,8 +1,9 @@
 package net.worldseed.multipart;
 
-import net.worldseed.multipart.model_bones.PaperRootBoneEntity;
+import net.worldseed.multipart.entity.PaperRootBoneEntity;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public interface PaperModel extends GenericModel<Player> {
 
@@ -16,6 +17,8 @@ public interface PaperModel extends GenericModel<Player> {
 //    Collection<Entity> getPassengers(String name);
 
     World getWorld();
+
+    JavaPlugin getPlugin();
 
     @Override
     PaperRootBoneEntity getModelRoot();

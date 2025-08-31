@@ -17,7 +17,7 @@ import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Quaternion;
-import net.worldseed.multipart.model_bones.*;
+import net.worldseed.multipart.entity.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;

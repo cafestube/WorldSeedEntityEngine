@@ -1,6 +1,5 @@
 package net.worldseed.multipart;
 
-import com.google.gson.JsonArray;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.ServerProcess;
 import net.minestom.server.collision.BoundingBox;
@@ -15,14 +14,12 @@ import net.minestom.server.instance.block.BlockFace;
 import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.events.AnimationCompleteEvent;
 import net.worldseed.multipart.events.ModelEvent;
-import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
-import net.worldseed.multipart.math.Vec;
-import net.worldseed.multipart.model_bones.*;
-import net.worldseed.multipart.model_bones.bone_types.RideableBone;
-import net.worldseed.multipart.model_bones.display_entity.MinestomRootBoneEntity;
-import net.worldseed.multipart.model_bones.entity.BoneEntity;
-import net.worldseed.multipart.model_bones.misc.*;
+import net.worldseed.multipart.entity.*;
+import net.worldseed.multipart.entity.bone_types.RideableBone;
+import net.worldseed.multipart.entity.display_entity.MinestomRootBoneEntity;
+import net.worldseed.multipart.entity.entity.BoneEntity;
+import net.worldseed.multipart.entity.misc.*;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -98,19 +95,6 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
     protected void registerBoneSuppliers() {
         super.registerBoneSuppliers();
         boneSuppliers.put(name -> name.equals("nametag") || name.equals("tag_name"), (info) -> new ModelBoneNametag(info.pivot(), info.name(), info.rotation(), this, info.scale()));
-        boneSuppliers.put(name -> name.contains("hitbox"), (info) -> {
-            if (info.cubes().isEmpty()) return null;
-
-            var cube = info.cubes().get(0);
-            JsonArray sizeArray = cube.getAsJsonObject().get("size").getAsJsonArray();
-            JsonArray p = cube.getAsJsonObject().get("pivot").getAsJsonArray();
-
-            Point sizePoint = new Vec(sizeArray.get(0).getAsFloat(), sizeArray.get(1).getAsFloat(), sizeArray.get(2).getAsFloat());
-            Point pivotPoint = new Vec(p.get(0).getAsFloat(), p.get(1).getAsFloat(), p.get(2).getAsFloat());
-
-            var newOffset = pivotPoint.mul(-1, 1, 1);
-            return new ModelBoneHitbox(info.pivot(), info.name(), info.rotation(), this, newOffset, sizePoint.x(), sizePoint.y(), info.cubes(), true, info.scale());
-        });
         boneSuppliers.put(name -> name.contains("seat"), (info) -> new ModelBoneSeat(info.pivot(), info.name(), info.rotation(), this, info.scale()));
     }
 

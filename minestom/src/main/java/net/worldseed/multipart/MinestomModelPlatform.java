@@ -1,15 +1,14 @@
 package net.worldseed.multipart;
 
 import net.minestom.server.entity.Player;
+import net.worldseed.multipart.entity.MinestomHitboxBoneEntity;
+import net.worldseed.multipart.entity.entity.*;
 import net.worldseed.multipart.math.Pos;
-import net.worldseed.multipart.model_bones.MinestomBoneEntity;
-import net.worldseed.multipart.model_bones.MinestomItemDisplayBoneEntity;
-import net.worldseed.multipart.model_bones.MinestomTextDisplayBoneEntity;
-import net.worldseed.multipart.model_bones.display_entity.MinestomRootBoneEntity;
-import net.worldseed.multipart.model_bones.entity.BoneEntity;
-import net.worldseed.multipart.model_bones.entity.ItemDisplayBoneEntity;
-import net.worldseed.multipart.model_bones.entity.RootBoneEntity;
-import net.worldseed.multipart.model_bones.entity.TextDisplayBoneEntity;
+import net.worldseed.multipart.entity.MinestomBoneEntity;
+import net.worldseed.multipart.entity.MinestomItemDisplayBoneEntity;
+import net.worldseed.multipart.entity.MinestomTextDisplayBoneEntity;
+import net.worldseed.multipart.entity.display_entity.MinestomRootBoneEntity;
+import net.worldseed.multipart.scheduling.Scheduler;
 
 public class MinestomModelPlatform implements ModelPlatform<Player> {
 
@@ -31,9 +30,19 @@ public class MinestomModelPlatform implements ModelPlatform<Player> {
     }
 
     @Override
+    public HitboxEntity<Player> createHitboxEntity(GenericModel<Player> model, String name) {
+        return new MinestomHitboxBoneEntity((MinestomModel) model, name);
+    }
+
+    @Override
     public void spawn(GenericModel<Player> model, BoneEntity<Player> entity, Pos position) {
         if(entity instanceof MinestomBoneEntity boneEntity && model instanceof MinestomModel minestomModel) {
             boneEntity.setInstance(minestomModel.getInstance(), position).join();
         }
+    }
+
+    @Override
+    public Scheduler getScheduler(GenericModel<Player> model) {
+        return new MinestomScheduler();
     }
 }

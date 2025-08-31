@@ -1,13 +1,9 @@
 package net.worldseed.multipart;
 
 import net.worldseed.multipart.math.Pos;
-import net.worldseed.multipart.model_bones.PaperItemDisplayBoneEntity;
-import net.worldseed.multipart.model_bones.PaperTextDisplayBoneEntity;
-import net.worldseed.multipart.model_bones.PaperRootBoneEntity;
-import net.worldseed.multipart.model_bones.entity.BoneEntity;
-import net.worldseed.multipart.model_bones.entity.ItemDisplayBoneEntity;
-import net.worldseed.multipart.model_bones.entity.RootBoneEntity;
-import net.worldseed.multipart.model_bones.entity.TextDisplayBoneEntity;
+import net.worldseed.multipart.entity.*;
+import net.worldseed.multipart.entity.entity.*;
+import net.worldseed.multipart.scheduling.Scheduler;
 import org.bukkit.entity.Player;
 
 public class PaperModelPlatform implements ModelPlatform<Player> {
@@ -30,7 +26,21 @@ public class PaperModelPlatform implements ModelPlatform<Player> {
     }
 
     @Override
+    public HitboxEntity<Player> createHitboxEntity(GenericModel<Player> model, String name) {
+        return new PaperHitboxEntity((PaperModel) model, name);
+    }
+
+    @Override
     public void spawn(GenericModel<Player> model, BoneEntity<Player> entity, Pos position) {
+        if(entity instanceof PaperHitboxEntity hitbox) {
+            hitbox.spawnAt(position);
+            return;
+        }
         entity.teleport(position);
+    }
+
+    @Override
+    public Scheduler getScheduler(GenericModel<Player> model) {
+        return new PaperScheduler(((PaperModel) model).getPlugin());
     }
 }

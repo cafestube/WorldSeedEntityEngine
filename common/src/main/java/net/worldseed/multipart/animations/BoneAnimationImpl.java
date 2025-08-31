@@ -3,7 +3,7 @@ package net.worldseed.multipart.animations;
 import net.worldseed.multipart.animations.data.BoneAnimationData;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Vec;
-import net.worldseed.multipart.model_bones.ModelBone;
+import net.worldseed.multipart.entity.ModelBone;
 import net.worldseed.multipart.mql.MQLPoint;
 
 public class BoneAnimationImpl implements BoneAnimation {

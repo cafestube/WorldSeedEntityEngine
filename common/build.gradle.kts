@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    kotlin("jvm")
 }
 
 group = "org.example"
@@ -18,8 +19,12 @@ dependencies {
     implementation("com.google.code.gson:gson:2.13.1")
 
     implementation("dev.hollowcube:mql:1.0.1")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 tasks.test {
     useJUnitPlatform()
+}
+kotlin {
+    jvmToolchain(21)
 }

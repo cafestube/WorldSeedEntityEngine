@@ -9,16 +9,17 @@ import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.PositionParser;
-import net.worldseed.multipart.model_bones.*;
-import net.worldseed.multipart.model_bones.bone_types.HeadBone;
-import net.worldseed.multipart.model_bones.bone_types.NametagBone;
-import net.worldseed.multipart.model_bones.display_entity.ModelBoneHeadDisplay;
-import net.worldseed.multipart.model_bones.display_entity.ModelBonePartDisplay;
-import net.worldseed.multipart.model_bones.entity.BoneEntity;
-import net.worldseed.multipart.model_bones.entity.ItemDisplayBoneEntity;
-import net.worldseed.multipart.model_bones.entity.RootBoneEntity;
-import net.worldseed.multipart.model_bones.entity.TextDisplayBoneEntity;
-import net.worldseed.multipart.model_bones.misc.*;
+import net.worldseed.multipart.math.Vec;
+import net.worldseed.multipart.entity.*;
+import net.worldseed.multipart.entity.bone_types.HeadBone;
+import net.worldseed.multipart.entity.bone_types.NametagBone;
+import net.worldseed.multipart.entity.display_entity.ModelBoneHeadDisplay;
+import net.worldseed.multipart.entity.display_entity.ModelBonePartDisplay;
+import net.worldseed.multipart.entity.entity.BoneEntity;
+import net.worldseed.multipart.entity.entity.ItemDisplayBoneEntity;
+import net.worldseed.multipart.entity.entity.RootBoneEntity;
+import net.worldseed.multipart.entity.entity.TextDisplayBoneEntity;
+import net.worldseed.multipart.entity.misc.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -155,19 +156,19 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
 
     protected void registerBoneSuppliers() {
 //        boneSuppliers.put(name -> name.equals("nametag") || name.equals("tag_name"), (info) -> new ModelBoneNametag(info.pivot, info.name, info.rotation, info.model, info.scale));
-//        boneSuppliers.put(name -> name.contains("hitbox"), (info) -> {
-//            if (info.cubes.isEmpty()) return null;
-//
-//            var cube = info.cubes.get(0);
-//            JsonArray sizeArray = cube.getAsJsonObject().get("size").getAsJsonArray();
-//            JsonArray p = cube.getAsJsonObject().get("pivot").getAsJsonArray();
-//
-//            Point sizePoint = new Vec(sizeArray.get(0).getAsFloat(), sizeArray.get(1).getAsFloat(), sizeArray.get(2).getAsFloat());
-//            Point pivotPoint = new Vec(p.get(0).getAsFloat(), p.get(1).getAsFloat(), p.get(2).getAsFloat());
-//
-//            var newOffset = pivotPoint.mul(-1, 1, 1);
-//            return new ModelBoneHitbox(info.pivot, info.name, info.rotation, info.model, newOffset, sizePoint.x(), sizePoint.y(), info.cubes, true, info.scale);
-//        });
+        boneSuppliers.put(name -> name.contains("hitbox"), (info) -> {
+            if (info.cubes.isEmpty()) return null;
+
+            var cube = info.cubes.get(0);
+            JsonArray sizeArray = cube.getAsJsonObject().get("size").getAsJsonArray();
+            JsonArray p = cube.getAsJsonObject().get("pivot").getAsJsonArray();
+
+            Point sizePoint = new Vec(sizeArray.get(0).getAsFloat(), sizeArray.get(1).getAsFloat(), sizeArray.get(2).getAsFloat());
+            Point pivotPoint = new Vec(p.get(0).getAsFloat(), p.get(1).getAsFloat(), p.get(2).getAsFloat());
+
+            var newOffset = pivotPoint.mul(-1, 1, 1);
+            return new ModelBoneHitbox<>(info.pivot, info.name, info.rotation, this, newOffset, sizePoint.x(), sizePoint.y(), info.cubes, true, info.scale);
+        });
         boneSuppliers.put(name -> name.contains("vfx"), (info) -> new ModelBoneVFX<>(info.pivot, info.name, info.rotation, this, info.scale));
 //        boneSuppliers.put(name -> name.contains("seat"), (info) -> new ModelBoneSeat(info.pivot, info.name, info.rotation, info.model, info.scale));
         boneSuppliers.put(name -> name.equals("head"), (info) -> new ModelBoneHeadDisplay<>(info.pivot, info.name, info.rotation, this, info.scale));

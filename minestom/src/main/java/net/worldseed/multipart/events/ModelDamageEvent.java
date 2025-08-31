@@ -5,7 +5,7 @@ import net.minestom.server.event.entity.EntityDamageEvent;
 import net.minestom.server.event.trait.CancellableEvent;
 import net.minestom.server.sound.SoundEvent;
 import net.worldseed.multipart.MinestomModel;
-import net.worldseed.multipart.model_bones.MinestomBoneEntity;
+import net.worldseed.multipart.entity.MinestomBoneEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

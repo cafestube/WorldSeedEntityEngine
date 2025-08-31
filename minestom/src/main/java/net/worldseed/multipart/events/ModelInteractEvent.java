@@ -3,7 +3,7 @@ package net.worldseed.multipart.events;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
-import net.worldseed.multipart.model_bones.MinestomBoneEntity;
+import net.worldseed.multipart.entity.MinestomBoneEntity;
 import net.worldseed.multipart.gestures.EmoteModel;
 import net.worldseed.multipart.MinestomModel;
 import org.jetbrains.annotations.NotNull;

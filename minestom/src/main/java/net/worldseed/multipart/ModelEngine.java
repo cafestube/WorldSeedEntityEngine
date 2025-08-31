@@ -11,7 +11,7 @@ import net.minestom.server.network.packet.client.play.ClientInputPacket;
 import net.worldseed.multipart.events.ModelControlEvent;
 import net.worldseed.multipart.events.ModelDamageEvent;
 import net.worldseed.multipart.events.ModelInteractEvent;
-import net.worldseed.multipart.model_bones.MinestomBoneEntity;
+import net.worldseed.multipart.entity.MinestomBoneEntity;
 
 public class ModelEngine {
     private static final EventListener<PlayerPacketEvent> playerListener = EventListener.of(PlayerPacketEvent.class, event -> {

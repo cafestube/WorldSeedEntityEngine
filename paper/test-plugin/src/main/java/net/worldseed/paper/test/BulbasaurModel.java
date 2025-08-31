@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 public class BulbasaurModel extends GenericModelImpl {
 
     public BulbasaurModel(ModelRegistry registry) {
-        super(registry, "bulbasaur/bulbasaur.bbmodel");
+        super(registry, "bulbasaur/bulbasaur.bbmodel", TestPlugin.getPlugin(TestPlugin.class));
     }
 
     public void init(@Nullable World instance, @NotNull Pos position) {

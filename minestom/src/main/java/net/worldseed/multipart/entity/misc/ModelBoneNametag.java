@@ -1,0 +1,168 @@
+package net.worldseed.multipart.entity.misc;
+
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.RGBLike;
+import net.minestom.server.entity.EntityType;
+import net.minestom.server.entity.Player;
+import net.minestom.server.entity.metadata.display.AbstractDisplayMeta;
+import net.minestom.server.entity.metadata.display.TextDisplayMeta;
+import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.MinestomModel;
+import net.worldseed.multipart.PositionConversion;
+import net.worldseed.multipart.math.Point;
+import net.worldseed.multipart.math.Pos;
+import net.worldseed.multipart.math.Vec;
+import net.worldseed.multipart.entity.ModelBoneImpl;
+import net.worldseed.multipart.entity.MinestomBoneEntity;
+import net.worldseed.multipart.entity.bone_types.NametagBone;
+import net.worldseed.multipart.entity.display_entity.MinestomRootBoneEntity;
+
+import java.util.List;
+
+public class ModelBoneNametag extends ModelBoneImpl<Player> implements NametagBone<Player> {
+    public ModelBoneNametag(Point pivot, String name, Point rotation, MinestomModel model, float scale) {
+        super(pivot, name, rotation, model, scale);
+    }
+
+    @Override
+    public MinestomBoneEntity getEntity() {
+        return (MinestomBoneEntity) super.getEntity();
+    }
+
+    @Override
+    public void addViewer(Player player) {
+        MinestomBoneEntity entity = this.getEntity();
+        if (entity != null) entity.addViewer(player);
+    }
+
+    @Override
+    public void removeViewer(Player player) {
+        MinestomBoneEntity entity = this.getEntity();
+        if (entity != null) entity.removeViewer(player);
+    }
+
+    @Override
+    public void removeGlowing() {
+    }
+
+    @Override
+    public void setGlowing(RGBLike color) {
+    }
+
+    @Override
+    public void removeGlowing(Player player) {
+    }
+
+    @Override
+    public void setGlowing(Player player, RGBLike color) {
+    }
+
+    @Override
+    public void attachModel(GenericModel<Player> model) {
+        throw new UnsupportedOperationException("Cannot attach a model to a nametag");
+    }
+
+    @Override
+    public List<GenericModel<Player>> getAttachedModels() {
+        return List.of();
+    }
+
+    @Override
+    public void detachModel(GenericModel<Player> model) {
+        throw new UnsupportedOperationException("Cannot detach a model from a nametag");
+    }
+
+    @Override
+    public void setGlobalRotation(double yaw, double pitch) {
+    }
+
+    @Override
+    public void setState(String state) {
+    }
+
+    @Override
+    public Point getPosition() {
+        return calculatePosition();
+    }
+
+    public void draw() {
+        MinestomBoneEntity entity = this.getEntity();
+        if (this.offset == null || stand == null) return;
+        
+        entity.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
+            textDisplayMeta.setTranslation(PositionConversion.asMinestom(calculatePositionInternal()));
+        });
+    }
+
+    @Override
+    public Pos calculatePosition() {
+        if (stand == null) return Pos.ZERO;
+        if (this.offset == null) return Pos.ZERO;
+
+        Point p = this.offset;
+        p = applyTransform(p);
+        p = calculateGlobalRotation(p);
+
+        return Pos.fromPoint(p)
+                .div(4, 4, 4).mul(scale)
+                .add(model.getPosition())
+                .add(model.getGlobalOffset());
+    }
+
+    @Override
+    public Point calculateRotation() {
+        return Vec.ZERO;
+    }
+
+    @Override
+    public Point calculateScale() {
+        return Vec.ZERO;
+    }
+
+    private Pos calculatePositionInternal() {
+        if (this.offset == null) return Pos.ZERO;
+        Point p = this.offset;
+        p = applyTransform(p);
+        return new Pos(p).div(4).mul(scale).withView(0, 0);
+    }
+
+    @Override
+    public void setNametag(Component component) {
+        MinestomModel model = (MinestomModel) this.model;
+
+        if(component == null && this.stand == null) return;
+
+        if(component == null) {
+            this.stand.remove();
+            this.stand = null;
+            return;
+        }
+        
+        MinestomBoneEntity entity = this.getEntity();
+        if(entity != null && (entity.isActive() || model.getInstance() == null)) {
+            entity.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
+                textDisplayMeta.setText(component);
+            });
+            return;
+        }
+
+        this.stand = entity = new MinestomBoneEntity(EntityType.TEXT_DISPLAY, model, this.name);
+        entity.editEntityMeta(TextDisplayMeta.class, textDisplayMeta -> {
+            textDisplayMeta.setText(component);
+            textDisplayMeta.setTranslation(PositionConversion.asMinestom(calculatePositionInternal()));
+            textDisplayMeta.setBillboardRenderConstraints(AbstractDisplayMeta.BillboardConstraints.VERTICAL);
+        });
+
+        if(model.getInstance() != null) {
+            entity.setInstance(model.getInstance(), model.getPosition());
+            ((MinestomRootBoneEntity) this.model.getModelRoot()).addPassenger(entity);
+        }
+    }
+
+    @Override
+    public Component getNametag() {
+        MinestomBoneEntity entity = this.getEntity();
+        if(entity == null) return null;
+        return ((TextDisplayMeta) entity.getEntityMeta()).getText();
+    }
+}

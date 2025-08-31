@@ -10,10 +10,10 @@ import net.worldseed.multipart.GenericModelImpl;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
-import net.worldseed.multipart.model_bones.MinestomBoneEntity;
-import net.worldseed.multipart.model_bones.ModelBone;
-import net.worldseed.multipart.model_bones.ModelBoneViewable;
-import net.worldseed.multipart.model_bones.entity.BoneEntity;
+import net.worldseed.multipart.entity.MinestomBoneEntity;
+import net.worldseed.multipart.entity.ModelBone;
+import net.worldseed.multipart.entity.ModelBoneViewable;
+import net.worldseed.multipart.entity.entity.BoneEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

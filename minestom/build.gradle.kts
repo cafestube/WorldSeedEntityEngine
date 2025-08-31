@@ -2,11 +2,10 @@ plugins {
     id("java")
     `maven-publish`
     signing
+    kotlin("jvm")
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
 
     withSourcesJar()
     withJavadocJar()
@@ -49,8 +48,12 @@ dependencies {
     testImplementation("org.zeroturnaround:zt-zip:1.17")
 
     implementation("dev.hollowcube:mql:1.0.1")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+}
+kotlin {
+    jvmToolchain(21)
 }
