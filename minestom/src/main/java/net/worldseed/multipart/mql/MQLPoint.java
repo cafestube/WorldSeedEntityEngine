@@ -3,26 +3,33 @@ package net.worldseed.multipart.mql;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.hollowcube.mql.jit.MqlCompiler;
+import net.hollowcube.molang.MolangExpr;
+import net.hollowcube.molang.MolangOptimizer;
+import net.hollowcube.molang.eval.MolangEvaluator;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
 public class MQLPoint {
     public static final MQLPoint ZERO = new MQLPoint();
-    MQLEvaluator molangX = null;
-    MQLEvaluator molangY = null;
-    MQLEvaluator molangZ = null;
+    MolangExpr molangX = null;
+    MolangExpr molangY = null;
+    MolangExpr molangZ = null;
     double x = 0;
     double y = 0;
     double z = 0;
-    MQLData data = new MQLData();
+
+    private final MQLData data = new MQLData();
+    private final MolangEvaluator evaluator = new MolangEvaluator(Map.of(
+            "q", this.data,
+            "query", this.data
+    ));
 
     public MQLPoint() {
-        x = 0;
-        y = 0;
-        z = 0;
+        this(0, 0, 0);
     }
 
     public MQLPoint(double x_, double y_, double z_) {
@@ -89,15 +96,15 @@ public class MQLPoint {
         }
     }
 
-    static MQLEvaluator fromDouble(double value) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    static MolangExpr fromDouble(double value) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         return fromString(Double.toString(value));
     }
 
-    static MQLEvaluator fromString(String s) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    static MolangExpr fromString(String s) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         if (s == null || s.isBlank()) return fromDouble(0);
-        MqlCompiler<MQLEvaluator> compiler = new MqlCompiler<>(MQLEvaluator.class);
-        Class<MQLEvaluator> scriptClass = compiler.compile(s.trim().replace("Math", "math"));
-        return scriptClass.getDeclaredConstructor().newInstance();
+        MolangExpr molangExpr = MolangExpr.parseOrThrow(s.trim().replace("Math", "math"));
+
+        return MolangOptimizer.optimizeAst(molangExpr);
     }
 
     public Point evaluate(double time) {
@@ -106,7 +113,7 @@ public class MQLPoint {
         double evaluatedX = x;
         if (molangX != null) {
             try {
-                evaluatedX = molangX.evaluate(data);
+                evaluatedX = this.evaluator.eval(this.molangX);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -115,7 +122,7 @@ public class MQLPoint {
         double evaluatedY = y;
         if (molangY != null) {
             try {
-                evaluatedY = molangY.evaluate(data);
+                evaluatedY = this.evaluator.eval(this.molangY);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -124,7 +131,7 @@ public class MQLPoint {
         double evaluatedZ = z;
         if (molangZ != null) {
             try {
-                evaluatedZ = molangZ.evaluate(data);
+                evaluatedZ = this.evaluator.eval(this.molangZ);
             } catch (Exception e) {
                 e.printStackTrace();
             }

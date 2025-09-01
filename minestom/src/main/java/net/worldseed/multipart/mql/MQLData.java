@@ -1,16 +1,21 @@
 package net.worldseed.multipart.mql;
 
-import net.hollowcube.mql.foreign.Query;
+import net.hollowcube.molang.eval.MolangValue;
+import org.jetbrains.annotations.NotNull;
 
-public class MQLData {
+public class MQLData implements MolangValue.Holder {
     private double time;
 
     public void setTime(double time) {
         this.time = time;
     }
 
-    @Query
-    public double anim_time() {
-        return time;
+    @Override
+    public @NotNull MolangValue get(@NotNull String field) {
+        if(field.equals("anim_time")) {
+            return new MolangValue.Num(this.time);
+        }
+
+        return MolangValue.NIL;
     }
 }
