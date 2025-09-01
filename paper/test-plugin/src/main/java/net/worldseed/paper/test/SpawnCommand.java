@@ -23,7 +23,7 @@ public class SpawnCommand implements BasicCommand {
         model.init(commandSourceStack.getExecutor().getLocation());
 
         model.addViewer((Player) commandSourceStack.getExecutor());
-//        AnimationHandler animationHandler = new AnimationHandlerImpl(model, JavaPlugin.getPlugin(TestPlugin.class));
-//        animationHandler.playRepeat("animation.bulbasaur.ground_idle");
+        AnimationHandler animationHandler = new AnimationHandlerImpl<>(model);
+        animationHandler.playRepeat("animation.bulbasaur.ground_idle");
     }
 }

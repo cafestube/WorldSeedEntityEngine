@@ -49,7 +49,7 @@ dependencies {
     testImplementation("org.slf4j:slf4j-simple:2.0.17")
 
     api(project(":common"))
-    implementation("dev.hollowcube:mql:1.0.1")
+    implementation("dev.hollowcube:molang:1.0.2")
 }
 
 tasks.getByName<Test>("test") {

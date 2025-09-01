@@ -2,7 +2,6 @@ plugins {
     id("java")
     `maven-publish`
     signing
-    kotlin("jvm")
 }
 
 java {
@@ -47,13 +46,9 @@ dependencies {
     testImplementation("commons-io:commons-io:2.20.0")
     testImplementation("org.zeroturnaround:zt-zip:1.17")
 
-    implementation("dev.hollowcube:mql:1.0.1")
-    implementation(kotlin("stdlib-jdk8"))
+    implementation("dev.hollowcube:molang:1.0.2")
 }
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
-}
-kotlin {
-    jvmToolchain(21)
 }
