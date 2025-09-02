@@ -1,8 +1,10 @@
 package net.worldseed.multipart.entity;
 
 import net.kyori.adventure.util.RGBLike;
+import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.worldseed.multipart.PaperModel;
+import net.worldseed.multipart.entity.util.DataWatcher;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.math.Vec;
@@ -29,12 +31,28 @@ public class PaperItemDisplayBoneEntity extends PaperPacketBoneEntity implements
 
     @Override
     public void setGlowing(RGBLike color) {
-        //TODO:
+        int rgb = 0;
+        rgb |= color.red() << 16;
+        rgb |= color.green() << 8;
+        rgb |= color.blue();
+
+        boolean previous = this.dataWatcher.setNotifyAboutChanges(false);
+        this.dataWatcher.set(EntityData.DISPLAY_DATA_GLOW_COLOR_OVERRIDE_ID, rgb);
+        super.setGlowing(true);
+        this.dataWatcher.setNotifyAboutChanges(previous);
     }
 
     @Override
     public void setGlowing(Player player, RGBLike color) {
-        //TODO:
+        int rgb = 0;
+        rgb |= color.red() << 16;
+        rgb |= color.green() << 8;
+        rgb |= color.blue();
+
+        DataWatcher watcher = new DataWatcher(null);
+        watcher.set(EntityData.DISPLAY_DATA_GLOW_COLOR_OVERRIDE_ID, rgb);
+        watcher.setSharedFlag(6, true); // glowing
+        sendPacket(player, new ClientboundSetEntityDataPacket(entityId, watcher.packDirty()));
     }
 
     @Override

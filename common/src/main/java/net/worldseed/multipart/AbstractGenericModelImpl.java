@@ -124,7 +124,6 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
 
             BoneEntity<TViewer> entity = modelBonePart.getEntity();
             if(entity != null) {
-                //TODO: Not too happy with that spawn method. We might need to rewrite this init stuff
                 getModelPlatform().spawn(this, entity, modelBonePart.calculatePosition());
             }
 

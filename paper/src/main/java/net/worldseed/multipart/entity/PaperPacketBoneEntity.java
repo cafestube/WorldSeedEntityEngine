@@ -7,6 +7,7 @@ import net.minecraft.world.entity.PositionMoveRotation;
 import net.minecraft.world.phys.Vec3;
 import net.worldseed.multipart.PaperModel;
 import net.worldseed.multipart.PositionConversion;
+import net.worldseed.multipart.entity.util.EntityData;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.entity.entity.BoneEntity;
 import net.worldseed.multipart.entity.util.DataWatcher;
@@ -124,12 +125,14 @@ public class PaperPacketBoneEntity implements BoneEntity<Player> {
 
     @Override
     public void setGlowing(boolean b) {
-        //TODO:
+        this.dataWatcher.setSharedFlag(6, b);
     }
 
     @Override
     public void setGlowing(Player player, boolean b) {
-        //TODO:
+        DataWatcher watcher = new DataWatcher(null);
+        watcher.setSharedFlag(6, true); // glowing
+        sendPacket(player, new ClientboundSetEntityDataPacket(entityId, watcher.packDirty()));
     }
 
     @Override

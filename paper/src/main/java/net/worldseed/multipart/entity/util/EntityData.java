@@ -3,6 +3,7 @@ package net.worldseed.multipart.entity.util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.world.entity.Display;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -22,6 +23,8 @@ public class EntityData {
     public static final EntityDataAccessor<Integer> DISPLAY_DATA_TRANSFORMATION_INTERPOLATION_DURATION_ID = getEntityDataAccessor(Display.class, "DATA_TRANSFORMATION_INTERPOLATION_DURATION_ID");
     public static final EntityDataAccessor<Integer> DISPLAY_DATA_POS_ROT_INTERPOLATION_DURATION_ID = getEntityDataAccessor(Display.class, "DATA_POS_ROT_INTERPOLATION_DURATION_ID");
     public static final EntityDataAccessor<Float> DISPLAY_DATA_VIEW_RANGE_ID = getEntityDataAccessor(Display.class, "DATA_VIEW_RANGE_ID");
+    public static final EntityDataAccessor<Integer> DISPLAY_DATA_GLOW_COLOR_OVERRIDE_ID = getEntityDataAccessor(Display.class, "DATA_GLOW_COLOR_OVERRIDE_ID");
+    public static final EntityDataAccessor<Byte> ENTITY_DATA_SHARED_FLAGS_ID = getEntityDataAccessor(Entity.class, "DATA_SHARED_FLAGS_ID");
 
 
     @SuppressWarnings("unchecked")

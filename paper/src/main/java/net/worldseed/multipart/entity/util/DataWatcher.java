@@ -5,6 +5,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import org.jetbrains.annotations.Nullable;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,10 +16,10 @@ public class DataWatcher {
 
     private final Map<Integer, Item<?>> data = new Int2ObjectOpenHashMap<>();
 
-    private final Consumer<List<SynchedEntityData.DataValue<?>>> updateHandler;
+    private final @Nullable Consumer<List<SynchedEntityData.DataValue<?>>> updateHandler;
     private boolean notifyAboutChanges = true;
 
-    public DataWatcher(Consumer<List<SynchedEntityData.DataValue<?>>> updateHandler) {
+    public DataWatcher(@Nullable Consumer<List<SynchedEntityData.DataValue<?>>> updateHandler) {
         this.updateHandler = updateHandler;
     }
 
@@ -33,8 +34,22 @@ public class DataWatcher {
             item.dirty = true;
         }
 
-        if(notifyAboutChanges) {
+        if(notifyAboutChanges && updateHandler != null) {
             updateHandler.accept(packDirty());
+        }
+    }
+
+
+    public void setSharedFlag(int flag, boolean set) {
+        Byte b = get(EntityData.ENTITY_DATA_SHARED_FLAGS_ID);
+        if(b == null) {
+            b = 0;
+        }
+
+        if (set) {
+            set(EntityData.ENTITY_DATA_SHARED_FLAGS_ID, (byte)(b | 1 << flag));
+        } else {
+            set(EntityData.ENTITY_DATA_SHARED_FLAGS_ID, (byte)(b & ~(1 << flag)));
         }
     }
 
@@ -66,20 +81,23 @@ public class DataWatcher {
         return list;
     }
 
-    public void setNotifyAboutChanges(boolean b) {
+    public boolean setNotifyAboutChanges(boolean b) {
+        boolean prev = this.notifyAboutChanges;
         this.notifyAboutChanges = b;
 
-        if(notifyAboutChanges) {
+        if(notifyAboutChanges && updateHandler != null) {
             List<SynchedEntityData.DataValue<?>> dataValues = packDirty();
             if(!dataValues.isEmpty()) {
                 updateHandler.accept(dataValues);
             }
         }
+
+        return prev;
     }
 
     private static class Item<T> {
 
-        private EntityDataAccessor<T> accessor;
+        private final EntityDataAccessor<T> accessor;
         private T value;
         private boolean dirty = false;
 
