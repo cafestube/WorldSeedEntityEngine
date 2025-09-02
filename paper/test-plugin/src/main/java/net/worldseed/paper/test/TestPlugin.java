@@ -59,6 +59,8 @@ public class TestPlugin extends JavaPlugin implements Listener {
 
         getServer().getPluginManager().registerEvents(this, this);
         registerCommand("spawn", new SpawnCommand(registry));
+
+        new ModelProfiler(this).register();
     }
 
     @EventHandler
