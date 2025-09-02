@@ -48,7 +48,7 @@ This is a library that allows users to add bedrock models from blockbench in to 
 WSEE lets you create multipart entities, using display entities.
 The framework provided allows users to easily create multipart entities, define animations, and write AI that fully utilises the entity's animations.
 
-Currently WSEE only supports [Minestom](https://github.com/Minestom/Minestom)
+Currently WSEE only supports [Minestom](https://github.com/Minestom/Minestom) and [PaperMC](https://papermc.io/).
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -74,16 +74,6 @@ dependencies {
 
 The lastest version number can be found [here](https://reposilite.atlasengine.ca/#/public/net/worldseed/multipart/WorldSeedEntityEngine)
 
-### VM Arguments
-
-Add the following VM arguments to your run configuration
-
-```
---add-opens java.base/java.lang=ALL-UNNAMED
-```
-
-This is required for the molang compiler library.
-
 ## Restrictions
 
 Some restrictions are imposed by Minecraft
@@ -100,16 +90,13 @@ A: Entities used for bones will be placed at the pivot point of the bone in bloc
 Q: Why is my model not working?\
 A: Make sure you have the type set to `Bedrock Model` in blockbench
 
-Q: Why am I getting the exception `InaccessibleObjectException`\
-A: Make sure you have the VM arguments set up correctly, as described in the [Getting Started](#getting-started) section
-
 Q: Why are `ModelDamageEvent` and `ModelInteractEvent` not triggering?\
 A: You need to create hitboxes for the model [Hitboxes](https://github.com/AtlasEngineCa/WorldSeedEntityEngine/wiki/Bone-Types#hitbox)
 
 ## Comparisons
 | Feature                                                                                                                          | Minestom Support | Paper Support | Math Animations | Cube Rotation   | Hurt Colour         | Accurate Hitboxes |
 |----------------------------------------------------------------------------------------------------------------------------------|------------------|---------------|----------------|-----------------|---------------------|-------------------|
-| [WSEE](https://github.com/AtlasEngineCa/WorldSeedEntityEngine)                                                                   | ✔️               | ❌            | ✔️             | ✔️ any          | ✔️ Texture Swapping | ✔️                 |
+| [WSEE](https://github.com/AtlasEngineCa/WorldSeedEntityEngine)                                                                   | ✔️               | ✔️            | ✔️             | ✔️ any          | ✔️ Texture Swapping | ✔️                 |
 | [Model Engine](https://mythiccraft.io/index.php?resources/model-engine%E2%80%94ultimate-entity-model-manager-1-16-5-1-20-4.389/) | ️❌              | ✔️            | ❌             | ❌ 22.5 multiple | ❌ Leather Armour    | ❌                 |
 | [hephaestus-engine](https://github.com/unnamed/hephaestus-engine)                                                                | ✔️               | ✔️            | ❌              | ❌ 22.5 multiple | ❌ Leather Armour    | ❌                 |
 
