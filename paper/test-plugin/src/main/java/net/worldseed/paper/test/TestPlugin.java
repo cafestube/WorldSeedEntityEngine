@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpServer;
 import net.kyori.adventure.resource.ResourcePackInfo;
 import net.worldseed.multipart.ModelRegistry;
 import net.worldseed.multipart.data.ModelProvider;
+import net.worldseed.paper.test.profiler.ModelProfiler;
 import net.worldseed.resourcepack.PackBuilder;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.event.EventHandler;

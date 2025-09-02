@@ -1,4 +1,4 @@
-package net.worldseed.paper.test;
+package net.worldseed.paper.test.profiler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
