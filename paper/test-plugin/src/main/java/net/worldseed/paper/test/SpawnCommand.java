@@ -24,6 +24,6 @@ public class SpawnCommand implements BasicCommand {
 
         model.addViewer((Player) commandSourceStack.getExecutor());
         AnimationHandler animationHandler = new AnimationHandlerImpl<>(model);
-        animationHandler.playRepeat("animation.bulbasaur.ground_idle");
+        animationHandler.playRepeat("animation.bulbasaur.faint");
     }
 }

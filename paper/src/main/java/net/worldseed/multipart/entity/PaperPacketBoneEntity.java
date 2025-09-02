@@ -124,12 +124,12 @@ public class PaperPacketBoneEntity implements BoneEntity<Player> {
 
     @Override
     public void setGlowing(boolean b) {
-
+        //TODO:
     }
 
     @Override
     public void setGlowing(Player player, boolean b) {
-
+        //TODO:
     }
 
     @Override

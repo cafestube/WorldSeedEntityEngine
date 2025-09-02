@@ -18,6 +18,11 @@ public class EntityData {
     public static final EntityDataAccessor<Byte> ITEM_DISPLAY_DATA_ITEM_DISPLAY_ID = getEntityDataAccessor(Display.ItemDisplay.class, "DATA_ITEM_DISPLAY_ID");
     public static final EntityDataAccessor<Component> TEXT_DISPLAY_DATA_TEXT_ID = getEntityDataAccessor(Display.TextDisplay.class, "DATA_TEXT_ID");
     public static final EntityDataAccessor<Byte> DISPLAY_DATA_BILLBOARD_RENDER_CONSTRAINTS_ID = getEntityDataAccessor(Display.class, "DATA_BILLBOARD_RENDER_CONSTRAINTS_ID");
+    public static final EntityDataAccessor<Integer> DISPLAY_DATA_TRANSFORMATION_INTERPOLATION_START_DELTA_TICKS_ID = getEntityDataAccessor(Display.class, "DATA_TRANSFORMATION_INTERPOLATION_START_DELTA_TICKS_ID");
+    public static final EntityDataAccessor<Integer> DISPLAY_DATA_TRANSFORMATION_INTERPOLATION_DURATION_ID = getEntityDataAccessor(Display.class, "DATA_TRANSFORMATION_INTERPOLATION_DURATION_ID");
+    public static final EntityDataAccessor<Integer> DISPLAY_DATA_POS_ROT_INTERPOLATION_DURATION_ID = getEntityDataAccessor(Display.class, "DATA_POS_ROT_INTERPOLATION_DURATION_ID");
+    public static final EntityDataAccessor<Float> DISPLAY_DATA_VIEW_RANGE_ID = getEntityDataAccessor(Display.class, "DATA_VIEW_RANGE_ID");
+
 
     @SuppressWarnings("unchecked")
     private static <T> EntityDataAccessor<T> getEntityDataAccessor(Class<?> clazz, String id) {

@@ -51,7 +51,7 @@ public class PaperItemDisplayBoneEntity extends PaperPacketBoneEntity implements
 
     @Override
     public void setTransformationInterpolationStartDelta(int i) {
-
+        this.dataWatcher.set(EntityData.DISPLAY_DATA_TRANSFORMATION_INTERPOLATION_START_DELTA_TICKS_ID, i);
     }
 
     @Override
@@ -71,22 +71,21 @@ public class PaperItemDisplayBoneEntity extends PaperPacketBoneEntity implements
 
     @Override
     public void setTransformationInterpolationDuration(int i) {
-        //TODO:
+        this.dataWatcher.set(EntityData.DISPLAY_DATA_TRANSFORMATION_INTERPOLATION_DURATION_ID, i);
     }
 
     @Override
     public void setPosRotInterpolationDuration(int i) {
-        //TODO:
+        this.dataWatcher.set(EntityData.DISPLAY_DATA_POS_ROT_INTERPOLATION_DURATION_ID, i);
     }
 
     @Override
     public void setViewRange(int i) {
-        //TODO:
+        this.dataWatcher.set(EntityData.DISPLAY_DATA_VIEW_RANGE_ID, (float) i);
     }
 
     @Override
     public void setFixedContext() {
         this.dataWatcher.set(EntityData.ITEM_DISPLAY_DATA_ITEM_DISPLAY_ID, ItemDisplayContext.FIXED.getId());
-
     }
 }
