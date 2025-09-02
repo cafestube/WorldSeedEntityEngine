@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class DataWatcher {
@@ -15,6 +16,7 @@ public class DataWatcher {
     private final Map<Integer, Item<?>> data = new Int2ObjectOpenHashMap<>();
 
     private final Consumer<List<SynchedEntityData.DataValue<?>>> updateHandler;
+    private boolean notifyAboutChanges = true;
 
     public DataWatcher(Consumer<List<SynchedEntityData.DataValue<?>>> updateHandler) {
         this.updateHandler = updateHandler;
@@ -26,11 +28,14 @@ public class DataWatcher {
             item = new Item<>(accessor, value);
             data.put(accessor.id(), item);
         } else {
+            if(Objects.equals(item.value, value)) return;
             item.value = value;
             item.dirty = true;
         }
 
-        updateHandler.accept(packDirty());
+        if(notifyAboutChanges) {
+            updateHandler.accept(packDirty());
+        }
     }
 
     public <T> @Nullable T get(EntityDataAccessor<T> accessor) {
@@ -59,6 +64,17 @@ public class DataWatcher {
             }
         }
         return list;
+    }
+
+    public void setNotifyAboutChanges(boolean b) {
+        this.notifyAboutChanges = b;
+
+        if(notifyAboutChanges) {
+            List<SynchedEntityData.DataValue<?>> dataValues = packDirty();
+            if(!dataValues.isEmpty()) {
+                updateHandler.accept(dataValues);
+            }
+        }
     }
 
     private static class Item<T> {

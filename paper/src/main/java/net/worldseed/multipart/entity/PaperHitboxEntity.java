@@ -83,4 +83,7 @@ public class PaperHitboxEntity implements HitboxEntity<Player> {
     public double getDistanceSquared(Pos newPos) {
         return entity.getBukkitEntity().getLocation().distanceSquared(PositionConversion.asPaper(this.model.getWorld(), newPos));
     }
+
+    @Override
+    public void setNotifyAboutChanges(boolean b) {}
 }

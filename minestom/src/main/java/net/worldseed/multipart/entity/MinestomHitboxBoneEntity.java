@@ -37,6 +37,8 @@ public class MinestomHitboxBoneEntity extends MinestomBoneEntity implements Hitb
     @Override
     public void setSize(double sizeX, double sizeY) {
         InteractionMeta meta = (InteractionMeta) this.getEntityMeta();
+        if(meta.getWidth() == sizeX && meta.getHeight() == sizeY)
+            return;
         meta.setHeight((float) sizeY);
         meta.setWidth((float) sizeX);
 

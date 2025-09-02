@@ -29,12 +29,12 @@ public class PaperItemDisplayBoneEntity extends PaperPacketBoneEntity implements
 
     @Override
     public void setGlowing(RGBLike color) {
-
+        //TODO:
     }
 
     @Override
     public void setGlowing(Player player, RGBLike color) {
-
+        //TODO:
     }
 
     @Override
@@ -71,17 +71,17 @@ public class PaperItemDisplayBoneEntity extends PaperPacketBoneEntity implements
 
     @Override
     public void setTransformationInterpolationDuration(int i) {
-
+        //TODO:
     }
 
     @Override
     public void setPosRotInterpolationDuration(int i) {
-
+        //TODO:
     }
 
     @Override
     public void setViewRange(int i) {
-
+        //TODO:
     }
 
     @Override

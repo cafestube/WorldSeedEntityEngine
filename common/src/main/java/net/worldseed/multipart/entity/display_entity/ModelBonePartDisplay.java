@@ -151,14 +151,12 @@ public class ModelBonePartDisplay<TViewer> extends ModelBoneImpl<TViewer> implem
 
             Quaternion q = calculateFinalAngle(new Quaternion(getPropogatedRotation()));
 
-//                meta.setNotifyAboutChanges(false);
-            //TODO: Notify changes?
-
+            display.setNotifyAboutChanges(false);
             display.setTransformationInterpolationStartDelta(0);
             display.setScale(new Vec(scale.x() * this.scale, scale.y() * this.scale, scale.z() * this.scale));
             display.setRightRotation(q);
             display.setTranslation(position);
-//                meta.setNotifyAboutChanges(true);
+            display.setNotifyAboutChanges(true);
 
             attached.forEach(model -> {
                 model.setPosition(this.model.getPosition().add(calculateGlobalRotation(position)));

@@ -47,6 +47,11 @@ public class PaperPacketBoneEntity implements BoneEntity<Player> {
     }
 
     @Override
+    public void setNotifyAboutChanges(boolean b) {
+        this.dataWatcher.setNotifyAboutChanges(b);
+    }
+
+    @Override
     public int getEntityId() {
         return entityId;
     }

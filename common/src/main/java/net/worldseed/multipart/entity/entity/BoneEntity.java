@@ -26,4 +26,6 @@ public interface BoneEntity<TViewer> {
 
     double getDistanceSquared(Pos newPos);
 
+    void setNotifyAboutChanges(boolean b);
+
 }

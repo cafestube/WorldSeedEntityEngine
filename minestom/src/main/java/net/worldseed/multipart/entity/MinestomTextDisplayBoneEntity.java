@@ -10,6 +10,8 @@ import net.worldseed.multipart.PositionConversion;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.entity.entity.TextDisplayBoneEntity;
 
+import java.util.Objects;
+
 public class MinestomTextDisplayBoneEntity extends MinestomBoneEntity implements TextDisplayBoneEntity<Player> {
 
     public MinestomTextDisplayBoneEntity(MinestomModel model, String name) {
@@ -22,6 +24,7 @@ public class MinestomTextDisplayBoneEntity extends MinestomBoneEntity implements
     @Override
     public void setText(Component text) {
         var meta = (TextDisplayMeta) this.getEntityMeta();
+        if(Objects.equals(meta.getText(), text)) return;
         meta.setText(text);
     }
 
@@ -34,6 +37,8 @@ public class MinestomTextDisplayBoneEntity extends MinestomBoneEntity implements
     @Override
     public void setTranslation(Pos position) {
         var meta = (TextDisplayMeta) this.getEntityMeta();
-        meta.setTranslation(PositionConversion.asMinestom(position));
+        var translation = PositionConversion.asMinestom(position);
+        if(Objects.equals(meta.getTranslation(), translation)) return;
+        meta.setTranslation(translation);
     }
 }

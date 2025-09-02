@@ -93,4 +93,9 @@ public class MinestomBoneEntity extends LivingEntity implements BoneEntity<Playe
     public double getDistanceSquared(net.worldseed.multipart.math.Pos newPos) {
         return this.getPosition().distanceSquared(PositionConversion.asMinestom(newPos));
     }
+
+    @Override
+    public void setNotifyAboutChanges(boolean b) {
+        this.metadata.setNotifyAboutChanges(b);
+    }
 }

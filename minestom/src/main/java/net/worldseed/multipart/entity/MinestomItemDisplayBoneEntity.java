@@ -14,8 +14,10 @@ import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.entity.entity.ItemDisplayBoneEntity;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class MinestomItemDisplayBoneEntity extends MinestomBoneEntity implements ItemDisplayBoneEntity<Player> {
 
@@ -35,6 +37,8 @@ public class MinestomItemDisplayBoneEntity extends MinestomBoneEntity implements
         rgb |= color.blue();
 
         var meta = (ItemDisplayMeta) this.getEntityMeta();
+        if(meta.isHasGlowingEffect() && Objects.equals(meta.getGlowColorOverride(), rgb)) return;
+
         meta.setHasGlowingEffect(true);
         meta.setGlowColorOverride(rgb);
     }
@@ -62,6 +66,7 @@ public class MinestomItemDisplayBoneEntity extends MinestomBoneEntity implements
     @Override
     public void clearItem() {
         var meta = (ItemDisplayMeta) this.getEntityMeta();
+        if(meta.getItemStack().isAir()) return;
         meta.setItemStack(ItemStack.AIR);
     }
 
@@ -69,6 +74,7 @@ public class MinestomItemDisplayBoneEntity extends MinestomBoneEntity implements
     public void setItemState(String state) {
         if (this.items.containsKey(state)) {
             var meta = (ItemDisplayMeta) this.getEntityMeta();
+            if(Objects.equals(meta.getItemStack(), this.items.get(state))) return;
             meta.setItemStack(this.items.get(state));
         }
     }
@@ -76,48 +82,59 @@ public class MinestomItemDisplayBoneEntity extends MinestomBoneEntity implements
     @Override
     public void setTransformationInterpolationStartDelta(int i) {
         var meta = (ItemDisplayMeta) this.getEntityMeta();
+        if(meta.getTransformationInterpolationStartDelta() == i) return;
         meta.setTransformationInterpolationStartDelta(i);
     }
 
     @Override
     public void setScale(Vec vec) {
         var meta = (ItemDisplayMeta) this.getEntityMeta();
-        meta.setScale(PositionConversion.asMinestom(vec));
+        var vector = PositionConversion.asMinestom(vec);
+        if(Objects.equals(meta.getScale(), vector)) return;
+        meta.setScale(vector);
     }
 
     @Override
     public void setRightRotation(Quaternion quaternion) {
         var meta = (ItemDisplayMeta) this.getEntityMeta();
-        meta.setRightRotation(new float[]{(float) quaternion.x(), (float) quaternion.y(), (float) quaternion.z(), (float) quaternion.w()});
+        float[] floats = {(float) quaternion.x(), (float) quaternion.y(), (float) quaternion.z(), (float) quaternion.w()};
+        if(Arrays.equals(meta.getRightRotation(), floats)) return;
+        meta.setRightRotation(floats);
     }
 
     @Override
     public void setTranslation(Point position) {
         var meta = (ItemDisplayMeta) this.getEntityMeta();
-        meta.setTranslation(PositionConversion.asMinestom(position));
+        var pos = PositionConversion.asMinestom(position);
+        if(Objects.equals(meta.getTranslation(), pos)) return;
+        meta.setTranslation(pos);
     }
 
     @Override
     public void setTransformationInterpolationDuration(int i) {
         var meta = (ItemDisplayMeta) this.getEntityMeta();
+        if(meta.getTransformationInterpolationDuration() == i) return;
         meta.setTransformationInterpolationDuration(i);
     }
 
     @Override
     public void setPosRotInterpolationDuration(int i) {
         var meta = (ItemDisplayMeta) this.getEntityMeta();
+        if(meta.getPosRotInterpolationDuration() == i) return;
         meta.setPosRotInterpolationDuration(i);
     }
 
     @Override
     public void setViewRange(int i) {
         var meta = (ItemDisplayMeta) this.getEntityMeta();
+        if(meta.getViewRange() == i) return;
         meta.setViewRange(i);
     }
 
     @Override
     public void setFixedContext() {
         var meta = (ItemDisplayMeta) this.getEntityMeta();
+        if(meta.getDisplayContext() == ItemDisplayMeta.DisplayContext.FIXED) return;
         meta.setDisplayContext(ItemDisplayMeta.DisplayContext.FIXED);
     }
 }
