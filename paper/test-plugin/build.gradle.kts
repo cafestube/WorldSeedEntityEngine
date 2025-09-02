@@ -5,6 +5,7 @@ plugins {
     id("xyz.jpenilla.run-paper") version "3.0.0-beta.1" // Adds runServer and runMojangMappedServer tasks for testing
     id("xyz.jpenilla.resource-factory-bukkit-convention") version "1.3.0" // Generates plugin.yml based on the Gradle config
     id("com.gradleup.shadow") version "9.0.2"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.18"
 }
 
 java {
@@ -20,6 +21,8 @@ repositories {
 }
 
 dependencies {
+    paperweight.paperDevBundle("1.21.8-R0.1-SNAPSHOT")
+
     implementation("commons-io:commons-io:2.20.0")
     implementation("org.zeroturnaround:zt-zip:1.17")
     implementation(project(":paper"))
@@ -52,7 +55,6 @@ tasks.withType(xyz.jpenilla.runpaper.task.RunServer::class) {
         vendor = JvmVendorSpec.JETBRAINS
         languageVersion = JavaLanguageVersion.of(21)
     }
-    minecraftVersion("1.21.8")
 
     jvmArgs("-XX:+AllowEnhancedClassRedefinition")
     jvmArgs("-Dcom.mojang.eula.agree=true")

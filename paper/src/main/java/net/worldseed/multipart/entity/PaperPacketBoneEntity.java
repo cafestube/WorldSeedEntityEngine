@@ -2,6 +2,7 @@ package net.worldseed.multipart.entity;
 
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.PositionMoveRotation;
 import net.minecraft.world.phys.Vec3;
 import net.worldseed.multipart.PaperModel;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class PaperPacketBoneEntity implements BoneEntity<Player> {
     private final PaperModel model;
@@ -29,7 +31,7 @@ public class PaperPacketBoneEntity implements BoneEntity<Player> {
     private final EntityType entityType;
     public final int entityId;
 
-    protected DataWatcher dataWatcher = new DataWatcher();
+    protected DataWatcher dataWatcher;
     private final UUID uuid;
     private Pos pos = new Pos(0, 0, 0, 0, 0);
     private boolean removed = false;
@@ -41,6 +43,7 @@ public class PaperPacketBoneEntity implements BoneEntity<Player> {
         this.entityType = entityType;
         this.entityId = Bukkit.getUnsafe().nextEntityId();
         this.uuid = UUID.randomUUID();
+        this.dataWatcher = new DataWatcher(dataValues -> sendPacketToViewers(new ClientboundSetEntityDataPacket(this.entityId, dataValues)));
     }
 
     @Override
@@ -80,6 +83,7 @@ public class PaperPacketBoneEntity implements BoneEntity<Player> {
             return false;
         }
 
+        viewers.add(player);
         updateNewViewer(player);
         return true;
     }

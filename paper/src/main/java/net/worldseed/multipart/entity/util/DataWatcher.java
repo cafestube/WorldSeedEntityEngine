@@ -8,10 +8,17 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class DataWatcher {
 
     private final Map<Integer, Item<?>> data = new Int2ObjectOpenHashMap<>();
+
+    private final Consumer<List<SynchedEntityData.DataValue<?>>> updateHandler;
+
+    public DataWatcher(Consumer<List<SynchedEntityData.DataValue<?>>> updateHandler) {
+        this.updateHandler = updateHandler;
+    }
 
     public <T> void set(EntityDataAccessor<T> accessor, T value) {
         @SuppressWarnings("unchecked") Item<T> item = (Item<T>) data.get(accessor.id());
@@ -22,6 +29,8 @@ public class DataWatcher {
             item.value = value;
             item.dirty = true;
         }
+
+        updateHandler.accept(packDirty());
     }
 
     public <T> @Nullable T get(EntityDataAccessor<T> accessor) {
@@ -38,6 +47,17 @@ public class DataWatcher {
             list.add(value.value());
         }
 
+        return list;
+    }
+
+    public List<SynchedEntityData.DataValue<?>> packDirty() {
+        List<SynchedEntityData.DataValue<?>> list = new ArrayList<>(this.data.size());
+        for (Item<?> value : this.data.values()) {
+            if (value.dirty) {
+                list.add(value.value());
+                value.dirty = false;
+            }
+        }
         return list;
     }
 
