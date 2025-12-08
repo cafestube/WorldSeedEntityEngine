@@ -2,41 +2,23 @@ package net.worldseed.resourcepack.multipart.generator;
 
 import net.worldseed.resourcepack.PackBuilder;
 import net.worldseed.resourcepack.math.Vec;
+import net.worldseed.resourcepack.multipart.parser.BlockBenchParser;
 
 import javax.json.*;
 import java.util.*;
 
 public class GeoGenerator {
-    private static List<JsonObject> parseRecursive(JsonObject obj, Map<String, JsonObject> cubeMap, Map<String, JsonObject> locators, Map<String, JsonObject> nullObjects, String parent) {
+    private static List<JsonObject> getBonesRecursive(BlockBenchParser.ModelOutliner modelOutliner, Map<String, JsonObject> cubeMap, Map<String, JsonObject> locators, Map<String, JsonObject> nullObjects, String parent) {
         List<JsonObject> res = new ArrayList<>();
-        float scale = 0.25f;
-
-        String name = obj.getString("name");
-        JsonArray pivot = obj.getJsonArray("origin");
-        pivot = Json.createArrayBuilder()
-                .add(-pivot.getJsonNumber(0).doubleValue() * scale)
-                .add(pivot.getJsonNumber(1).doubleValue() * scale)
-                .add(pivot.getJsonNumber(2).doubleValue() * scale)
-                .build();
 
         JsonArrayBuilder cubes = Json.createArrayBuilder();
 
-        JsonArray rotation = obj.getJsonArray("rotation");
-        if (rotation == null) {
-            rotation = Json.createArrayBuilder().add(0).add(0).add(0).build();
-        } else {
-            rotation = Json.createArrayBuilder()
-                    .add(-rotation.getJsonNumber(0).doubleValue())
-                    .add(-rotation.getJsonNumber(1).doubleValue())
-                    .add(rotation.getJsonNumber(2).doubleValue())
-                    .build();
-        }
+        for (BlockBenchParser.OutlinerChild child : modelOutliner.children()) {
+            if(child instanceof BlockBenchParser.ModelOutliner outliner) {
+                res.addAll(getBonesRecursive(outliner, cubeMap, locators, nullObjects, outliner.group().name()));
+            } else if(child instanceof BlockBenchParser.CubeRef(String uuid)) {
 
-        for (JsonValue child : obj.getJsonArray("children")) {
-            if (child.getValueType() == JsonValue.ValueType.OBJECT) {
-                res.addAll(parseRecursive(child.asJsonObject(), cubeMap, locators, nullObjects, name));
-            } else if (child.getValueType() == JsonValue.ValueType.STRING) {
-                JsonObject cube = cubeMap.get(child.toString());
+                JsonObject cube = cubeMap.get(uuid);
                 if (cube == null) continue;
 
                 var cubeRotation = new Vec(-cube.getJsonArray("rotation").getJsonNumber(0).doubleValue(), -cube.getJsonArray("rotation").getJsonNumber(1).doubleValue(), cube.getJsonArray("rotation").getJsonNumber(2).doubleValue());
@@ -47,18 +29,19 @@ public class GeoGenerator {
                 if (cubeRotation.z() != 0) rotationCount++;
 
                 // Minecraft doesnt support more than one rotation per cube, so we need to fix it
+                //TODO: 1.21.11 might remove the need for this?
                 if (rotationCount > 1) {
                     JsonObjectBuilder clonedCube = Json.createObjectBuilder(cube)
                             .add("rotation", Json.createArrayBuilder().add(0).add(0).add(0).build())
-                            .add("name", name + "_fix_" + UUID.randomUUID());
+                            .add("name", modelOutliner.group().name() + "_fix_" + UUID.randomUUID());
 
                     JsonObjectBuilder thisEl = Json.createObjectBuilder()
-                            .add("name", name + "_fix_" + UUID.randomUUID())
+                            .add("name", modelOutliner.group().name() + "_fix_" + UUID.randomUUID())
                             .add("pivot", cube.getJsonArray("pivot"))
                             .add("rotation", cube.getJsonArray("rotation"))
                             .add("cubes", Json.createArrayBuilder().add(clonedCube));
 
-                    thisEl.add("parent", name);
+                    thisEl.add("parent", modelOutliner.group().name());
 
                     res.add(thisEl.build());
 
@@ -66,13 +49,20 @@ public class GeoGenerator {
                 }
 
                 cubes.add(cube);
+
             }
         }
 
         JsonObjectBuilder thisEl = Json.createObjectBuilder()
-                .add("name", name)
-                .add("pivot", pivot)
-                .add("rotation", rotation)
+                .add("name", modelOutliner.group().name())
+                .add("pivot", Json.createArrayBuilder()
+                        .add(modelOutliner.group().origin().x())
+                        .add(modelOutliner.group().origin().y())
+                        .add(modelOutliner.group().origin().z()))
+                .add("rotation", Json.createArrayBuilder()
+                        .add(modelOutliner.group().rotation().x())
+                        .add(modelOutliner.group().rotation().y())
+                        .add(modelOutliner.group().rotation().z()))
                 .add("cubes", cubes);
 
         if (parent != null) {
@@ -84,7 +74,7 @@ public class GeoGenerator {
         return res;
     }
 
-    public static JsonArray generate(JsonArray elements, JsonArray outliner, Map<String, TextureGenerator.TextureData> textures) {
+    public static JsonArray generate(JsonArray elements, List<BlockBenchParser.OutlinerChild> outliner, Map<String, TextureGenerator.TextureData> textures) {
         Map<String, JsonObject> blocks = new HashMap<>();
         Map<String, JsonObject> locators = new HashMap<>();
         Map<String, JsonObject> nullObjects = new HashMap<>();
@@ -99,20 +89,21 @@ public class GeoGenerator {
             }
 
             String elType = el.getString("type", "cube");
-            if (elType.equals("cube")) {
-                readCube(el, blocks, scale, inflate, textures);
-            } else if (elType.equals("locator")) {
-                locators.put(el.getString("uuid"), el);
-            } else if (elType.equals("null_object")) {
-                nullObjects.put(el.getString("uuid"), el);
+            switch (elType) {
+                case "cube" -> readCube(el, blocks, scale, inflate, textures);
+                case "locator" -> locators.put(el.getString("uuid"), el);
+                case "null_object" -> nullObjects.put(el.getString("uuid"), el);
             }
         }
 
         List<JsonObject> bonesList = new ArrayList<>();
+
+
         for (var outline : outliner) {
-            if (outline instanceof JsonObject) {
-                JsonObject el = outline.asJsonObject();
-                bonesList.addAll(parseRecursive(el, blocks, locators, nullObjects, null));
+            if(outline instanceof BlockBenchParser.CubeRef(String uuid)) {
+                bonesList.add(blocks.get(uuid));
+            } else if(outline instanceof BlockBenchParser.ModelOutliner modelOutline) {
+                bonesList.addAll(getBonesRecursive(modelOutline, blocks, locators, nullObjects, null));
             }
         }
 

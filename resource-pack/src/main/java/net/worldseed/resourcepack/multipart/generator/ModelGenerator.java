@@ -2,12 +2,14 @@ package net.worldseed.resourcepack.multipart.generator;
 
 import net.worldseed.resourcepack.PackBuilder;
 import net.worldseed.resourcepack.multipart.AdditionalStates;
+import net.worldseed.resourcepack.multipart.parser.BlockBenchParser;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ModelGenerator {
@@ -32,7 +34,9 @@ public class ModelGenerator {
         }
 
         Map<String, TextureGenerator.TextureData> textures = TextureGenerator.generate(model.getJsonArray("textures"), mcmetas, width, height);
-        JsonArray bones = GeoGenerator.generate(model.getJsonArray("elements"), model.getJsonArray("outliner"), textures);
+
+        List<BlockBenchParser.OutlinerChild> outlinerChildren = BlockBenchParser.parseModelOutliners(model);
+        JsonArray bones = GeoGenerator.generate(model.getJsonArray("elements"), outlinerChildren, textures);
 
         JsonObject description = Json.createObjectBuilder()
                 .add("identifier", "geometry.unknown")

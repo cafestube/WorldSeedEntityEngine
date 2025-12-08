@@ -188,6 +188,9 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
 
                 if (predicate.test(name)) {
                     var modelBonePart = supplier.apply(new ModelBoneInfo(name, pivotPos, boneRotation, bone.getAsJsonObject().getAsJsonArray("cubes"), scale));
+                    if(modelBonePart == null) {
+                        throw new IllegalStateException("Bone supplier for predicate matched but returned null for bone: " + name);
+                    }
 
                     additionalBones.addAll(modelBonePart.getChildren());
                     parts.put(name, modelBonePart);
