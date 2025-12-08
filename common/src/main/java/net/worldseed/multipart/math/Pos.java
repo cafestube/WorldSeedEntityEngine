@@ -43,6 +43,13 @@ public record Pos(double x, double y, double z, float yaw, float pitch) implemen
     }
 
     @Override
+    public Pos lerp(Point vec, double percent) {
+        return new Pos(x + (percent * (vec.x() - x)),
+                y + (percent * (vec.y() - y)),
+                z + (percent * (vec.z() - z)), yaw, pitch);
+    }
+
+    @Override
     public Pos sub(Point value) {
         return new Pos(this.x - value.x(), this.y - value.y(), this.z - value.z(), yaw, pitch);
     }

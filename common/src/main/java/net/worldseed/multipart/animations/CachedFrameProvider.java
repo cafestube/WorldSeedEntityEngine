@@ -5,18 +5,20 @@ import net.worldseed.multipart.math.Vec;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
+//TODO: Does full precomputation of frames really make sense? Maybe switch to the computed one.
 public class CachedFrameProvider implements FrameProvider {
     private final Map<Short, Point> interpolationCache;
     private final AnimationLoader.AnimationType type;
 
-    public CachedFrameProvider(int length, LinkedHashMap<Double, BoneAnimationImpl.PointInterpolation> transform, AnimationLoader.AnimationType type) {
+    public CachedFrameProvider(int length, List<BoneAnimationImpl.KeyFrame> transform, AnimationLoader.AnimationType type) {
         this.interpolationCache = calculateAllTransforms(length, transform, type);
         this.type = type;
     }
 
-    private Map<Short, Point> calculateAllTransforms(double animationTime, LinkedHashMap<Double, BoneAnimationImpl.PointInterpolation> t, AnimationLoader.AnimationType type) {
+    private Map<Short, Point> calculateAllTransforms(double animationTime, List<BoneAnimationImpl.KeyFrame> t, AnimationLoader.AnimationType type) {
         Map<Short, Point> transform = new HashMap<>();
         int ticks = (int) (animationTime * 20);
 
@@ -29,15 +31,15 @@ public class CachedFrameProvider implements FrameProvider {
         return transform;
     }
 
-    private Point calculateTransform(int tick, LinkedHashMap<Double, BoneAnimationImpl.PointInterpolation> transform, AnimationLoader.AnimationType type, double length) {
+    private Point calculateTransform(int tick, List<BoneAnimationImpl.KeyFrame> transforms, AnimationLoader.AnimationType type, double length) {
         double toInterpolate = tick * 50.0 / 1000;
 
         if (type == AnimationLoader.AnimationType.ROTATION) {
-            return Interpolator.interpolateRotation(toInterpolate, transform, length).mul(RotationMul);
+            return Interpolation.interpolate(toInterpolate, transforms, length, Vec.ZERO).mul(RotationMul);
         } else if (type == AnimationLoader.AnimationType.SCALE) {
-            return Interpolator.interpolateScale(toInterpolate, transform, length);
+            return Interpolation.interpolate(toInterpolate, transforms, length, Vec.ONE);
         } else if (type == AnimationLoader.AnimationType.TRANSLATION) {
-            return Interpolator.interpolateTranslation(toInterpolate, transform, length).mul(TranslationMul);
+            return Interpolation.interpolate(toInterpolate, transforms, length, Vec.ZERO).mul(TranslationMul);
         }
 
         return Vec.ZERO;

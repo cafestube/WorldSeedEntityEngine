@@ -9,9 +9,7 @@ import net.worldseed.multipart.mql.MQLPoint;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class AnimationLoader {
     protected static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
@@ -80,68 +78,57 @@ public class AnimationLoader {
     }
 
     private static FrameProvider computeMathTransforms(int length, JsonElement keyframes, AnimationType type) {
-        LinkedHashMap<Double, BoneAnimationImpl.PointInterpolation> transform = new LinkedHashMap<>();
-
-        try {
-            for (Map.Entry<String, JsonElement> entry : keyframes.getAsJsonObject().entrySet()) {
-                double time = Double.parseDouble(entry.getKey());
-                MQLPoint point = PositionParser.getMQLPos(entry.getValue().getAsJsonObject().get("post").getAsJsonArray().get(0).getAsJsonObject()).orElse(MQLPoint.ZERO);
-                String lerp = entry.getValue().getAsJsonObject().get("lerp_mode").getAsString();
-                transform.put(time, new BoneAnimationImpl.PointInterpolation(point, lerp));
-            }
-        } catch (IllegalStateException | InvocationTargetException | NoSuchMethodException |
-                 InstantiationException | IllegalAccessException e) {
-            try {
-                e.printStackTrace();
-                MQLPoint point = PositionParser.getMQLPos(keyframes.getAsJsonObject()).orElse(MQLPoint.ZERO);
-                transform.put(0.0, new BoneAnimationImpl.PointInterpolation(point, "linear"));
-            } catch (Exception e2) {
-                e.printStackTrace();
-            }
-        }
-
+        List<BoneAnimationImpl.KeyFrame> transform = parseKeyFrames(keyframes);
         return new ComputedFrameProvider(transform, type, length);
     }
 
     private static FrameProvider computeCachedTransforms(int length, JsonElement keyframes, AnimationType type) {
-        LinkedHashMap<Double, BoneAnimationImpl.PointInterpolation> transform = new LinkedHashMap<>();
+        List<BoneAnimationImpl.KeyFrame> transform = parseKeyFrames(keyframes);
+        return new CachedFrameProvider(length, transform, type);
+    }
+
+    private static List<BoneAnimationImpl.KeyFrame> parseKeyFrames(JsonElement keyframes) {
+        JsonObject keyFrameObj = keyframes.getAsJsonObject();
+        List<BoneAnimationImpl.KeyFrame> transform = new ArrayList<>(keyFrameObj.size());
 
         try {
-            for (Map.Entry<String, JsonElement> entry : keyframes.getAsJsonObject().entrySet()) {
+            for (Map.Entry<String, JsonElement> entry : keyFrameObj.entrySet()) {
                 double time = Double.parseDouble(entry.getKey());
 
                 if (entry.getValue() instanceof JsonObject obj) {
+                    Interpolation lerp = Interpolation.fromBedrockName(entry.getValue().getAsJsonObject().get("lerp_mode").getAsString());
+
                     if (obj.get("post") instanceof JsonArray arr) {
                         if (arr.get(0) instanceof JsonObject) {
                             MQLPoint point = PositionParser.getMQLPos(obj.get("post").getAsJsonArray().get(0)).orElse(MQLPoint.ZERO);
-                            String lerp = entry.getValue().getAsJsonObject().get("lerp_mode").getAsString();
-                            if (lerp == null) lerp = "linear";
-                            transform.put(time, new BoneAnimationImpl.PointInterpolation(point, lerp));
+                            transform.add(new BoneAnimationImpl.KeyFrame(time, point, lerp));
                         } else {
                             MQLPoint point = PositionParser.getMQLPos(obj.get("post").getAsJsonArray()).orElse(MQLPoint.ZERO);
-                            String lerp = entry.getValue().getAsJsonObject().get("lerp_mode").getAsString();
-                            if (lerp == null) lerp = "linear";
-                            transform.put(time, new BoneAnimationImpl.PointInterpolation(point, lerp));
+                            transform.add(new BoneAnimationImpl.KeyFrame(time, point, lerp));
                         }
                     }
                 } else if (entry.getValue() instanceof JsonArray arr) {
                     MQLPoint point = PositionParser.getMQLPos(arr).orElse(MQLPoint.ZERO);
-                    transform.put(time, new BoneAnimationImpl.PointInterpolation(point, "linear"));
+                    transform.add(new BoneAnimationImpl.KeyFrame(time, point, Interpolation.LINEAR));
                 }
             }
         } catch (IllegalStateException | InvocationTargetException | NoSuchMethodException |
                  InstantiationException | IllegalAccessException e) {
+
             try {
                 e.printStackTrace();
-                MQLPoint point = PositionParser.getMQLPos(keyframes.getAsJsonObject()).orElse(MQLPoint.ZERO);
-                transform.put(0.0, new BoneAnimationImpl.PointInterpolation(point, "linear"));
+                MQLPoint point = PositionParser.getMQLPos(keyFrameObj).orElse(MQLPoint.ZERO);
+                transform.add(new BoneAnimationImpl.KeyFrame(0.0, point, Interpolation.LINEAR));
             } catch (Exception e2) {
                 e.printStackTrace();
             }
+
         }
 
-        return new CachedFrameProvider(length, transform, type);
+        Collections.sort(transform);
+        return transform;
     }
+
 
     public enum AnimationType {
         ROTATION, SCALE, TRANSLATION

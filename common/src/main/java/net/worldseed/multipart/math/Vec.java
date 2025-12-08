@@ -2,8 +2,8 @@ package net.worldseed.multipart.math;
 
 public record Vec(double x, double y, double z) implements Point {
 
-    public static final Point ZERO = new Vec(0,0,0);
-    public static final Point ONE = new Vec(1, 1, 1);
+    public static final Vec ZERO = new Vec(0,0,0);
+    public static final Vec ONE = new Vec(1, 1, 1);
 
     public static Vec fromPoint(Point point) {
         if(point instanceof Vec vec) {
@@ -48,10 +48,11 @@ public record Vec(double x, double y, double z) implements Point {
         return new Vec(this.x - x, this.y - y, this.z - z);
     }
 
-    public Vec lerp(Vec vec, double percent) {
-        return new Vec(x + (percent * (vec.x - x)),
-                y + (percent * (vec.y - y)),
-                z + (percent * (vec.z - z)));
+    @Override
+    public Vec lerp(Point vec, double percent) {
+        return new Vec(x + (percent * (vec.x() - x)),
+                y + (percent * (vec.y() - y)),
+                z + (percent * (vec.z() - z)));
     }
 
     @Override

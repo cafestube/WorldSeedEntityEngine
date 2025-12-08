@@ -5,6 +5,7 @@ import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.entity.ModelBone;
 import net.worldseed.multipart.mql.MQLPoint;
+import org.jetbrains.annotations.NotNull;
 
 public class BoneAnimationImpl implements BoneAnimation {
     private final AnimationLoader.AnimationType type;
@@ -92,6 +93,12 @@ public class BoneAnimationImpl implements BoneAnimation {
         return tick;
     }
 
-    record PointInterpolation(MQLPoint p, String lerp) {
+    public record KeyFrame(double time, MQLPoint p, Interpolation lerp) implements Comparable<KeyFrame> {
+
+        @Override
+        public int compareTo(@NotNull BoneAnimationImpl.KeyFrame o) {
+            return Double.compare(time, o.time);
+        }
+
     }
 }

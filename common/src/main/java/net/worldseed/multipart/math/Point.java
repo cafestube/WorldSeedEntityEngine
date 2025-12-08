@@ -34,4 +34,5 @@ public interface Point {
 
     Point withZ(double z);
 
+    Point lerp(Point target, double delta);
 }
