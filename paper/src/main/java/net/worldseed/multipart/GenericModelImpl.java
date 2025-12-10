@@ -4,8 +4,10 @@ import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.events.AnimationCompleteEvent;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.entity.PaperRootBoneEntity;
+import net.worldseed.multipart.tracker.ModelTracker;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +17,8 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
 
     protected World world;
     protected JavaPlugin plugin;
+    protected @Nullable ModelTracker modelTracker;
+    protected @Nullable Entity boundEntity;
 
     public GenericModelImpl(ModelRegistry registry, String modelId, JavaPlugin plugin) {
         super(registry, modelId);
@@ -79,6 +83,24 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
     @Override
     public JavaPlugin getPlugin() {
         return this.plugin;
+    }
+
+    @Override
+    public @Nullable ModelTracker getModelTracker() {
+        return this.modelTracker;
+    }
+
+    public void setModelTracker(@Nullable ModelTracker modelTracker) {
+        this.modelTracker = modelTracker;
+    }
+
+    @Override
+    public @Nullable Entity getBoundEntity() {
+        return this.boundEntity;
+    }
+
+    public void bindToEntity(@Nullable Entity entity) {
+        this.boundEntity = entity;
     }
 
 }
