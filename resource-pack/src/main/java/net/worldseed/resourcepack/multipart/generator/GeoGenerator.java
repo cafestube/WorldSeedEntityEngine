@@ -207,9 +207,9 @@ public class GeoGenerator {
             var n = entry.getValue().asJsonObject().get("texture");
             if (n != null && n.getValueType() != JsonValue.ValueType.NULL) {
                 int nInt = ((JsonNumber) n).intValue();
-                if (textures.values().size() <= nInt) texture = "#" + nInt;
+                if (textures.size() <= nInt) texture = "#" + nInt;
                 else texture = textures.values().toArray(new TextureGenerator.TextureData[0])[nInt].id();
-            }
+            } else continue;
 
             JsonObjectBuilder faceParsed = Json.createObjectBuilder()
                     .add("uv", from)

@@ -417,11 +417,13 @@ public class ModelParser {
         for (TextureFace face : TextureFace.values()) {
             String faceName = face.name().toLowerCase(Locale.ROOT);
 
-            JsonObject north = uv.getJsonObject(faceName);
-            JsonArray north_uv = north.getJsonArray("uv");
-            JsonArray north_size = north.getJsonArray("uv_size");
-            String texture = north.getString("texture");
-            int rotation = north.get("rotation") == null ? 0 : north.getInt("rotation");
+            JsonObject faceJson = uv.getJsonObject(faceName);
+            if(faceJson == null) continue;
+
+            JsonArray north_uv = faceJson.getJsonArray("uv");
+            JsonArray north_size = faceJson.getJsonArray("uv_size");
+            String texture = faceJson.getString("texture");
+            int rotation = faceJson.get("rotation") == null ? 0 : faceJson.getInt("rotation");
 
             UV uvNorth = new UV(north_uv.getJsonNumber(0).doubleValue(), north_uv.getJsonNumber(1).doubleValue(), north_size.getJsonNumber(0).doubleValue(), north_size.getJsonNumber(1).doubleValue(), texture, rotation);
             res.put(face, uvNorth);
