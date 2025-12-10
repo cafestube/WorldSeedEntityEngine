@@ -1,6 +1,7 @@
 package net.worldseed.multipart;
 
 import net.worldseed.multipart.animations.AnimationHandler;
+import net.worldseed.multipart.animations.AnimationHandlerImpl;
 import net.worldseed.multipart.events.AnimationCompleteEvent;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.entity.PaperRootBoneEntity;
@@ -12,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 public class GenericModelImpl extends AbstractGenericModelImpl<Player> implements PaperModel {
 
@@ -19,10 +21,23 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
     protected JavaPlugin plugin;
     protected @Nullable ModelTracker modelTracker;
     protected @Nullable Entity boundEntity;
+    private AnimationHandler animationHandler;
 
     public GenericModelImpl(ModelRegistry registry, String modelId, JavaPlugin plugin) {
         super(registry, modelId);
         this.plugin = plugin;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        this.animationHandler.destroy();
+    }
+
+    @Override
+    public AnimationHandler getAnimationHandler() {
+        return animationHandler;
     }
 
     @Override
@@ -35,7 +50,7 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
         return (PaperRootBoneEntity) super.getModelRoot();
     }
 
-    public void setPosition(Location position) {
+    public void setPosition(@NonNull Location position) {
         setPosition(PositionConversion.fromPaper(position));
     }
 
@@ -63,7 +78,17 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
 
     public void init(@Nullable World instance, @NotNull Pos position, float scale) {
         this.world = instance;
+        init(position, scale);
+    }
+
+    @Override
+    protected void init(@NotNull Pos position, float scale) {
         super.init(position, scale);
+
+        if(this.animationHandler != null) {
+            this.animationHandler.destroy();
+        }
+        this.animationHandler = new AnimationHandlerImpl<>(this);
     }
 
     protected void registerBoneSuppliers() {
@@ -99,8 +124,9 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
         return this.boundEntity;
     }
 
-    public void bindToEntity(@Nullable Entity entity) {
-        this.boundEntity = entity;
+    @Override
+    public void setBoundEntity(@Nullable Entity boundEntity) {
+        this.boundEntity = boundEntity;
     }
 
 }

@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import net.kyori.adventure.resource.ResourcePackInfo;
+import net.worldseed.multipart.ModelEngine;
 import net.worldseed.multipart.ModelRegistry;
 import net.worldseed.multipart.data.ModelProvider;
 import net.worldseed.paper.test.profiler.ModelProfiler;
@@ -58,8 +59,10 @@ public class TestPlugin extends JavaPlugin implements Listener {
 
         registry = new ModelRegistry("worldseed", ModelProvider.file(getDataPath().resolve("model_mappings.json"), getDataPath().resolve("models")));
 
+        ModelEngine modelEngine = new ModelEngine(this, registry, null);
+
         getServer().getPluginManager().registerEvents(this, this);
-        registerCommand("spawn", new SpawnCommand(registry));
+        registerCommand("spawn", new SpawnCommand(modelEngine));
 
         new ModelProfiler(this).register();
     }

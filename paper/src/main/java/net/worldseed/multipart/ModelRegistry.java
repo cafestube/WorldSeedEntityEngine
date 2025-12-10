@@ -14,6 +14,7 @@ import net.worldseed.multipart.math.PositionParser;
 import net.worldseed.multipart.persistance.ModelPersistenceHandler;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,26 +34,15 @@ public class ModelRegistry implements AbstractModelRegistry {
 
     private final Map<String, Map<String, AnimationData>> loadedAnimations = new HashMap<>();
     private final Map<String, JsonObject> loadedModels = new HashMap<>();
-    private final @Nullable ModelPersistenceHandler persistenceHandler;
 
-
-    public ModelRegistry(@KeyPattern.Namespace String namespace, ModelProvider geometryProvider, @Nullable ModelPersistenceHandler handler) {
+    public ModelRegistry(@KeyPattern.Namespace String namespace, ModelProvider geometryProvider) {
         this.geometryProvider = geometryProvider;
         this.namespace = namespace;
-        this.persistenceHandler = handler;
 
         if(!Key.parseableNamespace(namespace))
             throw new IllegalArgumentException("Invalid namespace: " + namespace);
 
         loadMappings();
-    }
-
-    public ModelRegistry(@KeyPattern.Namespace String namespace, ModelProvider geometryProvider) {
-        this(namespace, geometryProvider, null);
-    }
-
-    public @Nullable ModelPersistenceHandler getPersistenceHandler() {
-        return this.persistenceHandler;
     }
 
     public HashMap<String, ItemStack> getItems(String model, String name) {

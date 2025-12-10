@@ -23,6 +23,8 @@ public interface GenericModel<TViewer> {
      */
     String getId();
 
+    AnimationHandler getAnimationHandler();
+
     ModelPlatform<TViewer> getModelPlatform();
 
     AbstractModelRegistry getModelRegistry();
