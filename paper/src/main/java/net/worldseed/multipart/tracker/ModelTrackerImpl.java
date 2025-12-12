@@ -27,7 +27,7 @@ public class ModelTrackerImpl implements ModelTracker {
         for (TrackedModel trackedModel : trackedModels.values()) {
 
             for (Player viewer : trackedModel.model.getViewers()) {
-                if(viewer.getWorld() != trackedModel.model.getWorld() || distanceSquared(trackedModel.model.getPosition(), viewer.getLocation()) > 120*120) {
+                if(!viewer.isOnline() || !viewer.getWorld().equals(trackedModel.model.getWorld()) || distanceSquared(trackedModel.model.getPosition(), viewer.getLocation()) > 120*120) {
                     trackedModel.model.removeViewer(viewer);
                 }
             }
