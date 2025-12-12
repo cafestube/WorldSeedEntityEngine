@@ -12,6 +12,7 @@ import net.minestom.server.event.EventNode;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.BlockFace;
 import net.worldseed.multipart.animations.AnimationHandler;
+import net.worldseed.multipart.animations.AnimationHandlerImpl;
 import net.worldseed.multipart.events.AnimationCompleteEvent;
 import net.worldseed.multipart.events.ModelEvent;
 import net.worldseed.multipart.math.Pos;
@@ -30,6 +31,7 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
 
     private final EventNode<@NotNull ModelEvent> eventNode;
     protected Instance instance;
+    private AnimationHandler animationHandler;
 
     private static final EventFilter<@NotNull ModelEvent, @NotNull MinestomModel> MODEL_FILTER = EventFilter.from(ModelEvent.class, MinestomModel.class, ModelEvent::model);
 
@@ -44,6 +46,12 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
             // Local nodes require a server process
             this.eventNode = null;
         }
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        this.animationHandler.destroy();
     }
 
     @Override
@@ -79,6 +87,11 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
     }
 
     @Override
+    public AnimationHandler getAnimationHandler() {
+        return animationHandler;
+    }
+
+    @Override
     public ModelPlatform<Player> getModelPlatform() {
         return MinestomModelPlatform.INSTANCE;
     }
@@ -95,6 +108,16 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
     public void init(@Nullable Instance instance, @NotNull Pos position, float scale) {
         this.instance = instance;
         super.init(position, scale);
+    }
+
+    @Override
+    protected void init(@NotNull Pos position, float scale) {
+        super.init(position, scale);
+
+        if(this.animationHandler != null) {
+            this.animationHandler.destroy();
+        }
+        this.animationHandler = new AnimationHandlerImpl<>(this);
     }
 
     protected void registerBoneSuppliers() {
