@@ -23,11 +23,12 @@ repositories {
     }
 }
 
+version = property("version") as String
+
 publishing {
     publications.create<MavenPublication>("maven") {
         groupId = "net.cafestube.multipart"
-        artifactId = "WorldSeedEntityEngine"
-        version = "11.3.3"
+        artifactId = "WorldSeedEntityEnginePaper"
 
         from(components["java"])
     }

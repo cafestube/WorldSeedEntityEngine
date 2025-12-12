@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "net.cafestube.multipart"
-version = "1.0.0"
+version = property("version") as String
 
 repositories {
     mavenCentral()

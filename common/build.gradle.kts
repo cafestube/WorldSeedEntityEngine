@@ -1,10 +1,11 @@
 plugins {
     id("java")
     kotlin("jvm")
+    id("maven-publish")
 }
 
-group = "org.example"
-version = "unspecified"
+group = "net.cafestube"
+version = property("version") as String
 
 repositories {
     mavenCentral()
@@ -20,6 +21,23 @@ dependencies {
 
     implementation("dev.hollowcube:molang:1.0.2")
     implementation(kotlin("stdlib-jdk8"))
+}
+
+publishing {
+    publications.create<MavenPublication>("maven") {
+        groupId = "net.cafestube.multipart"
+        artifactId = "WorldSeedEntityEngineCommon"
+
+        from(components["java"])
+    }
+
+    repositories {
+        maven {
+            name = "cafestubeRepository"
+            credentials(PasswordCredentials::class)
+            url = uri("https://repo.cafestube.net/repository/maven-public-snapshots/")
+        }
+    }
 }
 
 tasks.test {
