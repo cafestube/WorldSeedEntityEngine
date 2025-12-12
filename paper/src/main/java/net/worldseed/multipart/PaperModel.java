@@ -19,10 +19,6 @@ public interface PaperModel extends GenericModel<Player> {
         return new GenericModelImpl(registry, modelId, plugin);
     }
 
-    static PaperModel model(ModelEngine engine, String modelId) {
-        return new GenericModelImpl(engine.getModelRegistry(), modelId, engine.getPlugin());
-    }
-
     void init(@NotNull Location position);
 
     void init(@org.jetbrains.annotations.Nullable World instance, @NotNull Pos position);

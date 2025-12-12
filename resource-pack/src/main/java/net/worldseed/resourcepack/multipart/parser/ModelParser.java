@@ -92,7 +92,7 @@ public class ModelParser {
         }
     }
 
-    public static ModelEngineFiles parse(Collection<ModelGenerator.BBEntityModel> data, Path modelPathMobs) throws Exception {
+    public static ModelEngineFiles parse(String namespace, Collection<ModelGenerator.BBEntityModel> data, Path modelPathMobs) throws Exception {
         List<ModelFile> models = new ArrayList<>();
 
         index = 0;
@@ -100,7 +100,7 @@ public class ModelParser {
         mappings.clear();
 
         for (var folder : data) {
-            models.addAll(createFiles(folder, modelPathMobs));
+            models.addAll(createFiles(namespace, folder, modelPathMobs));
         }
 
         List<ItemModelFile> itemModels = new ArrayList<>();
@@ -121,7 +121,7 @@ public class ModelParser {
         return new ModelEngineFiles(mappingsToJson(), itemModels, models);
     }
 
-    private static Map<String, JsonObject> createIndividualModels(List<Bone> bones, int textureWidth, int textureHeight, ModelGenerator.BBEntityModel bbModel, JsonObject builtTextures, JsonArray textureSize, TextureState state) {
+    private static Map<String, JsonObject> createIndividualModels(String namespace, List<Bone> bones, int textureWidth, int textureHeight, ModelGenerator.BBEntityModel bbModel, JsonObject builtTextures, JsonArray textureSize, TextureState state) {
         HashMap<String, JsonObject> modelInfo = new HashMap<>();
 
         for (Bone bone : bones) {
@@ -215,7 +215,7 @@ public class ModelParser {
                         mappings.put(item.name + "/" + item.bone, new MappingEntry(new HashMap<>(), item.offset, item.diff, bbModel.id()));
 
                     mappings.get(item.name + "/" + item.bone).map.put(state.name(), item.id);
-                    entries.computeIfAbsent(bbModel.id(), s -> new ArrayList<>()).add(createEntry(item.id, bbModel.id(), state.name(), item.bone));
+                    entries.computeIfAbsent(bbModel.id(), s -> new ArrayList<>()).add(createEntry(namespace, item.id, bbModel.id(), state.name(), item.bone));
                 }
 
                 JsonObjectBuilder boneInfo = Json.createObjectBuilder();
@@ -230,12 +230,12 @@ public class ModelParser {
         return modelInfo;
     }
 
-    private static ModelFile generateModelFile(TextureState state, ModelGenerator.BBEntityModel bbModel, List<Bone> bones, JsonArray textureSize, int textureWidth, int textureHeight) throws IOException {
+    private static ModelFile generateModelFile(String namespace, TextureState state, ModelGenerator.BBEntityModel bbModel, List<Bone> bones, JsonArray textureSize, int textureWidth, int textureHeight) throws IOException {
         Map<String, byte[]> textures = new HashMap<>();
 
         JsonObjectBuilder modelTextureJson = Json.createObjectBuilder();
         for (Map.Entry<String, TextureGenerator.TextureData> t : bbModel.textures().entrySet()) {
-            modelTextureJson.add(t.getKey(), "worldseed:mobs/" + bbModel.id() + "/" + state.name() + "/" + t.getKey());
+            modelTextureJson.add(t.getKey(), namespace + ":mobs/" + bbModel.id() + "/" + state.name() + "/" + t.getKey());
 
             byte[] textureByte = t.getValue().value();
             BufferedImage texture = ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(textureByte)));
@@ -246,12 +246,12 @@ public class ModelParser {
             textures.put(t.getKey(), baos.toByteArray());
         }
 
-        Map<String, JsonObject> modelInfo = createIndividualModels(bones, textureWidth, textureHeight, bbModel, modelTextureJson.build(), textureSize, state);
+        Map<String, JsonObject> modelInfo = createIndividualModels(namespace, bones, textureWidth, textureHeight, bbModel, modelTextureJson.build(), textureSize, state);
 
         return new ModelFile(modelInfo, textures, bbModel.id(), state, textureWidth, textureHeight);
     }
 
-    private static List<ModelFile> createFiles(ModelGenerator.BBEntityModel bbModel, Path modelPathMobs) throws Exception {
+    private static List<ModelFile> createFiles(String namespace, ModelGenerator.BBEntityModel bbModel, Path modelPathMobs) throws Exception {
         List<ModelFile> res = new ArrayList<>();
 
         int textureHeight = 16;
@@ -307,7 +307,7 @@ public class ModelParser {
         }
 
         for (var state : List.of(TextureState.HIT, TextureState.NORMAL)) {
-            var modelFile = generateModelFile(state, bbModel, bones, textureSize, textureWidth, textureHeight);
+            var modelFile = generateModelFile(namespace, state, bbModel, bones, textureSize, textureWidth, textureHeight);
             res.add(modelFile);
 
             for (var substate : bbModel.additionalStates().states.entrySet()) {
@@ -315,14 +315,14 @@ public class ModelParser {
                     JsonObjectBuilder modelTextureJson = Json.createObjectBuilder();
 
                     for (var t : modelFile.textures.keySet()) {
-                        modelTextureJson.add(t, "worldseed:mobs/" + bbModel.id() + "/" + state.name + "/" + subBone.getValue());
+                        modelTextureJson.add(t, namespace + ":mobs/" + bbModel.id() + "/" + state.name + "/" + subBone.getValue());
                     }
 
                     var subbones = bones.stream()
                             .filter(bone -> subBone.getKey().equals(bone.name))
                             .toList();
 
-                    var toWrite = createIndividualModels(subbones, textureWidth, textureHeight, bbModel, modelTextureJson.build(), textureSize, substate.getValue().state());
+                    var toWrite = createIndividualModels(namespace, subbones, textureWidth, textureHeight, bbModel, modelTextureJson.build(), textureSize, substate.getValue().state());
 
                     for (var w : toWrite.entrySet()) {
                         Path path = modelPathMobs.resolve(bbModel.id() + "/" + substate.getKey() + "/" + w.getKey());
@@ -432,12 +432,12 @@ public class ModelParser {
         return res;
     }
 
-    private static JsonObject createEntry(int threshold, String name, String state, String bone) {
+    private static JsonObject createEntry(String namespace, int threshold, String name, String state, String bone) {
         final JsonObjectBuilder entry = Json.createObjectBuilder();
 
         final JsonObjectBuilder model = Json.createObjectBuilder();
         model.add("type", "model");
-        model.add("model", "worldseed:mobs/" + name + "/" + state + "/" + bone);
+        model.add("model", namespace + ":mobs/" + name + "/" + state + "/" + bone);
 
         entry.add("threshold", threshold);
         entry.add("model", model);

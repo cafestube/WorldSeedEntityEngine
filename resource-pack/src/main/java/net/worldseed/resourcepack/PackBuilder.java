@@ -43,7 +43,7 @@ public class PackBuilder {
         Files.createDirectories(modelPathMobs);
         Files.createDirectories(baseModelPath);
 
-        JsonObject modelMappings = writeCustomModels(entityModels, modelDataPath, texturePathMobs, modelPathMobs, baseModelPath);
+        JsonObject modelMappings = writeCustomModels(namespace, entityModels, modelDataPath, texturePathMobs, modelPathMobs, baseModelPath);
 
         return new ConfigJson(modelMappings.toString());
     }
@@ -86,7 +86,7 @@ public class PackBuilder {
         }
     }
 
-    private static JsonObject writeCustomModels(List<Model> entityModels, Path modelDataPath, Path texturePathMobs, Path modelPathMobs, Path itemModelPath) throws Exception {
+    private static JsonObject writeCustomModels(String namespace, List<Model> entityModels, Path modelDataPath, Path texturePathMobs, Path modelPathMobs, Path itemModelPath) throws Exception {
         Map<String, ModelGenerator.BBEntityModel> res = new HashMap<>();
 
         for (Model entityModel : entityModels) {
@@ -100,7 +100,7 @@ public class PackBuilder {
             res.put(bbModel.id(), bbModel);
         }
 
-        ModelParser.ModelEngineFiles modelData = ModelParser.parse(res.values(), modelPathMobs);
+        ModelParser.ModelEngineFiles modelData = ModelParser.parse(namespace, res.values(), modelPathMobs);
 
         modelData.models().forEach(model -> {
             var textureData = res.get(model.id()).textures();

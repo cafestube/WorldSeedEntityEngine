@@ -59,10 +59,10 @@ public class TestPlugin extends JavaPlugin implements Listener {
 
         registry = new ModelRegistry("worldseed", ModelProvider.file(getDataPath().resolve("model_mappings.json"), getDataPath().resolve("models")));
 
-        ModelEngine modelEngine = new ModelEngine(this, registry, null);
+        ModelEngine modelEngine = new ModelEngine(this, null);
 
         getServer().getPluginManager().registerEvents(this, this);
-        registerCommand("spawn", new SpawnCommand(modelEngine));
+        registerCommand("spawn", new SpawnCommand(modelEngine, registry));
 
         new ModelProfiler(this).register();
     }

@@ -11,16 +11,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class ModelEngine {
 
     private final JavaPlugin plugin;
-    private final ModelRegistry modelRegistry;
     private final ModelPersistenceHandler modelPersistenceHandler;
     private final ModelPlatform<Player> modelPlatform = PaperModelPlatform.INSTANCE;
     private final ModelTrackerImpl modelTracker;
 
     private final ModelPersistenceListener persistenceListener;
 
-    public ModelEngine(JavaPlugin plugin, ModelRegistry modelRegistry, ModelPersistenceHandler modelPersistenceHandler) {
+    public ModelEngine(JavaPlugin plugin, ModelPersistenceHandler modelPersistenceHandler) {
         this.plugin = plugin;
-        this.modelRegistry = modelRegistry;
         this.modelPersistenceHandler = modelPersistenceHandler;
         this.modelTracker = new ModelTrackerImpl(plugin);
 
@@ -40,10 +38,6 @@ public class ModelEngine {
 
     public JavaPlugin getPlugin() {
         return plugin;
-    }
-
-    public ModelRegistry getModelRegistry() {
-        return modelRegistry;
     }
 
     public ModelPersistenceHandler getModelPersistenceHandler() {
