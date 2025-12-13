@@ -34,13 +34,17 @@ public class ModelTrackerImpl implements ModelTracker {
 
             for (Player player : trackedModel.model.getWorld().getPlayers()) {
                 if(!trackedModel.model.getViewers().contains(player)
-                        && trackedModel.rule.shouldTrack(trackedModel.model, player)
-                        && distanceSquared(trackedModel.model.getPosition(), player.getLocation()) <= 120*120) {
+                        && canShow(trackedModel, player)) {
                     trackedModel.model.addViewer(player);
                 }
             }
 
         }
+    }
+
+    private boolean canShow(TrackedModel trackedModel, Player player) {
+        return trackedModel.rule.shouldTrack(trackedModel.model, player)
+                && distanceSquared(trackedModel.model.getPosition(), player.getLocation()) <= 120*120;
     }
 
     private double distanceSquared(Pos position, @NotNull Location location) {
@@ -67,9 +71,15 @@ public class ModelTrackerImpl implements ModelTracker {
 
         model.setModelTracker(this);
         model.setBoundEntity(null);
-        this.trackedModels.put(model, new TrackedModel(model, null, rule));
 
+        TrackedModel trackedModel = new TrackedModel(model, null, rule);
+        this.trackedModels.put(model, trackedModel);
 
+        for (Player player : model.getWorld().getPlayers()) {
+            if(canShow(trackedModel, player)) {
+                model.addViewer(player);
+            }
+        }
     }
 
     @Override
