@@ -127,6 +127,8 @@ public class ModelParser {
         for (Bone bone : bones) {
             String boneName = bone.name;
 
+            if(bone.cubes.isEmpty() || bone.name.contains("hitbox")) continue;
+
             List<Element> elements = new ArrayList<>();
             double cubeMinX = 100000;
             double cubeMinY = 100000;
@@ -164,11 +166,11 @@ public class ModelParser {
                 Vec cubeTo = new Vec(cubeFrom.x() + cubeSize.x(), cubeFrom.y() + cubeSize.y(), cubeFrom.z() + cubeSize.z());
 
                 Vec cubeRotation = new Vec(-cube.rotation.x(), -cube.rotation.y(), cube.rotation.z());
-                HashMap<TextureFace, UV> uvs = new HashMap<>();
+                HashMap<TextureFace, UV> faces = new HashMap<>();
 
                 for (TextureFace face : cube.uv.keySet()) {
                     UV newUv = convertUV(cube.uv.get(face), textureWidth, textureHeight, face == TextureFace.up || face == TextureFace.down);
-                    uvs.put(face, newUv);
+                    faces.put(face, newUv);
                 }
 
                 double rotationAmount = 0;
@@ -197,34 +199,36 @@ public class ModelParser {
                     rotationAxis = "z";
                 }
 
+                if(faces.isEmpty()) continue;
+
                 RotationInfo rotationInfo = new RotationInfo(rotationAmount, rotationAxis, cubePivot);
-                Element newElement = new Element(cubeFrom, cubeTo, uvs, rotationInfo);
+                Element newElement = new Element(cubeFrom, cubeTo, faces, rotationInfo);
                 elements.add(newElement);
-
-                if (!mappings.containsKey(bbModel.id() + "/" + boneName) || mappings.get(bbModel.id() + "/" + boneName).map.get(state.name()) == null) {
-                    var item =
-                            new ItemId(
-                                    bbModel.id(),
-                                    boneName,
-                                    new Vec(cubeMinX + cubeDiff.x() - 8, cubeMinY + cubeDiff.y() - 8, cubeMinZ + cubeDiff.z() - 8),
-                                    cubeDiff,
-                                    ++index
-                            );
-
-                    if (mappings.get(item.name + "/" + item.bone) == null)
-                        mappings.put(item.name + "/" + item.bone, new MappingEntry(new HashMap<>(), item.offset, item.diff, bbModel.id()));
-
-                    mappings.get(item.name + "/" + item.bone).map.put(state.name(), item.id);
-                    entries.computeIfAbsent(bbModel.id(), s -> new ArrayList<>()).add(createEntry(namespace, item.id, bbModel.id(), state.name(), item.bone));
-                }
-
-                JsonObjectBuilder boneInfo = Json.createObjectBuilder();
-                boneInfo.add("textures", builtTextures);
-                boneInfo.add("elements", elementsToJson(elements));
-                boneInfo.add("texture_size", textureSize);
-                boneInfo.add("display", display(midOffset));
-                modelInfo.put(boneName + ".json", boneInfo.build());
             }
+
+            if (!mappings.containsKey(bbModel.id() + "/" + boneName) || mappings.get(bbModel.id() + "/" + boneName).map.get(state.name()) == null) {
+                var item =
+                        new ItemId(
+                                bbModel.id(),
+                                boneName,
+                                new Vec(cubeMinX + cubeDiff.x() - 8, cubeMinY + cubeDiff.y() - 8, cubeMinZ + cubeDiff.z() - 8),
+                                cubeDiff,
+                                ++index
+                        );
+
+                if (mappings.get(item.name + "/" + item.bone) == null)
+                    mappings.put(item.name + "/" + item.bone, new MappingEntry(new HashMap<>(), item.offset, item.diff, bbModel.id()));
+
+                mappings.get(item.name + "/" + item.bone).map.put(state.name(), item.id);
+                entries.computeIfAbsent(bbModel.id(), s -> new ArrayList<>()).add(createEntry(namespace, item.id, bbModel.id(), state.name(), item.bone));
+            }
+
+            JsonObjectBuilder boneInfo = Json.createObjectBuilder();
+            boneInfo.add("textures", builtTextures);
+            boneInfo.add("elements", elementsToJson(elements));
+            boneInfo.add("texture_size", textureSize);
+            boneInfo.add("display", display(midOffset));
+            modelInfo.put(boneName + ".json", boneInfo.build());
         }
 
         return modelInfo;
