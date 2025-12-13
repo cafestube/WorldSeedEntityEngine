@@ -97,6 +97,6 @@ public enum Interpolation {
         double timeDiff = nextFrame.time() - currentFrame.time();
         double timePercent = (time - currentFrame.time()) / timeDiff;
 
-        return nextFrame.lerp().interpolate(transform, nextIndex, time, timePercent);
+        return currentFrame.lerp().interpolate(transform, nextIndex, time, timePercent);
     }
 }
