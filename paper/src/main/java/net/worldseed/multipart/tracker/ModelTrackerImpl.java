@@ -115,5 +115,9 @@ public class ModelTrackerImpl implements ModelTracker {
         return trackedModels.keySet();
     }
 
-    record TrackedModel(PaperModel model, Entity entity, TrackingRule rule) {}
+    public Collection<TrackedModel> getAllTrackedModelsFull() {
+        return trackedModels.values();
+    }
+
+    public record TrackedModel(PaperModel model, Entity entity, TrackingRule rule) {}
 }
