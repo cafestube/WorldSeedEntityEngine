@@ -33,4 +33,9 @@ public class ModelBoneHeadDisplay<TViewer> extends ModelBonePartDisplay<TViewer>
     public void setRotation(double rotation) {
         this.headRotation = rotation;
     }
+
+    @Override
+    public double getRotation() {
+        return this.headRotation;
+    }
 }
