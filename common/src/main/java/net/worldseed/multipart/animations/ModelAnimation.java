@@ -20,6 +20,8 @@ public interface ModelAnimation {
 
     void play(boolean resume);
 
+    void play(short tick);
+
     void tick();
 
 }

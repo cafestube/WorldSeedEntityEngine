@@ -15,9 +15,15 @@ public interface AnimationHandler {
      *
      * @param animation name of animation to play
      */
-    void playRepeat(String animation) throws IllegalArgumentException;
+    default void playRepeat(String animation) throws IllegalArgumentException {
+        playRepeat(animation, AnimationDirection.FORWARD);
+    }
 
-    void playRepeat(String animation, AnimationDirection direction) throws IllegalArgumentException;
+    default void playRepeat(String animation, AnimationDirection direction) throws IllegalArgumentException {
+        playRepeat(animation, direction, (short) -1);
+    }
+
+    void playRepeat(String animation, AnimationDirection direction, short startAt) throws IllegalArgumentException;
 
     /**
      * Stop a repeating animation
@@ -34,7 +40,9 @@ public interface AnimationHandler {
      * @param override If true (default), fully overrides repeating background animations. If false, overrides only bones used in new animation.
      * @param cb       callback to call when animation is finished
      */
-    void playOnce(String animation, boolean override, Runnable cb) throws IllegalArgumentException;
+    default void playOnce(String animation, boolean override, Runnable cb) throws IllegalArgumentException {
+        this.playOnce(animation, AnimationDirection.FORWARD, override, cb);
+    }
 
     /**
      * Play an animation once
@@ -42,9 +50,15 @@ public interface AnimationHandler {
      * @param animation name of animation to play
      * @param cb        callback to call when animation is finished
      */
-    void playOnce(String animation, Runnable cb) throws IllegalArgumentException;
+    default void playOnce(String animation, Runnable cb) throws IllegalArgumentException {
+        this.playOnce(animation, true, cb);
+    }
 
-    void playOnce(String animation, AnimationHandler.AnimationDirection direction, boolean override, Runnable cb) throws IllegalArgumentException;
+    default void playOnce(String animation, AnimationHandler.AnimationDirection direction, boolean override, Runnable cb) throws IllegalArgumentException {
+        playOnce(animation, direction, override, (short) -1, cb);
+    }
+
+    void playOnce(String animation, AnimationHandler.AnimationDirection direction, boolean override, short startAt, Runnable cb) throws IllegalArgumentException;
 
     /**
      * Destroy the animation handler

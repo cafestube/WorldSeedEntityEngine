@@ -84,12 +84,8 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
         animations.put(animator.name(), animator);
     }
 
-    public void playRepeat(String animation) throws IllegalArgumentException {
-        playRepeat(animation, AnimationDirection.FORWARD);
-    }
-
     @Override
-    public void playRepeat(String animation, AnimationDirection direction) throws IllegalArgumentException {
+    public void playRepeat(String animation, AnimationDirection direction, short startAt) throws IllegalArgumentException {
         if (this.animationPriorities().get(animation) == null)
             throw new IllegalArgumentException("Animation " + animation + " does not exist");
         var modelAnimation = this.animations.get(animation);
@@ -109,7 +105,11 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
                 }
             });
             if (playingOnce == null) {
-                modelAnimation.play(false); //Start the repeating animation if no playOnce animation is currently playing
+                if(startAt != -1) {
+                    modelAnimation.play(startAt);
+                } else {
+                    modelAnimation.play(false); //Start the repeating animation if no playOnce animation is currently playing
+                }
             }
         }
     }
@@ -134,17 +134,8 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
         }
     }
 
-
-    public void playOnce(String animation, Runnable cb) throws IllegalArgumentException {
-        this.playOnce(animation, true, cb);
-    }
-
-    public void playOnce(String animation, boolean override, Runnable cb) throws IllegalArgumentException {
-        this.playOnce(animation, AnimationDirection.FORWARD, override, cb);
-    }
-
     @Override
-    public void playOnce(String animation, AnimationDirection direction, boolean override, Runnable cb) throws IllegalArgumentException {
+    public void playOnce(String animation, AnimationDirection direction, boolean override, short startAt, Runnable cb) throws IllegalArgumentException {
         if (this.animationPriorities().get(animation) == null)
             throw new IllegalArgumentException("Animation " + animation + " does not exist");
 
@@ -169,6 +160,16 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
             if (currentDirection != AnimationDirection.PAUSE)
                 this.callbackTimers.put(animation, modelAnimation.animationTime() - callbackTimer + 1);
         } else if (direction != AnimationDirection.PAUSE) { //This animation was not playing, or it was in the same direction
+            int totalTime = modelAnimation.animationTime();
+            if(startAt != -1) {
+                if(direction == AnimationDirection.FORWARD) {
+                    totalTime -= startAt;
+                } else if(direction == AnimationDirection.BACKWARD) {
+                    totalTime = startAt;
+                }
+            }
+            if(totalTime <= 0) throw new IllegalArgumentException("Animation " + animation + " has no time to play from the given start position");
+
             if (playingOnce != null) { //Stop current animation
                 this.animations.get(playingOnce).stop();
                 modelAnimation.stop();
@@ -176,8 +177,13 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
             playingOnce = animation;
 
             this.callbacks.put(animation, cb);
-            this.callbackTimers.put(animation, modelAnimation.animationTime());
-            modelAnimation.play(false);
+            this.callbackTimers.put(animation, totalTime);
+
+            if(startAt != -1) {
+                modelAnimation.play(startAt);
+            } else {
+                modelAnimation.play(false);
+            }
 
             Set<String> animatedBones = modelAnimation.getAnimatedBones();
             this.repeating.values().forEach(v -> {

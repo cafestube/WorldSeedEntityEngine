@@ -74,6 +74,11 @@ public class ModelAnimationClassic implements ModelAnimation {
     }
 
     @Override
+    public void play(short tick) {
+        boneAnimations.forEach(boneAnimation -> boneAnimation.resume(tick));
+    }
+
+    @Override
     public void tick() {
         boneAnimations.forEach(BoneAnimation::tick);
     }
