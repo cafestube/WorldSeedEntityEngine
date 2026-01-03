@@ -15,7 +15,7 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
 
     private final Map<String, ModelAnimation> animations = new ConcurrentHashMap<>();
     private final TreeMap<Integer, ModelAnimation> repeating = new TreeMap<>();
-    private String playingOnce = null;
+    private ModelAnimation playingOnce = null;
 
     private final Map<String, Runnable> callbacks = new ConcurrentHashMap<>();
     private final Map<String, Integer> callbackTimers = new ConcurrentHashMap<>();
@@ -150,12 +150,12 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
 
         int callbackTimer = this.callbackTimers.getOrDefault(animation, 0);
 
-        if (animation.equals(this.playingOnce) && direction == AnimationDirection.PAUSE && callbackTimer > 0) { //This animation was already playing, paused and not finished
+        if (modelAnimation.equals(this.playingOnce) && direction == AnimationDirection.PAUSE && callbackTimer > 0) { //This animation was already playing, paused and not finished
             // Pause. Only call if we're not stopped
-            playingOnce = animation;
+            playingOnce = modelAnimation;
             this.callbacks.put(animation, cb);
-        } else if (animation.equals(this.playingOnce) && currentDirection != direction) { //This animation was already playing, but in a different direction
-            playingOnce = animation;
+        } else if (modelAnimation.equals(this.playingOnce) && currentDirection != direction) { //This animation was already playing, but in a different direction
+            playingOnce = modelAnimation;
             this.callbacks.put(animation, cb);
             if (currentDirection != AnimationDirection.PAUSE)
                 this.callbackTimers.put(animation, modelAnimation.animationTime() - callbackTimer + 1);
@@ -171,10 +171,10 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
             if(totalTime <= 0) throw new IllegalArgumentException("Animation " + animation + " has no time to play from the given start position");
 
             if (playingOnce != null) { //Stop current animation
-                this.animations.get(playingOnce).stop();
+                playingOnce.stop();
                 modelAnimation.stop();
             }
-            playingOnce = animation;
+            playingOnce = modelAnimation;
 
             this.callbacks.put(animation, cb);
             this.callbackTimers.put(animation, totalTime);
@@ -204,7 +204,7 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
                 var modelAnimation = animations.get(entry.getKey()); //Get playOnce animation from string
 
                 if (entry.getValue() <= 0) { //All ticks were removed so playOnce should end
-                    if (this.playingOnce != null && this.playingOnce.equals(entry.getKey())) {
+                    if (this.playingOnce != null && this.playingOnce.name().equals(entry.getKey())) {
                         Map.Entry<Integer, ModelAnimation> firstEntry = this.repeating.firstEntry();
                         if (firstEntry != null) {
                             firstEntry.getValue().play(true); //Restart or resume the highest priority repeating animation
@@ -243,14 +243,26 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
 
     @Override
     public @Nullable String getPlaying() {
+        ModelAnimation playingAnimation = getPlayingAnimation();
+        return playingAnimation != null ? playingAnimation.name() : null;
+    }
+
+    @Override
+    public @Nullable ModelAnimation getPlayingAnimation() {
         if (this.playingOnce != null) return this.playingOnce;
-        return getRepeating();
+        return getRepeatingAnimation();
+    }
+
+    @Override
+    public @Nullable ModelAnimation getRepeatingAnimation() {
+        var playing = this.repeating.firstEntry();
+        return playing != null ? playing.getValue() : null;
     }
 
     @Override
     public @Nullable String getRepeating() {
-        var playing = this.repeating.firstEntry();
-        return playing != null ? playing.getValue().name() : null;
+        ModelAnimation repeatingAnimation = getRepeatingAnimation();
+        return repeatingAnimation != null ? repeatingAnimation.name() : null;
     }
 
     @Override

@@ -24,4 +24,6 @@ public interface ModelAnimation {
 
     void tick();
 
+    short getTick();
+
 }

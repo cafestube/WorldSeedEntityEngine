@@ -72,6 +72,8 @@ public interface AnimationHandler {
      */
     @Nullable String getPlaying();
 
+    @Nullable ModelAnimation getPlayingAnimation();
+
 
     /**
      * Get the current repeating animation
@@ -79,6 +81,8 @@ public interface AnimationHandler {
      * @return current repeating animation
      */
     @Nullable String getRepeating();
+
+    @Nullable ModelAnimation getRepeatingAnimation();
 
     /**
      * Get an animation by key
