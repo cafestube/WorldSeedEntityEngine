@@ -39,7 +39,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.0-M2")
     testImplementation("org.slf4j:slf4j-simple:2.0.17")
 
-    compileOnly("net.minestom:minestom:2025.08.12-1.21.8")
+    compileOnly("net.minestom:minestom:2025.12.19-1.21.10")
     testImplementation("net.minestom:minestom:2025.08.12-1.21.8")
     testImplementation(project(":resource-pack"))
     api(project(":common"))
@@ -48,6 +48,10 @@ dependencies {
     testImplementation("org.zeroturnaround:zt-zip:1.17")
 
     implementation("dev.hollowcube:molang:1.0.2")
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }
 
 tasks.getByName<Test>("test") {
