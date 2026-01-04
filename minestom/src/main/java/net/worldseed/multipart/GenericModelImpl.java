@@ -121,7 +121,7 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
 
     public void init(@Nullable Instance instance, @NotNull Pos position, float scale) {
         this.instance = instance;
-        super.init(position, scale);
+        init(position, scale);
     }
 
     @Override
