@@ -31,8 +31,10 @@ public class ModelEngine {
     }
 
     public void close() {
-        persistenceListener.onPluginDisable();
-        HandlerList.unregisterAll(this.persistenceListener);
+        if(this.persistenceListener != null) {
+            persistenceListener.onPluginDisable();
+            HandlerList.unregisterAll(this.persistenceListener);
+        }
         this.modelTracker.destroy();
     }
 
