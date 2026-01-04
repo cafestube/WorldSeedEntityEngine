@@ -13,7 +13,10 @@ import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.BlockFace;
 import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.animations.AnimationHandlerImpl;
+import net.worldseed.multipart.animations.ModelAnimation;
 import net.worldseed.multipart.events.AnimationCompleteEvent;
+import net.worldseed.multipart.events.AnimationStartEvent;
+import net.worldseed.multipart.events.AnimationStoppedEvent;
 import net.worldseed.multipart.events.ModelEvent;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.entity.*;
@@ -78,7 +81,18 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
         return eventNode;
     }
 
-    public void triggerAnimationEnd(String animation, AnimationHandler.AnimationDirection direction) {
+    @Override
+    public void triggerAnimationStart(ModelAnimation animation, AnimationHandler.AnimationDirection direction, short tick, boolean looped) {
+        MinecraftServer.getGlobalEventHandler().call(new AnimationStartEvent(this, animation, direction, tick, looped));
+    }
+
+    @Override
+    public void triggerAnimationStopped(ModelAnimation animation, AnimationHandler.AnimationDirection direction, boolean looped) {
+        MinecraftServer.getGlobalEventHandler().call(new AnimationStoppedEvent(this, animation, direction, looped));
+    }
+
+    @Override
+    public void triggerAnimationComplete(ModelAnimation animation, AnimationHandler.AnimationDirection direction) {
         MinecraftServer.getGlobalEventHandler().call(new AnimationCompleteEvent(this, animation, direction));
     }
 

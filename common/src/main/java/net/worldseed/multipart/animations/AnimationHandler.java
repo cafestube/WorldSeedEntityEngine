@@ -30,8 +30,7 @@ public interface AnimationHandler {
      *
      * @param animation name of animation to stop
      */
-    void stopRepeat(String animation) throws IllegalArgumentException;
-
+    void stop(String animation) throws IllegalArgumentException;
 
     /**
      * Play an animation once
@@ -43,6 +42,8 @@ public interface AnimationHandler {
     default void playOnce(String animation, boolean override, Runnable cb) throws IllegalArgumentException {
         this.playOnce(animation, AnimationDirection.FORWARD, override, cb);
     }
+
+    void stopRepeat(String animation) throws IllegalArgumentException;
 
     /**
      * Play an animation once
@@ -71,6 +72,8 @@ public interface AnimationHandler {
      * @return current animation
      */
     @Nullable String getPlaying();
+
+    @Nullable ModelAnimation getPlayingOnceAnimation();
 
     @Nullable ModelAnimation getPlayingAnimation();
 

@@ -101,6 +101,7 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
         if (top != null && animation.equals(top.getValue().name())) { //The animation you want to play is the highest priority
             this.repeating.values().forEach(v -> {
                 if (!v.name().equals(animation)) { //Stop all lower priority animations to ensure the correct one is playing
+                    this.model.triggerAnimationStopped(v, v.direction(), true);
                     v.stop(); //The extra loop seemed redundant, please let me know if this breaks something
                 }
             });
@@ -110,19 +111,48 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
                 } else {
                     modelAnimation.play(false); //Start the repeating animation if no playOnce animation is currently playing
                 }
+                this.model.triggerAnimationStart(modelAnimation, modelAnimation.direction(), modelAnimation.getTick(), true);
+            }
+        }
+    }
+
+    @Override
+    public void stop(String animation) throws IllegalArgumentException {
+        var modelAnimation = this.animations.get(animation);
+        if (modelAnimation == null) {
+            throw new IllegalArgumentException("Animation " + animation + " does not exist");
+        }
+
+        if (modelAnimation.equals(this.playingOnce)) {
+            this.model.triggerAnimationStopped(modelAnimation, modelAnimation.direction(), false);
+            this.playingOnce = null;
+            modelAnimation.stop();
+
+            Map.Entry<Integer, ModelAnimation> firstEntry = this.repeating.firstEntry();
+            if (firstEntry != null) {
+                boolean wasPlaying = firstEntry.getValue().isPlaying();
+                firstEntry.getValue().play(true); //Restart or resume the highest priority repeating animation
+                if(!wasPlaying) {
+                    this.model.triggerAnimationStart(firstEntry.getValue(), firstEntry.getValue().direction(), firstEntry.getValue().getTick(), true);
+                }
             }
         }
     }
 
     public void stopRepeat(String animation) throws IllegalArgumentException {
-        if (this.animationPriorities().get(animation) == null)
-            throw new IllegalArgumentException("Animation " + animation + " does not exist");
-
         var modelAnimation = this.animations.get(animation);
+        if (modelAnimation == null) {
+            throw new IllegalArgumentException("Animation " + animation + " does not exist");
+        }
 
+        if(!repeating.containsValue(modelAnimation)) {
+            throw new IllegalArgumentException("Animation " + animation + " is not playing as a repeating animation");
+        }
+
+        this.model.triggerAnimationStopped(modelAnimation, modelAnimation.direction(), true);
         modelAnimation.stop(); //Stop the highest priority repeating animation
-        int priority = this.animationPriorities().get(animation);
 
+        int priority = this.animationPriorities().get(animation);
         Map.Entry<Integer, ModelAnimation> currentTop = this.repeating.firstEntry();
 
         this.repeating.remove(priority);
@@ -131,6 +161,7 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
 
         if (this.playingOnce == null && firstEntry != null && currentTop != null && !firstEntry.getKey().equals(currentTop.getKey())) {
             firstEntry.getValue().play(false); //Restart the new highest priority repeating animation
+            this.model.triggerAnimationStart(firstEntry.getValue(), firstEntry.getValue().direction(), firstEntry.getValue().getTick(), true);
         }
     }
 
@@ -171,6 +202,7 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
             if(totalTime <= 0) throw new IllegalArgumentException("Animation " + animation + " has no time to play from the given start position");
 
             if (playingOnce != null) { //Stop current animation
+                this.model.triggerAnimationStopped(playingOnce, playingOnce.direction(), false);
                 playingOnce.stop();
                 modelAnimation.stop();
             }
@@ -184,11 +216,13 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
             } else {
                 modelAnimation.play(false);
             }
+            this.model.triggerAnimationStart(modelAnimation, modelAnimation.direction(), modelAnimation.getTick(), false);
 
             Set<String> animatedBones = modelAnimation.getAnimatedBones();
             this.repeating.values().forEach(v -> {
                 if (!v.name().equals(animation)) {
                     if (override) {
+                        this.model.triggerAnimationStopped(v, v.direction(), true);
                         v.stop(); //Stop all repeating animations
                     } else {
                         v.stop(animatedBones); //Stop all 'animatedBones' for all repeating animations
@@ -207,14 +241,19 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
                     if (this.playingOnce != null && this.playingOnce.name().equals(entry.getKey())) {
                         Map.Entry<Integer, ModelAnimation> firstEntry = this.repeating.firstEntry();
                         if (firstEntry != null) {
+                            boolean wasPlaying = firstEntry.getValue().isPlaying();
                             firstEntry.getValue().play(true); //Restart or resume the highest priority repeating animation
+
+                            if(!wasPlaying) {
+                                this.model.triggerAnimationStart(firstEntry.getValue(), firstEntry.getValue().direction(), firstEntry.getValue().getTick(), true);
+                            }
                         }
                         this.playingOnce = null;
                     }
 
-                    this.model.triggerAnimationEnd(entry.getKey(), modelAnimation.direction()); //Call AnimationCompleteEvent
-
+                    this.model.triggerAnimationComplete(modelAnimation, modelAnimation.direction()); //Call AnimationCompleteEvent
                     modelAnimation.stop();
+
                     callbackTimers.remove(entry.getKey()); //Remove playOnce animation from map
 
                     var cb = callbacks.remove(entry.getKey());
@@ -245,6 +284,11 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
     public @Nullable String getPlaying() {
         ModelAnimation playingAnimation = getPlayingAnimation();
         return playingAnimation != null ? playingAnimation.name() : null;
+    }
+
+    @Override
+    public @Nullable ModelAnimation getPlayingOnceAnimation() {
+        return this.playingOnce;
     }
 
     @Override

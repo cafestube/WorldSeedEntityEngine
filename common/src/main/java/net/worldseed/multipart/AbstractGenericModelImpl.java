@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.RGBLike;
 import net.worldseed.multipart.animations.AnimationHandler;
+import net.worldseed.multipart.animations.ModelAnimation;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.PositionParser;
@@ -96,8 +97,6 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
     public RootBoneEntity<TViewer> getModelRoot() {
         return this.rootEntity;
     }
-
-    public abstract void triggerAnimationEnd(String animation, AnimationHandler.AnimationDirection direction);
 
     @Override
     public AbstractModelRegistry getModelRegistry() {

@@ -2,7 +2,10 @@ package net.worldseed.multipart;
 
 import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.animations.AnimationHandlerImpl;
+import net.worldseed.multipart.animations.ModelAnimation;
 import net.worldseed.multipart.events.AnimationCompleteEvent;
+import net.worldseed.multipart.events.AnimationStartEvent;
+import net.worldseed.multipart.events.AnimationStoppedEvent;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.entity.PaperRootBoneEntity;
 import net.worldseed.multipart.tracker.ModelTracker;
@@ -54,8 +57,18 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
         setPosition(PositionConversion.fromPaper(position));
     }
 
-    public void triggerAnimationEnd(String animation, AnimationHandler.AnimationDirection direction) {
+    public void triggerAnimationComplete(ModelAnimation animation, AnimationHandler.AnimationDirection direction) {
         new AnimationCompleteEvent(this, animation, direction).callEvent();
+    }
+
+    @Override
+    public void triggerAnimationStopped(ModelAnimation animation, AnimationHandler.AnimationDirection direction, boolean looped) {
+        new AnimationStoppedEvent(this, animation, direction, looped).callEvent();
+    }
+
+    @Override
+    public void triggerAnimationStart(ModelAnimation animation, AnimationHandler.AnimationDirection direction, short tick, boolean looped) {
+        new AnimationStartEvent(this, animation, direction, tick, looped).callEvent();
     }
 
     public void init(@Nullable World instance, @NotNull Pos position) {

@@ -3,6 +3,7 @@ package net.worldseed.multipart;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.RGBLike;
 import net.worldseed.multipart.animations.AnimationHandler;
+import net.worldseed.multipart.animations.ModelAnimation;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.entity.ModelBone;
@@ -133,7 +134,11 @@ public interface GenericModel<TViewer> {
 
     Point getDiff(String bone);
 
-    void triggerAnimationEnd(String animation, AnimationHandler.AnimationDirection direction);
+    void triggerAnimationComplete(ModelAnimation animation, AnimationHandler.AnimationDirection direction);
+
+    void triggerAnimationStopped(ModelAnimation animation, AnimationHandler.AnimationDirection direction, boolean looped);
+
+    void triggerAnimationStart(ModelAnimation animation, AnimationHandler.AnimationDirection direction, short tick, boolean looped);
 
     void setGlobalScale(float scale);
 

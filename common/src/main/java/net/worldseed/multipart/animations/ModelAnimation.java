@@ -14,6 +14,8 @@ public interface ModelAnimation {
 
     void setDirection(AnimationHandler.AnimationDirection direction);
 
+    boolean isPlaying();
+
     void stop();
 
     void stop(Set<String> animatedBones);

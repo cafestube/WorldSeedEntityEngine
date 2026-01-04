@@ -48,6 +48,11 @@ public class ModelAnimationClassic implements ModelAnimation {
     }
 
     @Override
+    public boolean isPlaying() {
+        return boneAnimations.stream().anyMatch(BoneAnimation::isPlaying);
+    }
+
+    @Override
     public void stop() {
         boneAnimations.forEach(BoneAnimation::stop);
     }
