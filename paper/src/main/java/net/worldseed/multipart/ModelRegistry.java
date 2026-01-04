@@ -45,6 +45,11 @@ public class ModelRegistry implements AbstractModelRegistry {
         loadMappings();
     }
 
+    @Override
+    public String getNamespace() {
+        return namespace;
+    }
+
     public HashMap<String, ItemStack> getItems(String model, String name) {
         return blockMappings.get(model + "/" + name);
     }

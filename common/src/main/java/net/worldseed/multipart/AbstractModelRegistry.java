@@ -16,4 +16,5 @@ public interface AbstractModelRegistry {
 
     Point getOffsetMapping(String model, String boneName);
 
+    String getNamespace();
 }
