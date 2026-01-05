@@ -45,8 +45,8 @@ publishing {
 dependencies {
     paperweight.paperDevBundle("1.21.10-R0.1-SNAPSHOT")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.0-M2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.0-M2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.14.0")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.slf4j:slf4j-simple:2.0.17")
 
     api(project(":common"))
