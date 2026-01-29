@@ -15,7 +15,7 @@ public class GeoGenerator {
 
         for (BlockBenchParser.OutlinerChild child : modelOutliner.children()) {
             if(child instanceof BlockBenchParser.ModelOutliner outliner) {
-                res.addAll(getBonesRecursive(outliner, cubeMap, locators, nullObjects, outliner.group().name()));
+                res.addAll(getBonesRecursive(outliner, cubeMap, locators, nullObjects, modelOutliner.group().name()));
             } else if(child instanceof BlockBenchParser.CubeRef(String uuid)) {
 
                 JsonObject cube = cubeMap.get(uuid);
