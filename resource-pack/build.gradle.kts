@@ -37,7 +37,11 @@ publishing {
         maven {
             name = "cafestubeRepository"
             credentials(PasswordCredentials::class)
-            url = uri("https://repo.cafestube.net/repository/maven-public-snapshots/")
+            url = if(version.toString().endsWith("SNAPSHOT")) {
+                uri("https://repo.cafestube.net/repository/maven-snapshots/")
+            } else {
+                uri("https://repo.cafestube.net/repository/maven-releases/")
+            }
         }
     }
 }

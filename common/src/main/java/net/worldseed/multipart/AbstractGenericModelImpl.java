@@ -168,7 +168,7 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
             return new ModelBoneHitbox<>(info.pivot, info.name, info.rotation, this, newOffset, sizePoint.x(), sizePoint.y(), info.cubes, true, info.scale);
         });
         boneSuppliers.put(name -> name.contains("vfx"), (info) -> new ModelBoneVFX<>(info.pivot, info.name, info.rotation, this, info.scale));
-        boneSuppliers.put(name -> name.equals("head"), (info) -> new ModelBoneHeadDisplay<>(info.pivot, info.name, info.rotation, this, info.scale));
+        boneSuppliers.put(name -> name.equals("head") || name.startsWith("h_"), (info) -> new ModelBoneHeadDisplay<>(info.pivot, info.name, info.rotation, this, info.scale));
     }
 
     protected void loadBones(JsonObject loadedModel, float scale) {

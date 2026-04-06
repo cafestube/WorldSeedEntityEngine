@@ -10,7 +10,7 @@ plugins {
 
 java {
     // Configure the java toolchain. This allows gradle to auto-provision JDK 21 on systems that only have JDK 11 installed for example.
-    toolchain.languageVersion = JavaLanguageVersion.of(21)
+    toolchain.languageVersion = JavaLanguageVersion.of(25)
 }
 
 repositories {
@@ -21,7 +21,7 @@ repositories {
 }
 
 dependencies {
-    paperweight.paperDevBundle("1.21.10-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.11-R0.1-SNAPSHOT")
 
     implementation("commons-io:commons-io:2.20.0")
     implementation("org.zeroturnaround:zt-zip:1.17")
@@ -35,7 +35,7 @@ tasks {
     compileJava {
         // Set the release flag. This configures what version bytecode the compiler will emit, as well as what JDK APIs are usable.
         // See https://openjdk.java.net/jeps/247 for more information.
-        options.release = 21
+        options.release = 25
     }
     javadoc {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything

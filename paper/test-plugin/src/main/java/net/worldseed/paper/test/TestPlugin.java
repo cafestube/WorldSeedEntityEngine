@@ -70,14 +70,14 @@ public class TestPlugin extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         event.getPlayer().sendResourcePacks(ResourcePackInfo.resourcePackInfo()
-                .uri(URI.create("http://127.0.0.1:8080/pack?hash=" + hash))
+                .uri(URI.create("http://127.0.0.1:6655/pack?hash=" + hash))
                 .hash(hash)
                 .build());
     }
 
 
     private static void startHttpServer(File zipFile, String hash) throws IOException {
-        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+        HttpServer server = HttpServer.create(new InetSocketAddress(6655), 0);
         server.createContext("/pack", new PackHandler(zipFile, hash));
         server.start();
     }

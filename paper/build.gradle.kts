@@ -7,8 +7,8 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 
     withSourcesJar()
     withJavadocJar()
@@ -37,13 +37,17 @@ publishing {
         maven {
             name = "cafestubeRepository"
             credentials(PasswordCredentials::class)
-            url = uri("https://repo.cafestube.net/repository/maven-public-snapshots/")
+            url = if(version.toString().endsWith("SNAPSHOT")) {
+                uri("https://repo.cafestube.net/repository/maven-snapshots/")
+            } else {
+                uri("https://repo.cafestube.net/repository/maven-releases/")
+            }
         }
     }
 }
 
 dependencies {
-    paperweight.paperDevBundle("1.21.10-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.11-R0.1-SNAPSHOT")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.14.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
