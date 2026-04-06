@@ -1,19 +1,26 @@
 package net.worldseed.multipart.entity;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.CustomModelData;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.util.RGBLike;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.worldseed.multipart.PaperModel;
+import net.worldseed.multipart.blueprint.ModelRenderInformation;
 import net.worldseed.multipart.entity.util.DataWatcher;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.entity.entity.ItemDisplayBoneEntity;
 import net.worldseed.multipart.entity.util.EntityData;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ItemType;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -21,12 +28,8 @@ import java.util.HashMap;
 
 public class PaperItemDisplayBoneEntity extends PaperPacketBoneEntity implements ItemDisplayBoneEntity<Player> {
 
-    protected final HashMap<String, ItemStack> items;
-
     public PaperItemDisplayBoneEntity(PaperModel model, String name) {
         super(EntityType.ITEM_DISPLAY, model, name);
-
-        this.items = model.getModelRegistry().getItems(model.getId(), name);
     }
 
     @Override
@@ -56,15 +59,21 @@ public class PaperItemDisplayBoneEntity extends PaperPacketBoneEntity implements
     }
 
     @Override
-    public void clearItem() {
-        this.dataWatcher.set(EntityData.ITEM_DISPLAY_DATA_ITEM_STACK_ID, net.minecraft.world.item.ItemStack.EMPTY);
-    }
-
-    @Override
-    public void setItemState(String state) {
-        if (this.items.containsKey(state)) {
-            this.dataWatcher.set(EntityData.ITEM_DISPLAY_DATA_ITEM_STACK_ID, CraftItemStack.asNMSCopy(this.items.get(state)));
+    public void setItemState(@Nullable ModelRenderInformation itemState) {
+        if(itemState == null) {
+            this.dataWatcher.set(EntityData.ITEM_DISPLAY_DATA_ITEM_STACK_ID, net.minecraft.world.item.ItemStack.EMPTY);
+            return;
         }
+        ItemStack itemStack = ItemType.PAPER.createItemStack();
+        itemStack.setData(DataComponentTypes.ITEM_MODEL, itemState.itemModel());
+        itemStack.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData()
+                .addFloat(itemState.modelStateId())
+                .build());
+
+
+        this.dataWatcher.set(EntityData.ITEM_DISPLAY_DATA_ITEM_STACK_ID, CraftItemStack.asNMSCopy(
+            itemStack
+        ));
     }
 
     @Override

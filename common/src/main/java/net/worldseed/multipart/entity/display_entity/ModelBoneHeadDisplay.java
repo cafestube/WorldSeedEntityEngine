@@ -3,15 +3,18 @@ package net.worldseed.multipart.entity.display_entity;
 import net.worldseed.multipart.GenericModel;
 import net.worldseed.multipart.animations.AnimationLoader;
 import net.worldseed.multipart.animations.BoneAnimation;
+import net.worldseed.multipart.blueprint.ModelRenderInformation;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.entity.bone_types.HeadBone;
 
+import java.util.Map;
+
 public class ModelBoneHeadDisplay<TViewer> extends ModelBonePartDisplay<TViewer> implements HeadBone<TViewer> {
     private double headRotation;
 
-    public ModelBoneHeadDisplay(Point pivot, String name, Point rotation, GenericModel<TViewer> model, float scale) {
-        super(pivot, name, rotation, model, scale);
+    public ModelBoneHeadDisplay(Point pivot, String name, Point rotation, Point diff, Point offset, GenericModel<TViewer> model, float scale, Map<String, ModelRenderInformation> renderInfo) {
+        super(pivot, name, rotation, diff, offset, model, scale, renderInfo);
     }
 
     @Override

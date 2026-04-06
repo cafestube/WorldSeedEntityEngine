@@ -1,5 +1,6 @@
 package net.worldseed.multipart;
 
+import net.worldseed.multipart.blueprint.ModelBlueprint;
 import net.worldseed.multipart.entity.PaperRootBoneEntity;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.tracker.ModelTracker;
@@ -16,7 +17,11 @@ import javax.annotation.Nullable;
 public interface PaperModel extends GenericModel<Player> {
 
     static PaperModel model(ModelRegistry registry, String modelId, JavaPlugin plugin) {
-        return new GenericModelImpl(registry, modelId, plugin);
+        return new GenericModelImpl(ModelBlueprint.loadBlueprint(modelId, registry), plugin);
+    }
+
+    static PaperModel model(ModelBlueprint blueprint, JavaPlugin plugin) {
+        return new GenericModelImpl(blueprint, plugin);
     }
 
     void init(@NotNull Location position);
@@ -26,9 +31,6 @@ public interface PaperModel extends GenericModel<Player> {
     void setPosition(@NotNull Location position);
 
     void setPosition(@NotNull Pos position);
-
-    @Override
-    ModelRegistry getModelRegistry();
 
 //    void mountEntity(String name, Entity entity);
 //

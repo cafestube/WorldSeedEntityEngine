@@ -3,6 +3,7 @@ package net.worldseed.multipart;
 import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.animations.AnimationHandlerImpl;
 import net.worldseed.multipart.animations.ModelAnimation;
+import net.worldseed.multipart.blueprint.ModelBlueprint;
 import net.worldseed.multipart.events.AnimationCompleteEvent;
 import net.worldseed.multipart.events.AnimationStartEvent;
 import net.worldseed.multipart.events.AnimationStoppedEvent;
@@ -26,8 +27,8 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
     protected @Nullable Entity boundEntity;
     private AnimationHandler animationHandler;
 
-    public GenericModelImpl(ModelRegistry registry, String modelId, JavaPlugin plugin) {
-        super(registry, modelId);
+    public GenericModelImpl(ModelBlueprint blueprint, JavaPlugin plugin) {
+        super(blueprint);
         this.plugin = plugin;
     }
 
@@ -41,11 +42,6 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
     @Override
     public AnimationHandler getAnimationHandler() {
         return animationHandler;
-    }
-
-    @Override
-    public ModelRegistry getModelRegistry() {
-        return (ModelRegistry) super.getModelRegistry();
     }
 
     @Override

@@ -16,8 +16,8 @@ public class ModelBoneVFX<TViewer> extends ModelBoneImpl<TViewer> implements VFX
     private final List<GenericModel<TViewer>> attached = new ArrayList<>();
     private Pos position = Pos.ZERO;
 
-    public ModelBoneVFX(Point pivot, String name, Point rotation, GenericModel<TViewer> model, float scale) {
-        super(pivot, name, rotation, model, scale);
+    public ModelBoneVFX(Point pivot, String name, Point rotation, Point diff, Point offset, GenericModel<TViewer> model, float scale) {
+        super(pivot, name, rotation, diff, offset, model, scale);
         this.stand = null;
     }
 

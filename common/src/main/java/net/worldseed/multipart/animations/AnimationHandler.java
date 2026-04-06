@@ -1,6 +1,6 @@
 package net.worldseed.multipart.animations;
 
-import net.worldseed.multipart.animations.data.AnimationData;
+import net.worldseed.multipart.blueprint.animation.AnimationData;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;

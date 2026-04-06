@@ -8,12 +8,14 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.component.CustomModelData;
 import net.worldseed.multipart.animations.AnimationLoader;
-import net.worldseed.multipart.animations.data.AnimationData;
+import net.worldseed.multipart.blueprint.ModelRenderInformation;
+import net.worldseed.multipart.blueprint.animation.AnimationData;
 import net.worldseed.multipart.data.ModelProvider;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.PositionParser;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -27,7 +29,7 @@ public class ModelRegistry implements AbstractModelRegistry {
 
     public final HashMap<String, Point> offsetMappings = new HashMap<>();
     public final HashMap<String, Point> diffMappings = new HashMap<>();
-    private final HashMap<String, HashMap<String, ItemStack>> blockMappings = new HashMap<>();
+    private final HashMap<String, HashMap<String, ModelRenderInformation>> blockMappings = new HashMap<>();
 
     private final Map<String, Map<String, AnimationData>> loadedAnimations = new HashMap<>();
     private final Map<String, JsonObject> loadedModels = new HashMap<>();
@@ -47,15 +49,15 @@ public class ModelRegistry implements AbstractModelRegistry {
         return namespace;
     }
 
-    public HashMap<String, ItemStack> getItems(String model, String name) {
-        return blockMappings.get(model + "/" + name);
-    }
-
     public void clearCache() {
         loadedAnimations.clear();
         loadedModels.clear();
     }
 
+    @Override
+    public @Nullable Map<String, ModelRenderInformation> getModelRenderInfo(String model, String name) {
+        return blockMappings.get(model + "/" + name);
+    }
 
     public Map<String, AnimationData> getOrLoadAnimations(@KeyPattern.Value @NotNull String toLoad) {
         if (loadedAnimations.containsKey(toLoad))
@@ -114,7 +116,7 @@ public class ModelRegistry implements AbstractModelRegistry {
         }
 
         modelData.entrySet().forEach(entry -> {
-            HashMap<String, ItemStack> keys = new HashMap<>();
+            HashMap<String, ModelRenderInformation> keys = new HashMap<>();
 
             String modelId = entry.getValue().getAsJsonObject().get("model_id").getAsString();
 
@@ -122,7 +124,7 @@ public class ModelRegistry implements AbstractModelRegistry {
                     .get("id")
                     .getAsJsonObject()
                     .entrySet()
-                    .forEach(id -> keys.put(id.getKey(), generateBoneItem(id.getValue().getAsFloat(), modelId)));
+                    .forEach(id -> keys.put(id.getKey(), new ModelRenderInformation(Key.key(this.namespace, "bbmodel/" + modelId), id.getValue().getAsFloat())));
 
             blockMappings.put(entry.getKey(), keys);
             offsetMappings.put(entry.getKey(), PositionParser.getPos(entry.getValue().getAsJsonObject().get("offset").getAsJsonArray()).orElse(Pos.ZERO));
@@ -130,14 +132,4 @@ public class ModelRegistry implements AbstractModelRegistry {
         });
     }
 
-    private ItemStack generateBoneItem(float model_id, String model) {
-        return ItemStack.builder(Material.PAPER)
-                .set(DataComponents.ITEM_MODEL, Key.key(this.namespace, "bbmodel/" + model).asMinimalString())
-                .set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(
-                        List.of(model_id),
-                        List.of(),
-                        List.of(),
-                        List.of()
-                )).build();
-    }
 }

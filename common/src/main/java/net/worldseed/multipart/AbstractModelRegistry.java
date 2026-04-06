@@ -1,8 +1,10 @@
 package net.worldseed.multipart;
 
 import com.google.gson.JsonObject;
-import net.worldseed.multipart.animations.data.AnimationData;
+import net.worldseed.multipart.blueprint.ModelRenderInformation;
+import net.worldseed.multipart.blueprint.animation.AnimationData;
 import net.worldseed.multipart.math.Point;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -12,9 +14,11 @@ public interface AbstractModelRegistry {
 
     JsonObject getOrLoadGeometry(String id);
 
-    Point getDiffMapping(String model, String boneName);
+    @Nullable Point getDiffMapping(String model, String boneName);
 
-    Point getOffsetMapping(String model, String boneName);
+    @Nullable Point getOffsetMapping(String model, String boneName);
+
+    @Nullable Map<String, ModelRenderInformation> getModelRenderInfo(String model, String name);
 
     String getNamespace();
 }

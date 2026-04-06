@@ -14,6 +14,7 @@ import net.minestom.server.instance.block.BlockFace;
 import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.animations.AnimationHandlerImpl;
 import net.worldseed.multipart.animations.ModelAnimation;
+import net.worldseed.multipart.blueprint.ModelBlueprint;
 import net.worldseed.multipart.events.AnimationCompleteEvent;
 import net.worldseed.multipart.events.AnimationStartEvent;
 import net.worldseed.multipart.events.AnimationStoppedEvent;
@@ -38,8 +39,8 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
 
     private static final EventFilter<@NotNull ModelEvent, @NotNull MinestomModel> MODEL_FILTER = EventFilter.from(ModelEvent.class, MinestomModel.class, ModelEvent::model);
 
-    public GenericModelImpl(ModelRegistry registry, String modelId) {
-        super(registry, modelId);
+    public GenericModelImpl(ModelBlueprint blueprint) {
+        super(blueprint);
 
         final ServerProcess process = MinecraftServer.process();
         //noinspection ConstantValue
@@ -60,11 +61,6 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
     @Override
     public boolean isSpawned() {
         return getInstance() != null;
-    }
-
-    @Override
-    public ModelRegistry getModelRegistry() {
-        return (ModelRegistry) super.getModelRegistry();
     }
 
     @Override
@@ -136,7 +132,7 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
 
     protected void registerBoneSuppliers() {
         super.registerBoneSuppliers();
-        boneSuppliers.put(name -> name.contains("seat"), (info) -> new ModelBoneSeat(info.pivot(), info.name(), info.rotation(), this, info.scale()));
+        boneSuppliers.put(name -> name.contains("seat"), (info, scale) -> new ModelBoneSeat(info.pivot(), info.name(), info.rotation(), this, scale));
     }
 
     public Instance getInstance() {

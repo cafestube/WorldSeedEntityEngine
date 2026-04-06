@@ -1,9 +1,9 @@
 package net.worldseed.multipart.animations;
 
 import com.google.gson.*;
-import net.worldseed.multipart.animations.data.AnimatedBoneData;
-import net.worldseed.multipart.animations.data.AnimationData;
-import net.worldseed.multipart.animations.data.BoneAnimationData;
+import net.worldseed.multipart.blueprint.animation.AnimatedBoneData;
+import net.worldseed.multipart.blueprint.animation.AnimationData;
+import net.worldseed.multipart.blueprint.animation.BoneAnimationData;
 import net.worldseed.multipart.math.PositionParser;
 import net.worldseed.multipart.mql.MQLPoint;
 

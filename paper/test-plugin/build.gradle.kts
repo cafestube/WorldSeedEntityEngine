@@ -53,7 +53,7 @@ bukkitPluginYaml {
 tasks.withType(xyz.jpenilla.runpaper.task.RunServer::class) {
     javaLauncher = javaToolchains.launcherFor {
         vendor = JvmVendorSpec.JETBRAINS
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 
     jvmArgs("-XX:+AllowEnhancedClassRedefinition")

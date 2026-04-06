@@ -27,8 +27,8 @@ public class ModelBoneHitbox<TViewer> extends ModelBoneImpl<TViewer> implements 
     private final Point orgPivot;
     private ScheduledTask positionTask;
 
-    public ModelBoneHitbox(Point pivot, String name, Point rotation, GenericModel<TViewer> model, Point newOffset, double sizeX, double sizeY, JsonArray cubes, boolean parent, float scale) {
-        super(pivot, name, rotation, model, scale);
+    public ModelBoneHitbox(Point pivot, String name, Point rotation, Point diff, Point offset, GenericModel<TViewer> model, Point newOffset, double sizeX, double sizeY, JsonArray cubes, boolean parent, float scale) {
+        super(pivot, name, rotation, diff, offset, model, scale);
 
         this.orgPivot = pivot;
         this.cubes = cubes;
@@ -143,7 +143,7 @@ public class ModelBoneHitbox<TViewer> extends ModelBoneImpl<TViewer> implements 
                         if ((currentPos.y() + maxSize) > sizePoint.y())
                             currentPos = currentPos.withY(sizePoint.y() - maxSize);
 
-                        var created = new ModelBoneHitbox<>(pivotPos, name, boneRotation, genericModel, currentPos.add(newPoint), maxSize, maxSize, cubes, false, scale);
+                        var created = new ModelBoneHitbox<>(pivotPos, name, boneRotation, null, null, genericModel, currentPos.add(newPoint), maxSize, maxSize, cubes, false, scale);
                         illegitimateChildren.add(created);
                     }
                 }

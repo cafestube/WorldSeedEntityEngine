@@ -13,9 +13,6 @@ import java.util.Collection;
 
 public interface MinestomModel extends GenericModel<Player>, Shape, EventHandler<@NotNull ModelEvent> {
 
-    @Override
-    ModelRegistry getModelRegistry();
-
     void mountEntity(String name, Entity entity);
 
     void dismountEntity(String name, Entity entity);

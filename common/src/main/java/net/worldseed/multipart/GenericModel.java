@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.RGBLike;
 import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.animations.ModelAnimation;
+import net.worldseed.multipart.blueprint.ModelBlueprint;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.entity.ModelBone;
@@ -28,7 +29,7 @@ public interface GenericModel<TViewer> {
 
     ModelPlatform<TViewer> getModelPlatform();
 
-    AbstractModelRegistry getModelRegistry();
+    ModelBlueprint getBlueprint();
 
     /**
      * Get the pivot point of the model. Used for global rotation
@@ -128,11 +129,6 @@ public interface GenericModel<TViewer> {
     void setHeadRotation(String name, double rotation);
 
     @NotNull List<ModelBone<TViewer>> getParts();
-
-
-    Point getOffset(String bone);
-
-    Point getDiff(String bone);
 
     void triggerAnimationComplete(ModelAnimation animation, AnimationHandler.AnimationDirection direction);
 

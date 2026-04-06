@@ -6,21 +6,20 @@ import io.papermc.paper.datacomponent.item.CustomModelData;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.KeyPattern;
 import net.worldseed.multipart.animations.AnimationLoader;
-import net.worldseed.multipart.animations.data.AnimationData;
+import net.worldseed.multipart.blueprint.ModelBlueprint;
+import net.worldseed.multipart.blueprint.ModelRenderInformation;
+import net.worldseed.multipart.blueprint.animation.AnimationData;
 import net.worldseed.multipart.data.ModelProvider;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.PositionParser;
-import net.worldseed.multipart.persistance.ModelPersistenceHandler;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ModelRegistry implements AbstractModelRegistry {
@@ -30,7 +29,7 @@ public class ModelRegistry implements AbstractModelRegistry {
 
     public final HashMap<String, Point> offsetMappings = new HashMap<>();
     public final HashMap<String, Point> diffMappings = new HashMap<>();
-    private final HashMap<String, HashMap<String, ItemStack>> blockMappings = new HashMap<>();
+    private final HashMap<String, HashMap<String, ModelRenderInformation>> blockMappings = new HashMap<>();
 
     private final Map<String, Map<String, AnimationData>> loadedAnimations = new HashMap<>();
     private final Map<String, JsonObject> loadedModels = new HashMap<>();
@@ -48,10 +47,6 @@ public class ModelRegistry implements AbstractModelRegistry {
     @Override
     public String getNamespace() {
         return namespace;
-    }
-
-    public HashMap<String, ItemStack> getItems(String model, String name) {
-        return blockMappings.get(model + "/" + name);
     }
 
     public void clearCache() {
@@ -108,6 +103,11 @@ public class ModelRegistry implements AbstractModelRegistry {
         return offsetMappings.get(model + "/" + boneName);
     }
 
+    @Override
+    public @Nullable Map<String, ModelRenderInformation> getModelRenderInfo(String model, String name) {
+        return blockMappings.get(model + "/" + name);
+    }
+
     private void loadMappings() {
         JsonObject modelData = null;
         try {
@@ -117,7 +117,7 @@ public class ModelRegistry implements AbstractModelRegistry {
         }
 
         modelData.entrySet().forEach(entry -> {
-            HashMap<String, ItemStack> keys = new HashMap<>();
+            HashMap<String, ModelRenderInformation> keys = new HashMap<>();
 
             String modelId = entry.getValue().getAsJsonObject().get("model_id").getAsString();
 
@@ -125,20 +125,11 @@ public class ModelRegistry implements AbstractModelRegistry {
                     .get("id")
                     .getAsJsonObject()
                     .entrySet()
-                    .forEach(id -> keys.put(id.getKey(), generateBoneItem(id.getValue().getAsFloat(), modelId)));
+                    .forEach(id -> keys.put(id.getKey(), new ModelRenderInformation(Key.key(this.namespace, "bbmodel/" + modelId), id.getValue().getAsFloat())));
 
             blockMappings.put(entry.getKey(), keys);
             offsetMappings.put(entry.getKey(), PositionParser.getPos(entry.getValue().getAsJsonObject().get("offset").getAsJsonArray()).orElse(Pos.ZERO));
             diffMappings.put(entry.getKey(), PositionParser.getPos(entry.getValue().getAsJsonObject().get("diff").getAsJsonArray()).orElse(Pos.ZERO));
         });
-    }
-
-    private ItemStack generateBoneItem(float model_id, String model) {
-        ItemStack stack = new ItemStack(Material.PAPER);
-        stack.setData(DataComponentTypes.ITEM_MODEL, Key.key(this.namespace, "bbmodel/" + model));
-        stack.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData()
-                        .addFloat(model_id)
-                .build());
-        return stack;
     }
 }

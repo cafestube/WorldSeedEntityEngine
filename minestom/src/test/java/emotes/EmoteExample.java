@@ -5,7 +5,7 @@ import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.gestures.EmotePlayer;
 import net.worldseed.multipart.animations.AnimationLoader;
-import net.worldseed.multipart.animations.data.AnimationData;
+import net.worldseed.multipart.blueprint.animation.AnimationData;
 
 import java.util.Map;
 

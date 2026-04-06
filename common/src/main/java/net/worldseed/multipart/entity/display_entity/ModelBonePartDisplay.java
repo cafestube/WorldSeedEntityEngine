@@ -2,6 +2,7 @@ package net.worldseed.multipart.entity.display_entity;
 
 import net.kyori.adventure.util.RGBLike;
 import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.blueprint.ModelRenderInformation;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Quaternion;
@@ -11,14 +12,19 @@ import net.worldseed.multipart.entity.entity.BoneEntity;
 import net.worldseed.multipart.entity.entity.ItemDisplayBoneEntity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ModelBonePartDisplay<TViewer> extends ModelBoneImpl<TViewer> implements ModelBoneViewable {
     private final List<GenericModel<TViewer>> attached = new ArrayList<>();
+    private Map<String, ModelRenderInformation> renderInfo;
+    private String state;
 
-    public ModelBonePartDisplay(Point pivot, String name, Point rotation, GenericModel<TViewer> model, float scale) {
-        super(pivot, name, rotation, model, scale);
+    public ModelBonePartDisplay(Point pivot, String name, Point rotation, Point diff, Point offset, GenericModel<TViewer> model, float scale, Map<String, ModelRenderInformation> renderInfo) {
+        super(pivot, name, rotation, diff, offset, model, scale);
 
+        this.renderInfo = renderInfo;
         if (this.offset != null) {
             ItemDisplayBoneEntity<TViewer> entity = model.getModelPlatform().createItemDisplayBoneEntity(model, name);
             this.stand = entity;
@@ -28,6 +34,21 @@ public class ModelBonePartDisplay<TViewer> extends ModelBoneImpl<TViewer> implem
             entity.setTransformationInterpolationDuration(2);
             entity.setPosRotInterpolationDuration(2);
             entity.setViewRange(1000);
+        }
+
+        if(this.renderInfo == null) {
+            this.renderInfo = new HashMap<>();
+        }
+    }
+
+    public void setRenderInfo(Map<String, ModelRenderInformation> renderInfo) {
+        this.renderInfo = renderInfo;
+        if(this.renderInfo == null) {
+            this.renderInfo = new HashMap<>();
+        }
+
+        if(state != null) {
+            setState(state);
         }
     }
 
@@ -170,12 +191,13 @@ public class ModelBonePartDisplay<TViewer> extends ModelBoneImpl<TViewer> implem
     public void setState(String state) {
         BoneEntity<TViewer> entity = this.getEntity();
         if (entity instanceof ItemDisplayBoneEntity<TViewer> display) {
+            this.state = state;
             if (state.equals("invisible")) {
-                display.clearItem();
+                display.setItemState(null);
                 return;
             }
 
-            display.setItemState(state);
+            display.setItemState(renderInfo.get(state));
         }
     }
 

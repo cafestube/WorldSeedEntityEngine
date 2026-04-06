@@ -1,32 +1,31 @@
 package net.worldseed.multipart.entity;
 
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.util.RGBLike;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Metadata;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.metadata.display.ItemDisplayMeta;
 import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.Material;
+import net.minestom.server.item.component.CustomModelData;
 import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
 import net.worldseed.multipart.MinestomModel;
 import net.worldseed.multipart.PositionConversion;
+import net.worldseed.multipart.blueprint.ModelRenderInformation;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.entity.entity.ItemDisplayBoneEntity;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class MinestomItemDisplayBoneEntity extends MinestomBoneEntity implements ItemDisplayBoneEntity<Player> {
 
-    protected final HashMap<String, ItemStack> items;
-
     public MinestomItemDisplayBoneEntity(MinestomModel model, String name) {
         super(EntityType.ITEM_DISPLAY, model, name);
-
-        this.items = model.getModelRegistry().getItems(model.getId(), name);
     }
 
     @Override
@@ -64,19 +63,25 @@ public class MinestomItemDisplayBoneEntity extends MinestomBoneEntity implements
     }
 
     @Override
-    public void clearItem() {
-        var meta = (ItemDisplayMeta) this.getEntityMeta();
-        if(meta.getItemStack().isAir()) return;
-        meta.setItemStack(ItemStack.AIR);
-    }
-
-    @Override
-    public void setItemState(String state) {
-        if (this.items.containsKey(state)) {
+    public void setItemState(@Nullable ModelRenderInformation itemState) {
+        if(itemState == null) {
             var meta = (ItemDisplayMeta) this.getEntityMeta();
-            if(Objects.equals(meta.getItemStack(), this.items.get(state))) return;
-            meta.setItemStack(this.items.get(state));
+            if(meta.getItemStack().isAir()) return;
+            meta.setItemStack(ItemStack.AIR);
+            return;
         }
+
+        var meta = (ItemDisplayMeta) this.getEntityMeta();
+        meta.setItemStack(
+                ItemStack.builder(Material.PAPER)
+                        .set(DataComponents.ITEM_MODEL, itemState.itemModel().asMinimalString())
+                        .set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(
+                                List.of(itemState.modelStateId()),
+                                List.of(),
+                                List.of(),
+                                List.of()
+                        )).build()
+        );
     }
 
     @Override

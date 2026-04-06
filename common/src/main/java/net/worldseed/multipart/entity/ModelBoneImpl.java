@@ -22,13 +22,13 @@ public abstract class ModelBoneImpl<TViewer> implements ModelBone<TViewer> {
     protected BoneEntity<TViewer> stand;
     private ModelBone<TViewer> parent;
 
-    public ModelBoneImpl(Point pivot, String name, Point rotation, GenericModel<TViewer> model, float scale) {
+    public ModelBoneImpl(Point pivot, String name, Point rotation, Point diff, Point offset, GenericModel<TViewer> model, float scale) {
         this.name = name;
         this.rotation = rotation;
         this.model = model;
 
-        this.diff = model.getDiff(name);
-        this.offset = model.getOffset(name);
+        this.diff = diff;
+        this.offset = offset;
 
         if (this.diff != null) this.pivot = pivot.add(this.diff);
         else this.pivot = pivot;

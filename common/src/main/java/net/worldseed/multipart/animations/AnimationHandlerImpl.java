@@ -1,9 +1,9 @@
 package net.worldseed.multipart.animations;
 
 import net.worldseed.multipart.GenericModel;
-import net.worldseed.multipart.animations.data.AnimatedBoneData;
-import net.worldseed.multipart.animations.data.AnimationData;
-import net.worldseed.multipart.animations.data.BoneAnimationData;
+import net.worldseed.multipart.blueprint.animation.AnimatedBoneData;
+import net.worldseed.multipart.blueprint.animation.AnimationData;
+import net.worldseed.multipart.blueprint.animation.BoneAnimationData;
 import net.worldseed.multipart.scheduling.ScheduledTask;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +28,7 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
     }
 
     protected void loadDefaultAnimations() {
-        Map<String, AnimationData> loadedAnimations = model.getModelRegistry().getOrLoadAnimations(model.getId());
+        Map<String, AnimationData> loadedAnimations = model.getBlueprint().animations();
         // Init animation
         int i = 0;
         for (Map.Entry<String, AnimationData> animation : loadedAnimations.entrySet()) {

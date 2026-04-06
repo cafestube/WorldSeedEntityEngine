@@ -13,8 +13,8 @@ import net.worldseed.multipart.entity.bone_types.NametagBone;
 import java.util.List;
 
 public class ModelBoneNametag<TViewer> extends ModelBoneImpl<TViewer> implements NametagBone<TViewer> {
-    public ModelBoneNametag(Point pivot, String name, Point rotation, GenericModel<TViewer> model, float scale) {
-        super(pivot, name, rotation, model, scale);
+    public ModelBoneNametag(Point pivot, String name, Point rotation, Point diff, Point offset, GenericModel<TViewer> model, float scale) {
+        super(pivot, name, rotation, diff, offset, model, scale);
     }
 
     @Override

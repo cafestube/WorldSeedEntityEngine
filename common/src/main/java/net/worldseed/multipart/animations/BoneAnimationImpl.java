@@ -1,6 +1,6 @@
 package net.worldseed.multipart.animations;
 
-import net.worldseed.multipart.animations.data.BoneAnimationData;
+import net.worldseed.multipart.blueprint.animation.BoneAnimationData;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.entity.ModelBone;

@@ -1,9 +1,11 @@
 package net.worldseed.multipart.entity.entity;
 
 import net.kyori.adventure.util.RGBLike;
+import net.worldseed.multipart.blueprint.ModelRenderInformation;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Quaternion;
 import net.worldseed.multipart.math.Vec;
+import org.jetbrains.annotations.Nullable;
 
 public interface ItemDisplayBoneEntity<TViewer> extends BoneEntity<TViewer> {
 
@@ -11,9 +13,7 @@ public interface ItemDisplayBoneEntity<TViewer> extends BoneEntity<TViewer> {
 
     void setGlowing(TViewer player, RGBLike color);
 
-    void clearItem();
-
-    void setItemState(String state);
+    void setItemState(@Nullable ModelRenderInformation itemState);
 
     void setTransformationInterpolationStartDelta(int i);
 

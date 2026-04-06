@@ -1,4 +1,4 @@
-package net.worldseed.multipart.animations.data;
+package net.worldseed.multipart.blueprint.animation;
 
 public record AnimatedBoneData(BoneAnimationData rotation, BoneAnimationData position, BoneAnimationData scale)  {
 }

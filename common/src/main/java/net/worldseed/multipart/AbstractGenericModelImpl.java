@@ -2,11 +2,10 @@ package net.worldseed.multipart;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.RGBLike;
-import net.worldseed.multipart.animations.AnimationHandler;
-import net.worldseed.multipart.animations.ModelAnimation;
+import net.worldseed.multipart.blueprint.ModelBlueprint;
+import net.worldseed.multipart.blueprint.ModelBoneInfo;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.PositionParser;
@@ -26,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -41,21 +41,23 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
     private double pitch;
     private final RootBoneEntity<TViewer> rootEntity;
 
-    protected record ModelBoneInfo(String name, Point pivot, Point rotation, JsonArray cubes, float scale) {
-    }
+    protected final Map<Predicate<String>, BoneFactory<TViewer>> boneSuppliers = new LinkedHashMap<>();
 
-    protected final Map<Predicate<String>, Function<ModelBoneInfo, @Nullable ModelBone<TViewer>>> boneSuppliers = new LinkedHashMap<>();
-    Function<ModelBoneInfo, ModelBone<TViewer>> defaultBoneSupplier = (info) -> new ModelBonePartDisplay<>(info.pivot, info.name, info.rotation, this, info.scale);
+    protected BoneFactory<TViewer> defaultBoneSupplier = (info, scale) ->
+            new ModelBonePartDisplay<>(info.pivot(), info.name(), info.rotation(), info.diff(), info.offset(), this, scale, info.renderInfo());
 
-    private final AbstractModelRegistry modelRegistry;
-    private final String modelId;
+    private final ModelBlueprint blueprint;
 
-    public AbstractGenericModelImpl(AbstractModelRegistry registry, String modelId) {
-        this.modelRegistry = registry;
-        this.modelId = modelId;
+    public AbstractGenericModelImpl(ModelBlueprint blueprint) {
+        this.blueprint = blueprint;
 
         registerBoneSuppliers();
         this.rootEntity = getModelPlatform().createRootEntity(this);
+    }
+
+    @Override
+    public ModelBlueprint getBlueprint() {
+        return blueprint;
     }
 
     @Override
@@ -99,23 +101,16 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
     }
 
     @Override
-    public AbstractModelRegistry getModelRegistry() {
-        return modelRegistry;
-    }
-
-    @Override
     public String getId() {
-        return this.modelId;
+        return this.blueprint.modelId().value();
     }
 
     protected void init(@NotNull Pos position, float scale) {
         this.position = position;
 
-        JsonObject loadedModel = this.getModelRegistry().getOrLoadGeometry(getId());
-
         this.setGlobalRotation(position.yaw());
 
-        loadBones(loadedModel, scale);
+        loadBones(blueprint, scale);
 
         for (ModelBone<TViewer> modelBonePart : this.parts.values()) {
             if (modelBonePart instanceof ModelBoneViewable)
@@ -145,6 +140,51 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
         this.setState("normal");
     }
 
+    private void loadBones(ModelBlueprint blueprint, float scale) {
+        // Build bones
+        for (ModelBoneInfo bone : blueprint.parts().values()) {
+
+            boolean found = false;
+            for (Map.Entry<Predicate<String>, BoneFactory<TViewer>> entry : this.boneSuppliers.entrySet()) {
+                var predicate = entry.getKey();
+                var supplier = entry.getValue();
+
+                if (predicate.test(bone.name())) {
+                    var modelBonePart = supplier.create(bone, scale);
+                    if(modelBonePart == null) {
+                        throw new IllegalStateException("Bone supplier for predicate matched but returned null for bone: " + bone.name());
+                    }
+
+                    additionalBones.addAll(modelBonePart.getChildren());
+                    parts.put(bone.name(), modelBonePart);
+                    found = true;
+
+                    break;
+                }
+            }
+
+            if (!found) {
+                var modelBonePart = defaultBoneSupplier.create(bone, scale);
+
+                additionalBones.addAll(modelBonePart.getChildren());
+                parts.put(bone.name(), modelBonePart);
+            }
+        }
+
+        // Link parents
+        for (ModelBoneInfo bone : blueprint.parts().values()) {
+            if (bone.parent() != null) {
+                ModelBone<TViewer> child = this.parts.get(bone.name());
+
+                if (child == null) continue;
+                ModelBone<TViewer> parentBone = this.parts.get(bone.parent());
+
+                child.setParent(parentBone);
+                parentBone.addChild(child);
+            }
+        }
+    }
+
     @Override
     public void setGlobalScale(float scale) {
         for (ModelBone<TViewer> modelBonePart : this.parts.values()) {
@@ -153,11 +193,13 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
     }
 
     protected void registerBoneSuppliers() {
-        boneSuppliers.put(name -> name.equals("nametag") || name.equals("tag_name"), (info) -> new ModelBoneNametag<>(info.pivot(), info.name(), info.rotation(), this, info.scale()));
-        boneSuppliers.put(name -> name.contains("hitbox"), (info) -> {
-            if (info.cubes.isEmpty()) return null;
+        boneSuppliers.put(name -> name.equals("nametag") || name.equals("tag_name"),
+                (info, scale) -> new ModelBoneNametag<>(info.pivot(), info.name(), info.rotation(), info.offset(), info.diff(), this, scale));
 
-            var cube = info.cubes.get(0);
+        boneSuppliers.put(name -> name.contains("hitbox"), (info, scale) -> {
+            if (info.cubes().isEmpty()) return null;
+
+            var cube = info.cubes().get(0);
             JsonArray sizeArray = cube.getAsJsonObject().get("size").getAsJsonArray();
             JsonArray p = cube.getAsJsonObject().get("pivot").getAsJsonArray();
 
@@ -165,64 +207,13 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
             Point pivotPoint = new Vec(p.get(0).getAsFloat(), p.get(1).getAsFloat(), p.get(2).getAsFloat());
 
             var newOffset = pivotPoint.mul(-1, 1, 1);
-            return new ModelBoneHitbox<>(info.pivot, info.name, info.rotation, this, newOffset, sizePoint.x(), sizePoint.y(), info.cubes, true, info.scale);
+            return new ModelBoneHitbox<>(info.pivot(), info.name(), info.rotation(), info.diff(), info.offset(),
+                    this, newOffset, sizePoint.x(), sizePoint.y(), info.cubes(), true, scale);
         });
-        boneSuppliers.put(name -> name.contains("vfx"), (info) -> new ModelBoneVFX<>(info.pivot, info.name, info.rotation, this, info.scale));
-        boneSuppliers.put(name -> name.equals("head") || name.startsWith("h_"), (info) -> new ModelBoneHeadDisplay<>(info.pivot, info.name, info.rotation, this, info.scale));
-    }
-
-    protected void loadBones(JsonObject loadedModel, float scale) {
-        // Build bones
-        for (JsonElement bone : loadedModel.get("minecraft:geometry").getAsJsonArray().get(0).getAsJsonObject().get("bones").getAsJsonArray()) {
-            JsonElement pivot = bone.getAsJsonObject().get("pivot");
-            String name = bone.getAsJsonObject().get("name").getAsString();
-
-            Point boneRotation = PositionParser.getPos(bone.getAsJsonObject().get("rotation")).orElse(Pos.ZERO).mul(-1, -1, 1);
-            Point pivotPos = PositionParser.getPos(pivot).orElse(Pos.ZERO).mul(-1, 1, 1);
-
-            boolean found = false;
-            for (Map.Entry<Predicate<String>, Function<ModelBoneInfo, @Nullable ModelBone<TViewer>>> entry : this.boneSuppliers.entrySet()) {
-                var predicate = entry.getKey();
-                var supplier = entry.getValue();
-
-                if (predicate.test(name)) {
-                    var modelBonePart = supplier.apply(new ModelBoneInfo(name, pivotPos, boneRotation, bone.getAsJsonObject().getAsJsonArray("cubes"), scale));
-                    if(modelBonePart == null) {
-                        throw new IllegalStateException("Bone supplier for predicate matched but returned null for bone: " + name);
-                    }
-
-                    additionalBones.addAll(modelBonePart.getChildren());
-                    parts.put(name, modelBonePart);
-                    found = true;
-
-                    break;
-                }
-            }
-
-            if (!found) {
-                var modelBonePart = defaultBoneSupplier.apply(new ModelBoneInfo(name, pivotPos, boneRotation, bone.getAsJsonObject().getAsJsonArray("cubes"), scale));
-
-                additionalBones.addAll(modelBonePart.getChildren());
-                parts.put(name, modelBonePart);
-            }
-        }
-
-        // Link parents
-        for (JsonElement bone : loadedModel.get("minecraft:geometry").getAsJsonArray().get(0).getAsJsonObject().get("bones").getAsJsonArray()) {
-            String name = bone.getAsJsonObject().get("name").getAsString();
-            JsonElement parent = bone.getAsJsonObject().get("parent");
-            String parentString = parent == null ? null : parent.getAsString();
-
-            if (parentString != null) {
-                ModelBone<TViewer> child = this.parts.get(name);
-
-                if (child == null) continue;
-                ModelBone<TViewer> parentBone = this.parts.get(parentString);
-
-                child.setParent(parentBone);
-                parentBone.addChild(child);
-            }
-        }
+        boneSuppliers.put(name -> name.contains("vfx"), (info, scale) ->
+                new ModelBoneVFX<>(info.pivot(), info.name(), info.rotation(), info.diff(), info.offset(), this, scale));
+        boneSuppliers.put(name -> name.equals("head") || name.startsWith("h_"), (info, scale) ->
+                new ModelBoneHeadDisplay<>(info.pivot(), info.name(), info.rotation(), info.diff(), info.offset(), this, scale, info.renderInfo()));
     }
 
     public void setState(String state) {
@@ -280,14 +271,6 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
 
     public Pos getGlobalOffset() {
         return Pos.ZERO;
-    }
-
-    public Point getDiff(String boneName) {
-        return modelRegistry.getDiffMapping(getId(), boneName);
-    }
-
-    public Point getOffset(String boneName) {
-        return modelRegistry.getOffsetMapping(getId(), boneName);
     }
 
     @Override
