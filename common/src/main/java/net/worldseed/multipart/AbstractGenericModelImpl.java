@@ -61,6 +61,28 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
     }
 
     @Override
+    public void changePart(String part, String newPart, ModelBlueprint newModel) {
+        ModelBone<TViewer> modelBone = this.parts.get(part);
+
+        if(modelBone instanceof ModelBonePartDisplay<TViewer> displayBone) {
+            ModelBoneInfo info = newModel.parts().get(newPart);
+
+            displayBone.setRenderInfo(info.renderInfo());
+        }
+    }
+
+    @Override
+    public void remapModel(ModelBlueprint newModel) {
+        for (ModelBoneInfo value : newModel.parts().values()) {
+
+            ModelBone<TViewer> tViewerModelBone = parts.get(value.name());
+            if(tViewerModelBone instanceof ModelBonePartDisplay<TViewer> displayBone) {
+                displayBone.setRenderInfo(value.renderInfo());
+            }
+        }
+    }
+
+    @Override
     public double getGlobalRotation() {
         return globalRotation;
     }

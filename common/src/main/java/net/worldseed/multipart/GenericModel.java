@@ -31,6 +31,10 @@ public interface GenericModel<TViewer> {
 
     ModelBlueprint getBlueprint();
 
+    void changePart(String part, String newPart, ModelBlueprint newModel);
+
+    void remapModel(ModelBlueprint newModel);
+
     /**
      * Get the pivot point of the model. Used for global rotation
      *
