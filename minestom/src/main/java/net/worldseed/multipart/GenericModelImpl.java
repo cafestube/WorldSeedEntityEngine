@@ -132,7 +132,7 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
 
     protected void registerBoneSuppliers() {
         super.registerBoneSuppliers();
-        boneSuppliers.put(name -> name.contains("seat"), (info, scale) -> new ModelBoneSeat(info.pivot(), info.name(), info.rotation(), this, scale));
+        boneSuppliers.put(name -> name.contains("seat"), (info, scale) -> new ModelBoneSeat(info.pivot(), info.name(), info.rotation(), info.diff(), info.offset(), this, scale));
     }
 
     public Instance getInstance() {

@@ -23,8 +23,8 @@ import java.util.Set;
 
 public class ModelBoneSeat extends ModelBoneImpl<Player> implements RideableBone {
 
-    public ModelBoneSeat(Point pivot, String name, Point rotation, MinestomModel model, float scale) {
-        super(pivot, name, rotation, model, scale);
+    public ModelBoneSeat(Point pivot, String name, Point rotation,  Point diff, Point offset, MinestomModel model, float scale) {
+        super(pivot, name, rotation, diff, offset, model, scale);
 
         if (this.offset != null) {
             this.stand = new MinestomBoneEntity(EntityType.ARMOR_STAND, model, name);

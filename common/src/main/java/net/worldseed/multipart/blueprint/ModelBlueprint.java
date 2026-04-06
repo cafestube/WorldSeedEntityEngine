@@ -5,10 +5,13 @@ import com.google.gson.JsonObject;
 import net.kyori.adventure.key.Key;
 import net.worldseed.multipart.AbstractModelRegistry;
 import net.worldseed.multipart.blueprint.animation.AnimationData;
+import net.worldseed.multipart.entity.ModelBone;
+import net.worldseed.multipart.entity.display_entity.ModelBonePartDisplay;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.PositionParser;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -18,6 +21,18 @@ public record ModelBlueprint(
         Map<String, AnimationData> animations
 ) {
 
+    public ModelBlueprint remappedWith(ModelBlueprint other) {
+        Map<String, ModelBoneInfo> parts = new HashMap<>();
+
+        for (ModelBoneInfo value : other.parts().values()) {
+            ModelBoneInfo info = this.parts.get(value.name())
+                    .withRenderInfo(value.renderInfo());
+
+            parts.put(value.name(), info);
+        }
+
+        return new ModelBlueprint(modelId, parts, animations);
+    }
 
     public static ModelBlueprint loadBlueprint(String model, AbstractModelRegistry modelRegistry) {
         final LinkedHashMap<String, ModelBoneInfo> parts = new LinkedHashMap<>();

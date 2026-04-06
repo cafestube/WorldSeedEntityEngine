@@ -15,4 +15,17 @@ public record ModelBoneInfo(
         @Nullable Point offset,
         @Nullable Map<String, ModelRenderInformation> renderInfo,
         JsonArray cubes
-) { }
+) {
+    public ModelBoneInfo withRenderInfo(@Nullable Map<String, ModelRenderInformation> stringModelRenderInformationMap) {
+        return new ModelBoneInfo(
+                this.name,
+                this.parent,
+                this.pivot,
+                this.rotation,
+                this.diff,
+                this.offset,
+                stringModelRenderInformationMap,
+                this.cubes
+        );
+    }
+}

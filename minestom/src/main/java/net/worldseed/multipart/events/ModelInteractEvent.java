@@ -4,7 +4,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import net.worldseed.multipart.entity.MinestomBoneEntity;
-import net.worldseed.multipart.gestures.EmoteModel;
+//import net.worldseed.multipart.gestures.EmoteModel;
 import net.worldseed.multipart.MinestomModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,9 +15,9 @@ public class ModelInteractEvent implements ModelEvent {
     private final MinestomBoneEntity interactedBone;
     private final PlayerHand hand;
 
-    public ModelInteractEvent(@NotNull EmoteModel model, PlayerEntityInteractEvent event) {
-        this(model, event, null);
-    }
+//    public ModelInteractEvent(@NotNull EmoteModel model, PlayerEntityInteractEvent event) {
+//        this(model, event, null);
+//    }
     
     public ModelInteractEvent(@NotNull MinestomModel model, PlayerEntityInteractEvent event, @Nullable MinestomBoneEntity interactedBone) {
         this.model = model;
