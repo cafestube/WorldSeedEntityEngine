@@ -24,11 +24,16 @@ public record ModelBlueprint(
     public ModelBlueprint remappedWith(ModelBlueprint other) {
         Map<String, ModelBoneInfo> parts = new HashMap<>();
 
-        for (ModelBoneInfo value : other.parts().values()) {
-            ModelBoneInfo info = this.parts.get(value.name())
-                    .withRenderInfo(value.renderInfo());
+        for (ModelBoneInfo value : this.parts.values()) {
+            ModelBoneInfo info = other.parts.get(value.name());
 
-            parts.put(value.name(), info);
+            if(info != null) {
+                parts.put(value.name(), value.withRenderInfo(info.renderInfo()));
+            } else {
+                parts.put(value.name(), value);
+            }
+
+
         }
 
         return new ModelBlueprint(modelId, parts, animations);
