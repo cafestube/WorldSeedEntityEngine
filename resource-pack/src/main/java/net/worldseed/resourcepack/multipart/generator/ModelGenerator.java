@@ -3,6 +3,7 @@ package net.worldseed.resourcepack.multipart.generator;
 import net.worldseed.resourcepack.PackBuilder;
 import net.worldseed.resourcepack.multipart.AdditionalStates;
 import net.worldseed.resourcepack.multipart.parser.BlockBenchParser;
+import net.worldseed.resourcepack.multipart.parser.BlockBenchVersion;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -13,10 +14,12 @@ import java.util.List;
 import java.util.Map;
 
 public class ModelGenerator {
+
     public static BBEntityModel generate(PackBuilder.Model modelObj) {
         JsonObject model = Json.createReader(new StringReader(modelObj.data())).readObject();
+        BlockBenchVersion bbVersion = BlockBenchVersion.getFromString(model.getJsonObject("meta").getString("format_version"));
 
-        JsonObject animations = AnimationGenerator.generate(model.getJsonArray("animations"));
+        JsonObject animations = AnimationGenerator.generate(model.getJsonArray("animations"), bbVersion);
 
         int width = 16;
         int height = 16;

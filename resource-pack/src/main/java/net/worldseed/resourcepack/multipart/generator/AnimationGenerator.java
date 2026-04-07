@@ -1,5 +1,7 @@
 package net.worldseed.resourcepack.multipart.generator;
 
+import net.worldseed.resourcepack.multipart.parser.BlockBenchVersion;
+
 import javax.json.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class AnimationGenerator {
-    public static JsonObject generate(JsonArray animationRaw) {
+    public static JsonObject generate(JsonArray animationRaw, BlockBenchVersion version) {
         JsonObjectBuilder animations = Json.createObjectBuilder();
         if (animationRaw == null) return animations.build();
 
@@ -47,10 +49,33 @@ public class AnimationGenerator {
 
                     String interpolation = keyframe.getString("interpolation");
 
+                    JsonArray dataPoints = keyframe.getJsonArray("data_points");
+
+                    if(version.isHigherOrEqual(BlockBenchVersion.V5) && (channel.equals("position") || channel.equals("rotation"))) {
+                        JsonArrayBuilder builder = Json.createArrayBuilder();
+
+                        for (JsonValue p : dataPoints) {
+                            JsonObject dataPoint = p.asJsonObject();
+
+                            JsonObjectBuilder newPoint = Json.createObjectBuilder(dataPoint)
+                                    .add("x", MolangInverter.invertMolang(dataPoint.get("x")));
+
+                            if(channel.equals("rotation")) {
+                                newPoint.add("y", MolangInverter.invertMolang(dataPoint.get("y")));
+                            }
+
+                            builder.add(newPoint.build());
+                        }
+
+                        dataPoints = builder.build();
+                    }
+
+
                     JsonObject built = Json.createObjectBuilder()
-                            .add("post", keyframe.getJsonArray("data_points"))
+                            .add("post", dataPoints)
                             .add("lerp_mode", interpolation)
                             .build();
+
 
                     switch (channel) {
                         case "rotation" -> rotation.add(Map.entry(time, built));
