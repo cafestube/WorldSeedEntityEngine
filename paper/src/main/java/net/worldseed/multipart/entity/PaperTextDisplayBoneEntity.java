@@ -15,7 +15,8 @@ public class PaperTextDisplayBoneEntity extends PaperPacketBoneEntity implements
 
     public PaperTextDisplayBoneEntity(PaperModel model, String name) {
         super(EntityType.TEXT_DISPLAY, model, name);
-        this.dataWatcher.set(EntityData.DISPLAY_DATA_BILLBOARD_RENDER_CONSTRAINTS_ID, (byte) Display.BillboardConstraints.VERTICAL.ordinal());
+        this.dataWatcher.set(EntityData.DISPLAY_DATA_BILLBOARD_RENDER_CONSTRAINTS_ID, (byte) Display.BillboardConstraints.CENTER.ordinal());
+        this.dataWatcher.set(EntityData.TEXT_DISPLAY_DATA_STYLE_FLAGS_ID, (byte) 2); //See through blocks
     }
 
     @Override

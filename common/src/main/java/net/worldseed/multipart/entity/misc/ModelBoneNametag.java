@@ -82,7 +82,7 @@ public class ModelBoneNametag<TViewer> extends ModelBoneImpl<TViewer> implements
         TextDisplayBoneEntity<TViewer> entity = this.getEntity();
         if (this.offset == null || stand == null) return;
 
-        entity.setTranslation(calculatePositionInternal());
+        entity.teleport(calculatePosition());
     }
 
     @Override
@@ -135,12 +135,11 @@ public class ModelBoneNametag<TViewer> extends ModelBoneImpl<TViewer> implements
 
         this.stand = entity = model.getModelPlatform().createTextDisplayBoneEntity(model, this.name);
 
-        entity.setTranslation(calculatePositionInternal());
+        entity.teleport(calculatePosition());
         entity.setText(component);
 
         if(model.isSpawned()) {
-            model.getModelPlatform().spawn(model, entity, model.getPosition());
-            model.getModelRoot().attachEntity(entity);
+            model.getModelPlatform().spawn(model, entity, calculatePosition());
         }
     }
 

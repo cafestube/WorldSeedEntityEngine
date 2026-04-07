@@ -18,7 +18,8 @@ public class MinestomTextDisplayBoneEntity extends MinestomBoneEntity implements
         super(EntityType.TEXT_DISPLAY, model, name);
 
         var meta = (TextDisplayMeta) this.getEntityMeta();
-        meta.setBillboardRenderConstraints(AbstractDisplayMeta.BillboardConstraints.VERTICAL);
+        meta.setBillboardRenderConstraints(AbstractDisplayMeta.BillboardConstraints.CENTER);
+        meta.setSeeThrough(true);
     }
 
     @Override

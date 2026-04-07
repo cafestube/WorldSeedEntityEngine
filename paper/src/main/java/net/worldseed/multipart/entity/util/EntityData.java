@@ -18,6 +18,7 @@ public class EntityData {
     public static final EntityDataAccessor<Quaternionf> DISPLAY_DATA_RIGHT_ROTATION_ID = getEntityDataAccessor(Display.class, "DATA_RIGHT_ROTATION_ID");
     public static final EntityDataAccessor<Byte> ITEM_DISPLAY_DATA_ITEM_DISPLAY_ID = getEntityDataAccessor(Display.ItemDisplay.class, "DATA_ITEM_DISPLAY_ID");
     public static final EntityDataAccessor<Component> TEXT_DISPLAY_DATA_TEXT_ID = getEntityDataAccessor(Display.TextDisplay.class, "DATA_TEXT_ID");
+    public static final EntityDataAccessor<Byte> TEXT_DISPLAY_DATA_STYLE_FLAGS_ID = getEntityDataAccessor(Display.TextDisplay.class, "DATA_STYLE_FLAGS_ID");
     public static final EntityDataAccessor<Byte> DISPLAY_DATA_BILLBOARD_RENDER_CONSTRAINTS_ID = getEntityDataAccessor(Display.class, "DATA_BILLBOARD_RENDER_CONSTRAINTS_ID");
     public static final EntityDataAccessor<Integer> DISPLAY_DATA_TRANSFORMATION_INTERPOLATION_START_DELTA_TICKS_ID = getEntityDataAccessor(Display.class, "DATA_TRANSFORMATION_INTERPOLATION_START_DELTA_TICKS_ID");
     public static final EntityDataAccessor<Integer> DISPLAY_DATA_TRANSFORMATION_INTERPOLATION_DURATION_ID = getEntityDataAccessor(Display.class, "DATA_TRANSFORMATION_INTERPOLATION_DURATION_ID");

@@ -216,7 +216,7 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
 
     protected void registerBoneSuppliers() {
         boneSuppliers.put(name -> name.equals("nametag") || name.equals("tag_name"),
-                (info, scale) -> new ModelBoneNametag<>(info.pivot(), info.name(), info.rotation(), info.offset(), info.diff(), this, scale));
+                (info, scale) -> new ModelBoneNametag<>(info.pivot(), info.name(), info.rotation(), info.diff(), info.offset(), this, scale));
 
         boneSuppliers.put(name -> name.contains("hitbox"), (info, scale) -> {
             if (info.cubes().isEmpty()) return null;
