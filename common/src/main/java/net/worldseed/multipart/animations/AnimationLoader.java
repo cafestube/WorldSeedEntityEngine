@@ -4,6 +4,7 @@ import com.google.gson.*;
 import net.worldseed.multipart.blueprint.animation.AnimatedBoneData;
 import net.worldseed.multipart.blueprint.animation.AnimationData;
 import net.worldseed.multipart.blueprint.animation.BoneAnimationData;
+import net.worldseed.multipart.blueprint.animation.KeyFrame;
 import net.worldseed.multipart.math.PositionParser;
 import net.worldseed.multipart.mql.MQLPoint;
 
@@ -78,18 +79,18 @@ public class AnimationLoader {
     }
 
     private static FrameProvider computeMathTransforms(int length, JsonElement keyframes, AnimationType type) {
-        List<BoneAnimationImpl.KeyFrame> transform = parseKeyFrames(keyframes);
+        List<KeyFrame> transform = parseKeyFrames(keyframes);
         return new ComputedFrameProvider(transform, type, length);
     }
 
     private static FrameProvider computeCachedTransforms(int length, JsonElement keyframes, AnimationType type) {
-        List<BoneAnimationImpl.KeyFrame> transform = parseKeyFrames(keyframes);
+        List<KeyFrame> transform = parseKeyFrames(keyframes);
         return new CachedFrameProvider(length, transform, type);
     }
 
-    private static List<BoneAnimationImpl.KeyFrame> parseKeyFrames(JsonElement keyframes) {
+    private static List<KeyFrame> parseKeyFrames(JsonElement keyframes) {
         JsonObject keyFrameObj = keyframes.getAsJsonObject();
-        List<BoneAnimationImpl.KeyFrame> transform = new ArrayList<>(keyFrameObj.size());
+        List<KeyFrame> transform = new ArrayList<>(keyFrameObj.size());
 
         try {
             for (Map.Entry<String, JsonElement> entry : keyFrameObj.entrySet()) {
@@ -101,15 +102,15 @@ public class AnimationLoader {
                     if (obj.get("post") instanceof JsonArray arr) {
                         if (arr.get(0) instanceof JsonObject) {
                             MQLPoint point = PositionParser.getMQLPos(obj.get("post").getAsJsonArray().get(0)).orElse(MQLPoint.ZERO);
-                            transform.add(new BoneAnimationImpl.KeyFrame(time, point, lerp));
+                            transform.add(new KeyFrame(time, point, lerp));
                         } else {
                             MQLPoint point = PositionParser.getMQLPos(obj.get("post").getAsJsonArray()).orElse(MQLPoint.ZERO);
-                            transform.add(new BoneAnimationImpl.KeyFrame(time, point, lerp));
+                            transform.add(new KeyFrame(time, point, lerp));
                         }
                     }
                 } else if (entry.getValue() instanceof JsonArray arr) {
                     MQLPoint point = PositionParser.getMQLPos(arr).orElse(MQLPoint.ZERO);
-                    transform.add(new BoneAnimationImpl.KeyFrame(time, point, Interpolation.LINEAR));
+                    transform.add(new KeyFrame(time, point, Interpolation.LINEAR));
                 }
             }
         } catch (IllegalStateException | InvocationTargetException | NoSuchMethodException |
@@ -118,7 +119,7 @@ public class AnimationLoader {
             try {
                 e.printStackTrace();
                 MQLPoint point = PositionParser.getMQLPos(keyFrameObj).orElse(MQLPoint.ZERO);
-                transform.add(new BoneAnimationImpl.KeyFrame(0.0, point, Interpolation.LINEAR));
+                transform.add(new KeyFrame(0.0, point, Interpolation.LINEAR));
             } catch (Exception e2) {
                 e.printStackTrace();
             }

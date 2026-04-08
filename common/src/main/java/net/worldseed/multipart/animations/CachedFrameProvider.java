@@ -1,5 +1,6 @@
 package net.worldseed.multipart.animations;
 
+import net.worldseed.multipart.blueprint.animation.KeyFrame;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Vec;
 
@@ -13,12 +14,12 @@ public class CachedFrameProvider implements FrameProvider {
     private final Map<Short, Point> interpolationCache;
     private final AnimationLoader.AnimationType type;
 
-    public CachedFrameProvider(int length, List<BoneAnimationImpl.KeyFrame> transform, AnimationLoader.AnimationType type) {
+    public CachedFrameProvider(int length, List<KeyFrame> transform, AnimationLoader.AnimationType type) {
         this.interpolationCache = calculateAllTransforms(length, transform, type);
         this.type = type;
     }
 
-    private Map<Short, Point> calculateAllTransforms(double animationTime, List<BoneAnimationImpl.KeyFrame> t, AnimationLoader.AnimationType type) {
+    private Map<Short, Point> calculateAllTransforms(double animationTime, List<KeyFrame> t, AnimationLoader.AnimationType type) {
         Map<Short, Point> transform = new HashMap<>();
         int ticks = (int) (animationTime * 20);
 
@@ -31,7 +32,7 @@ public class CachedFrameProvider implements FrameProvider {
         return transform;
     }
 
-    private Point calculateTransform(int tick, List<BoneAnimationImpl.KeyFrame> transforms, AnimationLoader.AnimationType type, double length) {
+    private Point calculateTransform(int tick, List<KeyFrame> transforms, AnimationLoader.AnimationType type, double length) {
         double toInterpolate = tick * 50.0 / 1000;
 
         if (type == AnimationLoader.AnimationType.ROTATION) {

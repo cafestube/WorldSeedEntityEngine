@@ -1,6 +1,6 @@
 package net.worldseed.multipart.animations;
 
-import net.worldseed.multipart.animations.BoneAnimationImpl.KeyFrame;
+import net.worldseed.multipart.blueprint.animation.KeyFrame;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Vec;
 
@@ -73,7 +73,7 @@ public enum Interpolation {
         return LINEAR; // Default to LINEAR if not found
     }
 
-    public static Point interpolate(double time, List<BoneAnimationImpl.KeyFrame> transform, double animationTime, Vec fallback) {
+    public static Point interpolate(double time, List<KeyFrame> transform, double animationTime, Vec fallback) {
         if(transform.isEmpty()) return fallback;
 
         int currentIndex = 0;
@@ -87,8 +87,8 @@ public enum Interpolation {
         currentIndex = Math.min(currentIndex, transform.size() - 1);
         int nextIndex = Math.min(currentIndex+1, transform.size() - 1);
 
-        BoneAnimationImpl.KeyFrame currentFrame = transform.get(currentIndex);
-        BoneAnimationImpl.KeyFrame nextFrame = transform.get(nextIndex);
+        KeyFrame currentFrame = transform.get(currentIndex);
+        KeyFrame nextFrame = transform.get(nextIndex);
 
         if(currentFrame == nextFrame) {
             return currentFrame.p().evaluate(time);

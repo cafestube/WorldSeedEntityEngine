@@ -1,5 +1,6 @@
 package net.worldseed.multipart.animations;
 
+import net.worldseed.multipart.blueprint.animation.KeyFrame;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Vec;
 
@@ -7,10 +8,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class ComputedFrameProvider implements FrameProvider {
-    private final List<BoneAnimationImpl.KeyFrame> transform;
+    private final List<KeyFrame> transform;
     private final AnimationLoader.AnimationType type;
 
-    public ComputedFrameProvider(List<BoneAnimationImpl.KeyFrame> transform, AnimationLoader.AnimationType type, int length) {
+    public ComputedFrameProvider(List<KeyFrame> transform, AnimationLoader.AnimationType type, int length) {
         this.transform = transform;
         this.type = type;
     }

@@ -93,12 +93,4 @@ public class BoneAnimationImpl implements BoneAnimation {
         return tick;
     }
 
-    public record KeyFrame(double time, MQLPoint p, Interpolation lerp) implements Comparable<KeyFrame> {
-
-        @Override
-        public int compareTo(@NotNull BoneAnimationImpl.KeyFrame o) {
-            return Double.compare(time, o.time);
-        }
-
-    }
 }
