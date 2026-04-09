@@ -138,6 +138,7 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
     public void playAnimation(String animation, AnimationDirection direction, boolean overrideBones, boolean repeating, int startAt, int fadeInDuration, int fadeOutDuration, @Nullable Runnable onEnd) throws IllegalArgumentException {
         ModelAnimationInstance animationInstance = this.animations.get(animation);
         animationInstance.reset();
+        animationInstance.setDirection(direction);
         animationInstance.setOverrideBones(overrideBones);
         animationInstance.setRepeating(repeating);
         animationInstance.setFadeTiming(fadeInDuration, fadeOutDuration);
@@ -160,6 +161,7 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
     public void playAnimation(String animation, AnimationDirection direction, boolean overrideBones, boolean repeating, @Nullable Runnable onEnd) throws IllegalArgumentException {
         ModelAnimationInstance animationInstance = this.animations.get(animation);
         animationInstance.reset();
+        animationInstance.setDirection(direction);
         animationInstance.setOverrideBones(overrideBones);
         animationInstance.setRepeating(repeating);
         animationInstance.setEndCallback(onEnd);
@@ -171,6 +173,7 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
     public void playAnimation(String animation, AnimationDirection direction, int startAt, int fadeInDuration, int fadeOutDuration, @Nullable Runnable onEnd) throws IllegalArgumentException {
         ModelAnimationInstance animationInstance = this.animations.get(animation);
         animationInstance.reset();
+        animationInstance.setDirection(direction);
         animationInstance.setFadeTiming(fadeInDuration, fadeOutDuration);
         animationInstance.setEndCallback(onEnd);
 
@@ -182,6 +185,7 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
         ModelAnimationInstance animationInstance = this.animations.get(animation);
         animationInstance.reset();
         animationInstance.setRepeating(repeating);
+        animationInstance.setDirection(direction);
         animationInstance.setFadeTiming(fadeInDuration, fadeOutDuration);
         animationInstance.setEndCallback(onEnd);
 
