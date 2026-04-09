@@ -86,9 +86,9 @@
 //
 //    @Override
 //    public void tick(long time) {
-//        var position = this.getPosition();
+//        var translation = this.getPosition();
 //        super.tick(time);
-//        if (position.equals(this.getPosition())) return;
+//        if (translation.equals(this.getPosition())) return;
 //        this.model.setPosition(PositionConversion.fromMinestom(this.getPosition()));
 //    }
 //

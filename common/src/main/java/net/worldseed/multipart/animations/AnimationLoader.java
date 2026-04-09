@@ -36,6 +36,8 @@ public class AnimationLoader {
         final JsonElement animationLength = animation.get("animation_length");
         final double length = animationLength == null ? 0 : animationLength.getAsDouble();
         final Map<String, AnimatedBoneData> bones = new HashMap<>();
+        final boolean loop = animation.has("loop") && animation.get("loop").getAsBoolean();
+        final boolean override = animation.has("override_previous_animation") && animation.get("override_previous_animation").getAsBoolean();
 
         final int convertedLength = (int) (length * 20);
 
@@ -75,7 +77,7 @@ public class AnimationLoader {
             bones.put(boneName, new AnimatedBoneData(rotation, position, scale));
         }
 
-        return new AnimationData(length, bones);
+        return new AnimationData(loop, override, length, bones);
     }
 
     private static FrameProvider computeMathTransforms(int length, JsonElement keyframes, AnimationType type) {

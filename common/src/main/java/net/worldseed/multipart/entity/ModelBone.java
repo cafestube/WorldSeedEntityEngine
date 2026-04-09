@@ -2,13 +2,14 @@ package net.worldseed.multipart.entity;
 
 import net.kyori.adventure.util.RGBLike;
 import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.animations.BoneAnimationTransform;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Quaternion;
-import net.worldseed.multipart.animations.BoneAnimation;
 import net.worldseed.multipart.entity.entity.BoneEntity;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,6 +18,10 @@ import java.util.List;
 public interface ModelBone<TViewer> {
 
     Point applyTransform(Point p);
+
+    @NotNull BoneAnimationTransform getAnimationTransform();
+
+    void setAnimationTransform(@Nullable BoneAnimationTransform transform);
 
     void draw();
 
@@ -55,8 +60,6 @@ public interface ModelBone<TViewer> {
     Quaternion calculateFinalAngle(Quaternion q);
 
     void addChild(ModelBone<TViewer> child);
-
-    void addAnimation(BoneAnimation animation);
 
     void addViewer(TViewer player);
 

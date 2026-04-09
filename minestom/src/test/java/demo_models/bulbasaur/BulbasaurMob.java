@@ -43,8 +43,8 @@ public class BulbasaurMob extends EntityCreature {
             damage(event.getDamage().getType(), event.getDamage().getAmount());
         });
 
-        this.animationHandler = new AnimationHandlerImpl(model);
-        this.animationHandler.playRepeat("animation.bulbasaur.ground_idle");
+        this.animationHandler = model.getAnimationHandler();
+        this.animationHandler.playAnimation("animation.bulbasaur.ground_idle", true);
 
         addAIGroup(
                 List.of(

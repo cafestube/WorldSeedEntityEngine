@@ -134,6 +134,7 @@ public class ModelBoneSeat extends ModelBoneImpl<Player> implements RideableBone
     }
 
     public void draw() {
+        super.draw();
         this.children.forEach(ModelBone::draw);
         if (this.offset == null) return;
 

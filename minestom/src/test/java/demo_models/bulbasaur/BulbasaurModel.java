@@ -5,13 +5,14 @@ import net.minestom.server.instance.Instance;
 import net.worldseed.multipart.GenericModelImpl;
 import net.worldseed.multipart.ModelRegistry;
 import net.worldseed.multipart.ModelRegistry;
+import net.worldseed.multipart.blueprint.ModelBlueprint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class BulbasaurModel extends GenericModelImpl {
 
     public BulbasaurModel(ModelRegistry registry) {
-        super(registry, "bulbasaur/bulbasaur.bbmodel");
+        super(ModelBlueprint.loadBlueprint("bulbasaur/bulbasaur.bbmodel", registry));
     }
 
     public void init(@Nullable Instance instance, @NotNull Pos position) {

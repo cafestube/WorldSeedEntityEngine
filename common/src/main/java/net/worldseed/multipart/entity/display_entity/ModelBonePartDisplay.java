@@ -162,6 +162,7 @@ public class ModelBonePartDisplay<TViewer> extends ModelBoneImpl<TViewer> implem
     }
 
     public void draw() {
+        super.draw();
         this.children.forEach(ModelBone::draw);
         if (this.offset == null) return;
 

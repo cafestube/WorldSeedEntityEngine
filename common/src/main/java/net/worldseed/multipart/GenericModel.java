@@ -3,7 +3,7 @@ package net.worldseed.multipart;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.RGBLike;
 import net.worldseed.multipart.animations.AnimationHandler;
-import net.worldseed.multipart.animations.ModelAnimation;
+import net.worldseed.multipart.animations.ModelAnimationInstance;
 import net.worldseed.multipart.blueprint.ModelBlueprint;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
@@ -74,21 +74,21 @@ public interface GenericModel<TViewer> {
     /**
      * Get the postion offset for drawing the model
      *
-     * @return the position
+     * @return the translation
      */
     Point getGlobalOffset();
 
     /**
-     * Get the position the model is being drawn at
+     * Get the translation the model is being drawn at
      *
-     * @return the model position
+     * @return the model translation
      */
     Pos getPosition();
 
     /**
-     * Set the position of the model
+     * Set the translation of the model
      *
-     * @param pos new model position
+     * @param pos new model translation
      */
     void setPosition(Pos pos);
 
@@ -134,11 +134,11 @@ public interface GenericModel<TViewer> {
 
     @NotNull List<ModelBone<TViewer>> getParts();
 
-    void triggerAnimationComplete(ModelAnimation animation, AnimationHandler.AnimationDirection direction);
+    void triggerAnimationComplete(ModelAnimationInstance animation, AnimationHandler.AnimationDirection direction);
 
-    void triggerAnimationStopped(ModelAnimation animation, AnimationHandler.AnimationDirection direction, boolean looped);
+    void triggerAnimationStopped(ModelAnimationInstance animation, AnimationHandler.AnimationDirection direction, boolean looped);
 
-    void triggerAnimationStart(ModelAnimation animation, AnimationHandler.AnimationDirection direction, short tick, boolean looped);
+    void triggerAnimationStart(ModelAnimationInstance animation, AnimationHandler.AnimationDirection direction, short tick, boolean looped);
 
     void setGlobalScale(float scale);
 

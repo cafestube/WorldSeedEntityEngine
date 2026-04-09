@@ -2,7 +2,7 @@ package net.worldseed.multipart;
 
 import net.worldseed.multipart.animations.AnimationHandler;
 import net.worldseed.multipart.animations.AnimationHandlerImpl;
-import net.worldseed.multipart.animations.ModelAnimation;
+import net.worldseed.multipart.animations.ModelAnimationInstance;
 import net.worldseed.multipart.blueprint.ModelBlueprint;
 import net.worldseed.multipart.events.AnimationCompleteEvent;
 import net.worldseed.multipart.events.AnimationStartEvent;
@@ -53,17 +53,17 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
         setPosition(PositionConversion.fromPaper(position));
     }
 
-    public void triggerAnimationComplete(ModelAnimation animation, AnimationHandler.AnimationDirection direction) {
+    public void triggerAnimationComplete(ModelAnimationInstance animation, AnimationHandler.AnimationDirection direction) {
         new AnimationCompleteEvent(this, animation, direction).callEvent();
     }
 
     @Override
-    public void triggerAnimationStopped(ModelAnimation animation, AnimationHandler.AnimationDirection direction, boolean looped) {
+    public void triggerAnimationStopped(ModelAnimationInstance animation, AnimationHandler.AnimationDirection direction, boolean looped) {
         new AnimationStoppedEvent(this, animation, direction, looped).callEvent();
     }
 
     @Override
-    public void triggerAnimationStart(ModelAnimation animation, AnimationHandler.AnimationDirection direction, short tick, boolean looped) {
+    public void triggerAnimationStart(ModelAnimationInstance animation, AnimationHandler.AnimationDirection direction, short tick, boolean looped) {
         new AnimationStartEvent(this, animation, direction, tick, looped).callEvent();
     }
 
@@ -92,12 +92,11 @@ public class GenericModelImpl extends AbstractGenericModelImpl<Player> implement
 
     @Override
     protected void init(@NotNull Pos position, float scale) {
-        super.init(position, scale);
-
         if(this.animationHandler != null) {
             this.animationHandler.destroy();
         }
         this.animationHandler = new AnimationHandlerImpl<>(this);
+        super.init(position, scale);
     }
 
     protected void registerBoneSuppliers() {

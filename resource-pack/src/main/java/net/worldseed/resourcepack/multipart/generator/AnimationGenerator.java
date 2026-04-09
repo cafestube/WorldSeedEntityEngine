@@ -92,29 +92,40 @@ public class AnimationGenerator {
                 JsonObjectBuilder positionJson = Json.createObjectBuilder();
                 JsonObjectBuilder scaleJson = Json.createObjectBuilder();
 
+                boolean hasRotation = false;
                 for (var rotation_ : rotation) {
+                    hasRotation = true;
                     rotationJson.add(rotation_.getKey().toString(), rotation_.getValue());
                 }
 
+                boolean hasPosition = false;
                 for (var position_ : position) {
+                    hasPosition = true;
                     positionJson.add(position_.getKey().toString(), position_.getValue());
                 }
 
+                boolean hasScale = false;
                 for (var scale_ : scale) {
+                    hasScale = true;
                     scaleJson.add(scale_.getKey().toString(), scale_.getValue());
                 }
 
-                JsonObject built = Json.createObjectBuilder()
-                        .add("rotation", rotationJson)
-                        .add("position", positionJson)
-                        .add("scale", scaleJson)
-                        .build();
-
-                bones.add(boneName, built);
+                JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+                if(hasRotation) {
+                    objectBuilder.add("rotation", rotationJson);
+                }
+                if(hasPosition) {
+                    objectBuilder.add("position", positionJson);
+                }
+                if(hasScale) {
+                    objectBuilder.add("scale", scaleJson);
+                }
+                bones.add(boneName, objectBuilder.build());
             }
 
             JsonObject built = Json.createObjectBuilder()
                     .add("loop", animation.getString("loop").equals("loop"))
+                    .add("override_previous_animation", animation.getBoolean("override"))
                     .add("animation_length", length)
                     .add("bones", bones)
                     .build();

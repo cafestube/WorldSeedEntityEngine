@@ -85,7 +85,7 @@
 //
 //        if (entity != null) {
 //            var scale = calculateScale();
-//            var position = calculatePosition();
+//            var translation = calculatePosition();
 //
 //            if (entity.getEntityMeta() instanceof ItemDisplayMeta meta) {
 //                Quaternion q = new Quaternion(calculateRotation());
@@ -96,7 +96,7 @@
 //                meta.setRightRotation(new float[]{(float) q.x(), (float) q.y(), (float) q.z(), (float) q.w()});
 //                meta.setNotifyAboutChanges(true);
 //
-//                entity.teleport(PositionConversion.asMinestom(position.withView((float) 0, 0)));
+//                entity.teleport(PositionConversion.asMinestom(translation.withView((float) 0, 0)));
 //            }
 //        }
 //    }

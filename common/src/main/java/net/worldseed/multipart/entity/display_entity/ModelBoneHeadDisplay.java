@@ -2,7 +2,6 @@ package net.worldseed.multipart.entity.display_entity;
 
 import net.worldseed.multipart.GenericModel;
 import net.worldseed.multipart.animations.AnimationLoader;
-import net.worldseed.multipart.animations.BoneAnimation;
 import net.worldseed.multipart.blueprint.ModelRenderInformation;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Vec;
@@ -20,15 +19,7 @@ public class ModelBoneHeadDisplay<TViewer> extends ModelBonePartDisplay<TViewer>
     @Override
     public Point getPropogatedRotation() {
         Point netTransform = Vec.ZERO;
-
-        for (BoneAnimation currentAnimation : this.allAnimations) {
-            if (currentAnimation != null && currentAnimation.isPlaying()) {
-                if (currentAnimation.getType() == AnimationLoader.AnimationType.ROTATION) {
-                    Point calculatedTransform = currentAnimation.getTransform();
-                    netTransform = netTransform.add(calculatedTransform);
-                }
-            }
-        }
+        netTransform = netTransform.add(this.getAnimationTransform().rotation());
 
         return this.rotation.add(netTransform).add(0, this.headRotation, 0);
     }

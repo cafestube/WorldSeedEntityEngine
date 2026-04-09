@@ -7,6 +7,12 @@ plugins {
 group = "net.cafestube"
 version = property("version") as String
 
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
 repositories {
     mavenCentral()
 }

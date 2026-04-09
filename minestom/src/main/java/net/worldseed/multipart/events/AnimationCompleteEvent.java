@@ -2,11 +2,10 @@ package net.worldseed.multipart.events;
 
 import net.worldseed.multipart.MinestomModel;
 import net.worldseed.multipart.animations.AnimationHandler;
-import net.worldseed.multipart.animations.ModelAnimation;
-import org.jetbrains.annotations.NotNull;
+import net.worldseed.multipart.animations.ModelAnimationInstance;
 
 public record AnimationCompleteEvent(
-        MinestomModel model, ModelAnimation animation,
+        MinestomModel model, ModelAnimationInstance animation,
         AnimationHandler.AnimationDirection direction
 ) implements ModelEvent {
 }

@@ -110,11 +110,11 @@
 //        return super.removeViewer(player);
 //    }
 //
-//    private void init_(@Nullable Instance instance, @NotNull Pos position) {
+//    private void init_(@Nullable Instance instance, @NotNull Pos translation) {
 //        this.instance = instance;
-//        this.position = position;
+//        this.translation = translation;
 //
-//        this.setGlobalRotation(position.yaw());
+//        this.setGlobalRotation(translation.yaw());
 //
 //        try {
 //            super.loadBones(MODEL_JSON, 1);
@@ -138,13 +138,13 @@
 //                }
 //            }
 //        }
-//        this.getModelRoot().setInstance(instance, position);
+//        this.getModelRoot().setInstance(instance, translation);
 //
 //        draw();
 //    }
 //
-//    public void init(@Nullable Instance instance, @NotNull Pos position) {
-//        this.init_(instance, position);
+//    public void init(@Nullable Instance instance, @NotNull Pos translation) {
+//        this.init_(instance, translation);
 //    }
 //
 //    @Override

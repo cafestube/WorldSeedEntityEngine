@@ -75,6 +75,7 @@ public class ModelBoneVFX<TViewer> extends ModelBoneImpl<TViewer> implements VFX
     }
 
     public void draw() {
+        super.draw();
         this.children.forEach(ModelBone::draw);
         if (this.offset == null) return;
 

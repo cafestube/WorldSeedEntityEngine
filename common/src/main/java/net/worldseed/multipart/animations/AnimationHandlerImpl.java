@@ -1,24 +1,22 @@
 package net.worldseed.multipart.animations;
 
 import net.worldseed.multipart.GenericModel;
-import net.worldseed.multipart.blueprint.animation.AnimatedBoneData;
 import net.worldseed.multipart.blueprint.animation.AnimationData;
-import net.worldseed.multipart.blueprint.animation.BoneAnimationData;
+import net.worldseed.multipart.entity.ModelBone;
+import net.worldseed.multipart.math.Point;
+import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.scheduling.ScheduledTask;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 
 public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
     private final GenericModel<TViewer> model;
 
-    private final Map<String, ModelAnimation> animations = new ConcurrentHashMap<>();
-    private final TreeMap<Integer, ModelAnimation> repeating = new TreeMap<>();
-    private ModelAnimation playingOnce = null;
-
-    private final Map<String, Runnable> callbacks = new ConcurrentHashMap<>();
-    private final Map<String, Integer> callbackTimers = new ConcurrentHashMap<>();
+    private final Map<String, ModelAnimationInstance> animations = new ConcurrentHashMap<>();
+    private final List<ModelAnimationInstance> animationsSortedDescending = new ArrayList<>();
     private final ScheduledTask task;
 
     public AnimationHandlerImpl(GenericModel<TViewer> model) {
@@ -39,238 +37,178 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
 
     @Override
     public void registerAnimation(String name, AnimationData animation, int priority) {
-        final double length = animation.length();
-
-        HashSet<BoneAnimation> animationSet = new HashSet<>();
-        HashSet<String> animatedBones = new HashSet<>();
-
-        for (Map.Entry<String, AnimatedBoneData> boneEntry : animation.bones().entrySet()) {
-            String boneName = boneEntry.getKey();
-            var bone = model.getPart(boneName);
-            if (bone == null) continue;
-
-            BoneAnimationData animationRotation = boneEntry.getValue().rotation();
-            BoneAnimationData animationPosition = boneEntry.getValue().position();
-            BoneAnimationData animationScale = boneEntry.getValue().scale();
-
-            boolean animated = false;
-
-            if (animationRotation != null) {
-                animated = true;
-                BoneAnimationImpl boneAnimation = new BoneAnimationImpl(name, boneName, bone, animationRotation, AnimationLoader.AnimationType.ROTATION, length);
-                animationSet.add(boneAnimation);
-            }
-            if (animationPosition != null) {
-                animated = true;
-                BoneAnimationImpl boneAnimation = new BoneAnimationImpl(name, boneName, bone, animationPosition, AnimationLoader.AnimationType.TRANSLATION, length);
-                animationSet.add(boneAnimation);
-            }
-            if (animationScale != null) {
-                animated = true;
-                BoneAnimationImpl boneAnimation = new BoneAnimationImpl(name, boneName, bone, animationScale, AnimationLoader.AnimationType.SCALE, length);
-                animationSet.add(boneAnimation);
-            }
-
-            if (animated) {
-                animatedBones.add(boneName);
-            }
-        }
-
-        animations.put(name, new ModelAnimationClassic(name, (int) (length * 20), priority, animationSet, animatedBones));
+        registerAnimation(new ModelAnimationInstanceImpl(model, name, animation, priority));
     }
 
     @Override
-    public void registerAnimation(ModelAnimation animator) {
+    public void registerAnimation(ModelAnimationInstance animator) {
         animations.put(animator.name(), animator);
-    }
 
-    @Override
-    public void playRepeat(String animation, AnimationDirection direction, short startAt) throws IllegalArgumentException {
-        if (this.animationPriorities().get(animation) == null)
-            throw new IllegalArgumentException("Animation " + animation + " does not exist");
-        var modelAnimation = this.animations.get(animation);
-
-        if (this.repeating.containsKey(this.animationPriorities().get(animation))
-                && modelAnimation.direction() == direction) return;
-
-        modelAnimation.setDirection(direction);
-
-        this.repeating.put(this.animationPriorities().get(animation), modelAnimation);
-        var top = this.repeating.firstEntry();
-
-        if (top != null && animation.equals(top.getValue().name())) { //The animation you want to play is the highest priority
-            this.repeating.values().forEach(v -> {
-                if (!v.name().equals(animation)) { //Stop all lower priority animations to ensure the correct one is playing
-                    this.model.triggerAnimationStopped(v, v.direction(), true);
-                    v.stop(); //The extra loop seemed redundant, please let me know if this breaks something
-                }
-            });
-            if (playingOnce == null) {
-                if(startAt != -1) {
-                    modelAnimation.play(startAt);
-                } else {
-                    modelAnimation.play(false); //Start the repeating animation if no playOnce animation is currently playing
-                }
-                this.model.triggerAnimationStart(modelAnimation, modelAnimation.direction(), modelAnimation.getTick(), true);
-            }
-        }
+        animationsSortedDescending.add(animator);
+        animationsSortedDescending.sort((o1, o2)
+                -> Integer.compare(o2.priority(), o1.priority()));
     }
 
     @Override
     public void stop(String animation) throws IllegalArgumentException {
-        var modelAnimation = this.animations.get(animation);
-        if (modelAnimation == null) {
-            throw new IllegalArgumentException("Animation " + animation + " does not exist");
-        }
-
-        if (modelAnimation.equals(this.playingOnce)) {
-            this.model.triggerAnimationStopped(modelAnimation, modelAnimation.direction(), false);
-            this.playingOnce = null;
-            modelAnimation.stop();
-
-            Map.Entry<Integer, ModelAnimation> firstEntry = this.repeating.firstEntry();
-            if (firstEntry != null) {
-                boolean wasPlaying = firstEntry.getValue().isPlaying();
-                firstEntry.getValue().play(true); //Restart or resume the highest priority repeating animation
-                if(!wasPlaying) {
-                    this.model.triggerAnimationStart(firstEntry.getValue(), firstEntry.getValue().direction(), firstEntry.getValue().getTick(), true);
-                }
-            }
-        }
+        animations.get(animation).stop();
     }
 
-    public void stopRepeat(String animation) throws IllegalArgumentException {
-        var modelAnimation = this.animations.get(animation);
-        if (modelAnimation == null) {
-            throw new IllegalArgumentException("Animation " + animation + " does not exist");
+    @Override
+    public void forceStop(String animation) throws IllegalArgumentException {
+        animations.get(animation).forceStop();
+    }
+
+    @Override
+    public void pause(String animation) throws IllegalArgumentException {
+        animations.get(animation).pause();
+    }
+
+    @Override
+    public void resume(String animation) throws IllegalArgumentException {
+        animations.get(animation).resume();
+    }
+
+    @Override
+    public void updateBone(ModelBone<?> bone) {
+        Point translation = Vec.ZERO;
+        Point rotation = Vec.ZERO;
+        Point scale = Vec.ONE;
+
+        for (ModelAnimationInstance modelAnimationInstance : animationsSortedDescending) {
+            //Avoid allocations by just not doing any calculation for these
+            if(!modelAnimationInstance.getAnimatedBones().contains(bone.getName()))
+                continue;
+            if(!modelAnimationInstance.isActive()) continue;
+
+            Point thisTranslation = modelAnimationInstance.getTranslation(bone.getName());
+            Point thisRotation = modelAnimationInstance.getRotation(bone.getName());
+            Point thisScale = modelAnimationInstance.getScale(bone.getName());
+
+            switch (modelAnimationInstance.getState()) {
+                case FADE_IN -> {
+                    thisTranslation = Vec.ZERO.lerp(
+                            thisTranslation,
+                            modelAnimationInstance.getFadeInPercent()
+                    );
+                    thisRotation = Vec.ZERO.lerp(
+                            thisRotation,
+                            modelAnimationInstance.getFadeInPercent()
+                    );
+                    thisScale = Vec.ONE.lerp(
+                            thisScale,
+                            modelAnimationInstance.getFadeInPercent()
+                    );
+                }
+                case FADE_OUT -> {
+                    thisTranslation = thisTranslation.lerp(
+                            Vec.ZERO,
+                            modelAnimationInstance.getFadeOutPercent()
+                    );
+                    thisRotation = thisRotation.lerp(
+                            Vec.ZERO,
+                            modelAnimationInstance.getFadeOutPercent()
+                    );
+                    thisScale = thisScale.lerp(
+                            Vec.ONE,
+                            modelAnimationInstance.getFadeOutPercent()
+                    );
+                }
+            }
+
+            if(modelAnimationInstance.isOverrideBones()) {
+                translation = thisTranslation;
+                rotation = thisRotation;
+                scale = thisScale;
+            } else {
+                translation = translation.add(thisTranslation);
+                rotation = rotation.add(thisRotation);
+                scale = scale.mul(thisScale);
+            }
         }
 
-        if(!repeating.containsValue(modelAnimation)) {
-            throw new IllegalArgumentException("Animation " + animation + " is not playing as a repeating animation");
-        }
-
-        this.model.triggerAnimationStopped(modelAnimation, modelAnimation.direction(), true);
-        modelAnimation.stop(); //Stop the highest priority repeating animation
-
-        int priority = this.animationPriorities().get(animation);
-        Map.Entry<Integer, ModelAnimation> currentTop = this.repeating.firstEntry();
-
-        this.repeating.remove(priority);
-
-        Map.Entry<Integer, ModelAnimation> firstEntry = this.repeating.firstEntry();
-
-        if (this.playingOnce == null && firstEntry != null && currentTop != null && !firstEntry.getKey().equals(currentTop.getKey())) {
-            firstEntry.getValue().play(false); //Restart the new highest priority repeating animation
-            this.model.triggerAnimationStart(firstEntry.getValue(), firstEntry.getValue().direction(), firstEntry.getValue().getTick(), true);
+        if(!translation.equals(Vec.ZERO) || !rotation.equals(Vec.ZERO) || !scale.equals(Vec.ONE)) {
+            bone.setAnimationTransform(new BoneAnimationTransform(translation, rotation, scale));
+        } else {
+            bone.setAnimationTransform(BoneAnimationTransform.ZERO);
         }
     }
 
     @Override
-    public void playOnce(String animation, AnimationDirection direction, boolean override, short startAt, Runnable cb) throws IllegalArgumentException {
-        if (this.animationPriorities().get(animation) == null)
-            throw new IllegalArgumentException("Animation " + animation + " does not exist");
+    public void playAnimation(String animation, AnimationDirection direction, boolean overrideBones, boolean repeating, int startAt, int fadeInDuration, int fadeOutDuration, @Nullable Runnable onEnd) throws IllegalArgumentException {
+        ModelAnimationInstance animationInstance = this.animations.get(animation);
+        animationInstance.reset();
+        animationInstance.setOverrideBones(overrideBones);
+        animationInstance.setRepeating(repeating);
+        animationInstance.setFadeTiming(fadeInDuration, fadeOutDuration);
+        animationInstance.setEndCallback(onEnd);
 
-        var modelAnimation = this.animations.get(animation);
-
-        AnimationDirection currentDirection = modelAnimation.direction();
-        modelAnimation.setDirection(direction);
-
-        if (this.callbacks.containsKey(animation)) { //This animation had a pending runnable
-            this.callbacks.get(animation).run(); //Run callback runnable
-        }
-
-        int callbackTimer = this.callbackTimers.getOrDefault(animation, 0);
-
-        if (modelAnimation.equals(this.playingOnce) && direction == AnimationDirection.PAUSE && callbackTimer > 0) { //This animation was already playing, paused and not finished
-            // Pause. Only call if we're not stopped
-            playingOnce = modelAnimation;
-            this.callbacks.put(animation, cb);
-        } else if (modelAnimation.equals(this.playingOnce) && currentDirection != direction) { //This animation was already playing, but in a different direction
-            playingOnce = modelAnimation;
-            this.callbacks.put(animation, cb);
-            if (currentDirection != AnimationDirection.PAUSE)
-                this.callbackTimers.put(animation, modelAnimation.animationTime() - callbackTimer + 1);
-        } else if (direction != AnimationDirection.PAUSE) { //This animation was not playing, or it was in the same direction
-            int totalTime = modelAnimation.animationTime();
-            if(startAt != -1) {
-                if(direction == AnimationDirection.FORWARD) {
-                    totalTime -= startAt;
-                } else if(direction == AnimationDirection.BACKWARD) {
-                    totalTime = startAt;
-                }
-            }
-            if(totalTime <= 0) throw new IllegalArgumentException("Animation " + animation + " has no time to play from the given start position");
-
-            if (playingOnce != null) { //Stop current animation
-                this.model.triggerAnimationStopped(playingOnce, playingOnce.direction(), false);
-                playingOnce.stop();
-                modelAnimation.stop();
-            }
-            playingOnce = modelAnimation;
-
-            this.callbacks.put(animation, cb);
-            this.callbackTimers.put(animation, totalTime);
-
-            if(startAt != -1) {
-                modelAnimation.play(startAt);
-            } else {
-                modelAnimation.play(false);
-            }
-            this.model.triggerAnimationStart(modelAnimation, modelAnimation.direction(), modelAnimation.getTick(), false);
-
-            Set<String> animatedBones = modelAnimation.getAnimatedBones();
-            this.repeating.values().forEach(v -> {
-                if (!v.name().equals(animation)) {
-                    if (override) {
-                        this.model.triggerAnimationStopped(v, v.direction(), true);
-                        v.stop(); //Stop all repeating animations
-                    } else {
-                        v.stop(animatedBones); //Stop all 'animatedBones' for all repeating animations
-                    }
-                }
-            });
-        }
+        animationInstance.start(startAt);
     }
+
+    @Override
+    public void playAnimation(String animation, boolean repeating, @Nullable Runnable onEnd) throws IllegalArgumentException {
+        ModelAnimationInstance animationInstance = this.animations.get(animation);
+        animationInstance.reset();
+        animationInstance.setRepeating(repeating);
+        animationInstance.setEndCallback(onEnd);
+
+        animationInstance.start();
+    }
+
+    @Override
+    public void playAnimation(String animation, AnimationDirection direction, boolean overrideBones, boolean repeating, @Nullable Runnable onEnd) throws IllegalArgumentException {
+        ModelAnimationInstance animationInstance = this.animations.get(animation);
+        animationInstance.reset();
+        animationInstance.setOverrideBones(overrideBones);
+        animationInstance.setRepeating(repeating);
+        animationInstance.setEndCallback(onEnd);
+
+        animationInstance.start();
+    }
+
+    @Override
+    public void playAnimation(String animation, AnimationDirection direction, int startAt, int fadeInDuration, int fadeOutDuration, @Nullable Runnable onEnd) throws IllegalArgumentException {
+        ModelAnimationInstance animationInstance = this.animations.get(animation);
+        animationInstance.reset();
+        animationInstance.setFadeTiming(fadeInDuration, fadeOutDuration);
+        animationInstance.setEndCallback(onEnd);
+
+        animationInstance.start(startAt);
+    }
+
+    @Override
+    public void playAnimation(String animation, AnimationDirection direction, boolean repeating, int startAt, int fadeInDuration, int fadeOutDuration, @Nullable Runnable onEnd) throws IllegalArgumentException {
+        ModelAnimationInstance animationInstance = this.animations.get(animation);
+        animationInstance.reset();
+        animationInstance.setRepeating(repeating);
+        animationInstance.setFadeTiming(fadeInDuration, fadeOutDuration);
+        animationInstance.setEndCallback(onEnd);
+
+        animationInstance.start(startAt);
+    }
+
+    private boolean animationRunningLastTick;
 
     protected void tick() {
         try {
-            for (Map.Entry<String, Integer> entry : callbackTimers.entrySet()) {
-                var modelAnimation = animations.get(entry.getKey()); //Get playOnce animation from string
-
-                if (entry.getValue() <= 0) { //All ticks were removed so playOnce should end
-                    if (this.playingOnce != null && this.playingOnce.name().equals(entry.getKey())) {
-                        Map.Entry<Integer, ModelAnimation> firstEntry = this.repeating.firstEntry();
-                        if (firstEntry != null) {
-                            boolean wasPlaying = firstEntry.getValue().isPlaying();
-                            firstEntry.getValue().play(true); //Restart or resume the highest priority repeating animation
-
-                            if(!wasPlaying) {
-                                this.model.triggerAnimationStart(firstEntry.getValue(), firstEntry.getValue().direction(), firstEntry.getValue().getTick(), true);
-                            }
-                        }
-                        this.playingOnce = null;
-                    }
-
-                    this.model.triggerAnimationComplete(modelAnimation, modelAnimation.direction()); //Call AnimationCompleteEvent
-                    modelAnimation.stop();
-
-                    callbackTimers.remove(entry.getKey()); //Remove playOnce animation from map
-
-                    var cb = callbacks.remove(entry.getKey());
-                    if (cb != null) cb.run(); //Run 'callback' runnable
-                } else {
-                    if (modelAnimation.direction() != AnimationDirection.PAUSE) {
-                        callbackTimers.put(entry.getKey(), entry.getValue() - 1); //Countdown 1 tick until it reaches 0 during playOnce animation
-                    }
+            boolean animationRunning = false;
+            for (Map.Entry<String, ModelAnimationInstance> animation : this.animations.entrySet()) {
+                if(animation.getValue().isPlaying()) {
+                    animationRunning = true;
                 }
             }
 
-            if (callbacks.size() + repeating.size() == 0) return; //Return if no playOnce or repeating animation is playing
-            this.model.draw(); 
+            if(animationRunning || animationRunningLastTick) {
+                this.model.draw();
+            }
 
-            this.animations.forEach((animation, animations) -> {
-                animations.tick(); //Play every tick (besides the first one) of the animation
-            });
+            for (Map.Entry<String, ModelAnimationInstance> animation : this.animations.entrySet()) {
+                if(!animation.getValue().isPlaying()) continue;
+                animation.getValue().tick();
+            }
+
+            this.animationRunningLastTick = animationRunning;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -281,43 +219,68 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
     }
 
     @Override
-    public @Nullable String getPlaying() {
-        ModelAnimation playingAnimation = getPlayingAnimation();
-        return playingAnimation != null ? playingAnimation.name() : null;
-    }
-
-    @Override
-    public @Nullable ModelAnimation getPlayingOnceAnimation() {
-        return this.playingOnce;
-    }
-
-    @Override
-    public @Nullable ModelAnimation getPlayingAnimation() {
-        if (this.playingOnce != null) return this.playingOnce;
-        return getRepeatingAnimation();
-    }
-
-    @Override
-    public @Nullable ModelAnimation getRepeatingAnimation() {
-        var playing = this.repeating.firstEntry();
-        return playing != null ? playing.getValue() : null;
-    }
-
-    @Override
-    public @Nullable String getRepeating() {
-        ModelAnimation repeatingAnimation = getRepeatingAnimation();
-        return repeatingAnimation != null ? repeatingAnimation.name() : null;
-    }
-
-    @Override
-    public @Nullable ModelAnimation getAnimation(String animation) {
+    public @Nullable ModelAnimationInstance getAnimation(String animation) {
         return this.animations.get(animation);
+    }
+
+    @Override
+    public List<ModelAnimationInstance> getPlayingAnimations() {
+        ArrayList<ModelAnimationInstance> list = new ArrayList<>(animations.size());
+        for (ModelAnimationInstance value : this.animations.values()) {
+            if(value.isPlaying()) list.add(value);
+        }
+        return list;
+    }
+
+    @Override
+    public List<String> getPlayingAnimationNames() {
+        ArrayList<String> list = new ArrayList<>(animations.size());
+        for (ModelAnimationInstance value : this.animations.values()) {
+            if(value.isPlaying()) list.add(value.name());
+        }
+        return list;
+    }
+
+    @Override
+    public List<ModelAnimationInstance> getPlayingOnceAnimations() {
+        ArrayList<ModelAnimationInstance> list = new ArrayList<>(animations.size());
+        for (ModelAnimationInstance value : this.animations.values()) {
+            if(value.isPlaying() && !value.isRepeating()) list.add(value);
+        }
+        return list;
+    }
+
+    @Override
+    public List<String> getPlayingOnceAnimationNames() {
+        ArrayList<String> list = new ArrayList<>(animations.size());
+        for (ModelAnimationInstance value : this.animations.values()) {
+            if(value.isPlaying() && !value.isRepeating()) list.add(value.name());
+        }
+        return list;
+    }
+
+    @Override
+    public List<ModelAnimationInstance> getRepeatingAnimations() {
+        ArrayList<ModelAnimationInstance> list = new ArrayList<>(animations.size());
+        for (ModelAnimationInstance value : this.animations.values()) {
+            if(value.isPlaying() && value.isRepeating()) list.add(value);
+        }
+        return list;
+    }
+
+    @Override
+    public List<String> getRepeatingAnimationNames() {
+        ArrayList<String> list = new ArrayList<>(animations.size());
+        for (ModelAnimationInstance value : this.animations.values()) {
+            if(value.isPlaying() && value.isRepeating()) list.add(value.name());
+        }
+        return list;
     }
 
     @Override
     public Map<String, Integer> animationPriorities() {
         return new HashMap<>() {{
-            for (Map.Entry<String, ModelAnimation> entry : animations.entrySet()) {
+            for (Map.Entry<String, ModelAnimationInstance> entry : animations.entrySet()) {
                 put(entry.getKey(), entry.getValue().priority());
             }
         }};

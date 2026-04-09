@@ -2,25 +2,23 @@ package net.worldseed.multipart.events;
 
 import net.worldseed.multipart.PaperModel;
 import net.worldseed.multipart.animations.AnimationHandler;
-import net.worldseed.multipart.animations.ModelAnimation;
+import net.worldseed.multipart.animations.ModelAnimationInstance;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 public final class AnimationCompleteEvent extends ModelEvent {
 
-    private final ModelAnimation animation;
+    private final ModelAnimationInstance animation;
     private final AnimationHandler.AnimationDirection direction;
     private static final HandlerList HANDLERS = new HandlerList();
 
-    public AnimationCompleteEvent(@NotNull PaperModel model, ModelAnimation animation, AnimationHandler.AnimationDirection direction) {
+    public AnimationCompleteEvent(@NotNull PaperModel model, ModelAnimationInstance animation, AnimationHandler.AnimationDirection direction) {
         super(model);
         this.animation = animation;
         this.direction = direction;
     }
 
-    public ModelAnimation animation() {
+    public ModelAnimationInstance animation() {
         return animation;
     }
 

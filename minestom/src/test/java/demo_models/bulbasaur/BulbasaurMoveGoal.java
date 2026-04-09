@@ -29,7 +29,7 @@ public class BulbasaurMoveGoal extends GoalSelector {
         target = findTarget();
         if (target == null) return false;
         if (entityCreature.getPassengers().contains(target)) return false;
-        if (!this.animationHandler.getPlaying().equals("animation.bulbasaur.ground_idle")) return false;
+        if (!this.animationHandler.getPlayingAnimationNames().contains("animation.bulbasaur.ground_idle")) return false;
 
         if (entityCreature.getNavigator().getPathPosition() != null)
             if (entityCreature.getNavigator().getPathPosition().samePoint(target.getPosition())) return false;
@@ -39,7 +39,9 @@ public class BulbasaurMoveGoal extends GoalSelector {
 
     @Override
     public void start() {
-        this.animationHandler.playRepeat("animation.bulbasaur.ground_walk");
+        this.animationHandler.playAnimation("animation.bulbasaur.ground_walk", AnimationHandler.AnimationDirection.FORWARD,
+                true, -1, 0, 5, null);
+        this.animationHandler.stop("animation.bulbasaur.ground_idle");
 
         this.entityCreature.setTarget(target);
         Navigator navigator = entityCreature.getNavigator();
@@ -76,13 +78,14 @@ public class BulbasaurMoveGoal extends GoalSelector {
                 || entityCreature.getDistance(target) >= maxDistance
                 || entityCreature.getDistance(target) <= minDistance
                 || entityCreature.getPassengers().contains(target)
-                || !this.animationHandler.getPlaying().equals("animation.bulbasaur.ground_walk");
+                || !this.animationHandler.getPlayingAnimationNames().contains("animation.bulbasaur.ground_walk");
     }
 
     @Override
     public void end() {
         this.entityCreature.getNavigator().setPathTo(null);
-        this.animationHandler.stopRepeat("animation.bulbasaur.ground_walk");
+        this.animationHandler.stop("animation.bulbasaur.ground_walk");
+        this.animationHandler.playAnimation("animation.bulbasaur.ground_idle", true);
         this.forceEnd = false;
     }
 }

@@ -79,6 +79,7 @@ public class ModelBoneNametag<TViewer> extends ModelBoneImpl<TViewer> implements
     }
 
     public void draw() {
+        super.draw();
         TextDisplayBoneEntity<TViewer> entity = this.getEntity();
         if (this.offset == null || stand == null) return;
 

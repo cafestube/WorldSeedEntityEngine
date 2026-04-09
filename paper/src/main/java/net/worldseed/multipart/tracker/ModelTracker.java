@@ -12,7 +12,7 @@ public interface ModelTracker {
 
     /**
      * Starts tracking the given model on the specified entity.
-     * This means that the model will be synced with the entity's position and sent to the client
+     * This means that the model will be synced with the entity's translation and sent to the client
      * when the host entity is in range. Default animations (walk, fly, idle) will also be handled automatically.
      *
      * @param model The model to track.

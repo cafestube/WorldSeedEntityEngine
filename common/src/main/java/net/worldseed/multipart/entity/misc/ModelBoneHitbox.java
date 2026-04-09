@@ -3,7 +3,6 @@ package net.worldseed.multipart.entity.misc;
 import com.google.gson.JsonArray;
 import net.kyori.adventure.util.RGBLike;
 import net.worldseed.multipart.GenericModel;
-import net.worldseed.multipart.animations.BoneAnimation;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
 import net.worldseed.multipart.math.Vec;
@@ -19,6 +18,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 public class ModelBoneHitbox<TViewer> extends ModelBoneImpl<TViewer> implements HitboxBone<TViewer> {
     private static final int INTERPOLATE_TICKS = 2;
@@ -169,12 +169,6 @@ public class ModelBoneHitbox<TViewer> extends ModelBoneImpl<TViewer> implements 
     }
 
     @Override
-    public void addAnimation(BoneAnimation animation) {
-        super.addAnimation(animation);
-        this.illegitimateChildren.forEach(modelBone -> modelBone.addAnimation(animation));
-    }
-
-    @Override
     public void setState(String state) {
     }
 
@@ -212,7 +206,13 @@ public class ModelBoneHitbox<TViewer> extends ModelBoneImpl<TViewer> implements 
 
     public void draw() {
         if (!this.illegitimateChildren.isEmpty()) {
+            super.draw(); //Only update animation state for this one.
+
             this.children.forEach(ModelBone::draw);
+            this.illegitimateChildren.forEach(tViewerModelBone -> {
+                tViewerModelBone.setAnimationTransform(getAnimationTransform());
+                tViewerModelBone.draw();
+            });
             this.illegitimateChildren.forEach(ModelBone::draw);
         }
 

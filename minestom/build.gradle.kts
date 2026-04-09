@@ -43,7 +43,8 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.slf4j:slf4j-simple:2.0.17")
 
-    compileOnly("net.minestom:minestom:2025.12.19-1.21.10")
+    compileOnly("net.minestom:minestom:2026.03.25-1.21.11")
+    testImplementation("net.minestom:minestom:2026.03.25-1.21.11")
     testImplementation("net.minestom:minestom:2025.08.12-1.21.8")
     testImplementation(project(":resource-pack"))
     api(project(":common"))

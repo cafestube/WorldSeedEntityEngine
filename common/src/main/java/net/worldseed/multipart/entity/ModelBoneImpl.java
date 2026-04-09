@@ -2,17 +2,16 @@ package net.worldseed.multipart.entity;
 
 import net.worldseed.multipart.GenericModel;
 import net.worldseed.multipart.animations.AnimationLoader;
-import net.worldseed.multipart.animations.BoneAnimation;
+import net.worldseed.multipart.animations.BoneAnimationTransform;
 import net.worldseed.multipart.math.*;
 import net.worldseed.multipart.entity.entity.BoneEntity;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public abstract class ModelBoneImpl<TViewer> implements ModelBone<TViewer> {
     protected final Point pivot;
     protected final String name;
-    protected final List<BoneAnimation> allAnimations = new ArrayList<>();
     protected final ArrayList<ModelBone<TViewer>> children = new ArrayList<>();
     protected final GenericModel<TViewer> model;
     protected Point diff;
@@ -21,6 +20,7 @@ public abstract class ModelBoneImpl<TViewer> implements ModelBone<TViewer> {
     protected Point rotation;
     protected BoneEntity<TViewer> stand;
     private ModelBone<TViewer> parent;
+    private BoneAnimationTransform animationTransform = BoneAnimationTransform.ZERO;
 
     public ModelBoneImpl(Point pivot, String name, Point rotation, Point diff, Point offset, GenericModel<TViewer> model, float scale) {
         this.name = name;
@@ -34,6 +34,25 @@ public abstract class ModelBoneImpl<TViewer> implements ModelBone<TViewer> {
         else this.pivot = pivot;
 
         this.scale = scale;
+    }
+
+    @Override
+    public void draw() {
+        model.getAnimationHandler().updateBone(this);
+    }
+
+    @Override
+    public @NotNull BoneAnimationTransform getAnimationTransform() {
+        return this.animationTransform;
+    }
+
+    @Override
+    public void setAnimationTransform(BoneAnimationTransform transform) {
+        if(transform == null) {
+            this.animationTransform = BoneAnimationTransform.ZERO;
+            return;
+        }
+        this.animationTransform = transform;
     }
 
     @Override
@@ -87,14 +106,7 @@ public abstract class ModelBoneImpl<TViewer> implements ModelBone<TViewer> {
             endPos = calculateRotation(endPos, this.getPropogatedRotation(), this.pivot);
         }
 
-        for (BoneAnimation currentAnimation : this.allAnimations) {
-            if (currentAnimation != null && currentAnimation.isPlaying()) {
-                if (currentAnimation.getType() == AnimationLoader.AnimationType.TRANSLATION) {
-                    var calculatedTransform = currentAnimation.getTransform();
-                    endPos = endPos.add(calculatedTransform);
-                }
-            }
-        }
+        endPos = endPos.add(animationTransform.translation());
 
         if (this.parent != null) {
             endPos = parent.applyTransform(endPos);
@@ -105,16 +117,7 @@ public abstract class ModelBoneImpl<TViewer> implements ModelBone<TViewer> {
 
     public Point getPropogatedRotation() {
         Point netTransform = Vec.ZERO;
-
-        for (BoneAnimation currentAnimation : this.allAnimations) {
-            if (currentAnimation != null && currentAnimation.isPlaying()) {
-                if (currentAnimation.getType() == AnimationLoader.AnimationType.ROTATION) {
-                    Point calculatedTransform = currentAnimation.getTransform();
-                    netTransform = netTransform.add(calculatedTransform);
-                }
-            }
-        }
-
+        netTransform = netTransform.add(this.animationTransform.rotation());
         return this.rotation.add(netTransform);
     }
 
@@ -122,14 +125,7 @@ public abstract class ModelBoneImpl<TViewer> implements ModelBone<TViewer> {
     public Point getPropogatedScale() {
         Point netTransform = Vec.ONE;
 
-        for (BoneAnimation currentAnimation : this.allAnimations) {
-            if (currentAnimation != null && currentAnimation.isPlaying()) {
-                if (currentAnimation.getType() == AnimationLoader.AnimationType.SCALE) {
-                    Point calculatedTransform = currentAnimation.getTransform();
-                    netTransform = netTransform.mul(calculatedTransform);
-                }
-            }
-        }
+        netTransform = netTransform.mul(animationTransform.scale());
 
         return netTransform;
     }
@@ -151,10 +147,6 @@ public abstract class ModelBoneImpl<TViewer> implements ModelBone<TViewer> {
         }
 
         return q;
-    }
-
-    public void addAnimation(BoneAnimation animation) {
-        this.allAnimations.add(animation);
     }
 
     public void addChild(ModelBone<TViewer> child) {
