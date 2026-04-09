@@ -207,9 +207,9 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
                 this.model.draw();
             }
 
-            for (Map.Entry<String, ModelAnimationInstance> animation : this.animations.entrySet()) {
-                if(!animation.getValue().isPlaying()) continue;
-                animation.getValue().tick();
+
+            for (ModelAnimationInstance animation : this.getPlayingAnimations()) {
+                animation.tick();
             }
 
             this.animationRunningLastTick = animationRunning;

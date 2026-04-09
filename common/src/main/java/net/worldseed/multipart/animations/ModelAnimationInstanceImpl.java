@@ -81,6 +81,9 @@ public class ModelAnimationInstanceImpl implements ModelAnimationInstance {
     @Override
     public void stop() {
         this.stopping = true;
+        if(this.fadeOut == 0) {
+            forceStop();
+        }
     }
 
     @Override
@@ -187,29 +190,26 @@ public class ModelAnimationInstanceImpl implements ModelAnimationInstance {
         switch (this.direction) {
 
             case FORWARD -> {
+                this.tick++;
                 if(this.tick > animationTime() && animationTime() != 0) {
                     if(this.repeating) {
                         this.tick = getStartTick();
                     } else {
                         this.state = AnimationState.FADE_OUT;
                         tickFadeOut();
-
-                        return;
                     }
                 }
-                this.tick++;
             }
             case BACKWARD -> {
+                this.tick--;
                 if(this.tick < 0 && animationTime() != 0) {
                     if(this.repeating) {
                         this.tick = getStartTick();
                     } else {
                         this.state = AnimationState.FADE_OUT;
                         tickFadeOut();
-                        return;
                     }
                 }
-                this.tick--;
             }
         }
     }
@@ -218,7 +218,7 @@ public class ModelAnimationInstanceImpl implements ModelAnimationInstance {
     private int getStartTick() {
         return switch (this.direction) {
             case FORWARD -> 0;
-            case BACKWARD -> animationTime()-1;
+            case BACKWARD -> animationTime();
         };
     }
 
