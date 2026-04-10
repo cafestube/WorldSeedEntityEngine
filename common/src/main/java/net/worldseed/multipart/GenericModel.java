@@ -52,16 +52,22 @@ public interface GenericModel<TViewer> {
     /**
      * Get the rotation of the model on the Y axis
      *
+     * @deprecated Confusing name
      * @return the global rotation
      */
-    double getGlobalRotation();
+    @Deprecated
+    default double getGlobalRotation() {
+        return getGlobalYRotation();
+    }
+
+    double getGlobalYRotation();
 
     /**
      * Set the rotation of the model on the Y axis
      *
-     * @param rotation new global rotation
+     * @param yaw new global rotation
      */
-    void setGlobalRotation(double rotation);
+    void setGlobalRotation(double yaw);
 
     /**
      * Set the rotation of the model on the Y and X axis
@@ -128,9 +134,20 @@ public interface GenericModel<TViewer> {
      * Set the model's head rotation
      *
      * @param name     name of the bone
-     * @param rotation rotation of head
+     * @param yaw      rotation of head
      */
-    void setHeadRotation(String name, double rotation);
+    void setHeadRotation(String name, double yaw);
+
+    /**
+     * Set the model's head rotation
+     *
+     * @param name     name of the bone
+     * @param yaw      rotation of head
+     * @param pitch    rotation of head
+     */
+    void setHeadRotation(String name, double yaw, double pitch);
+
+    void setHeadRotation(double yaw, double pitch);
 
     @NotNull List<ModelBone<TViewer>> getParts();
 

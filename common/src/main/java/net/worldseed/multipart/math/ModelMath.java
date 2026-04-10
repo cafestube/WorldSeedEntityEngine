@@ -1,8 +1,5 @@
 package net.worldseed.multipart.math;
 
-import net.worldseed.multipart.math.Point;
-import net.worldseed.multipart.math.Vec;
-
 class Matrix3 {
     double x1, x2, x3;
     double y1, y2, y3;
@@ -55,6 +52,14 @@ public class ModelMath {
 
     static Point toDegrees(Point vector) {
         return vector.mul(RADIAN);
+    }
+
+    public static double boundedDegrees(double degree) {
+        return (degree % 360.0F + 540.0F) % 360.0F - 180.0F;
+    }
+
+    public static double differenceDegrees(double a, double b) {
+        return boundedDegrees(b - a);
     }
 
     public static Point rotate(Point vector, Point rotation) {

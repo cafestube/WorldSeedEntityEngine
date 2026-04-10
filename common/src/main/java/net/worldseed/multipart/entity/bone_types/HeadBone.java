@@ -8,7 +8,11 @@ public interface HeadBone<TPlayer> extends ModelBone<TPlayer> {
      *
      * @param rotation the new rotation
      */
-    void setRotation(double rotation);
+    void setYRotation(double rotation);
 
-    double getRotation();
+    double getYRotation();
+
+    double getXRotation();
+
+    void setXRotation(double pitch);
 }

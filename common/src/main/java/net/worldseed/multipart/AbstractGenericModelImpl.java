@@ -1,14 +1,12 @@
 package net.worldseed.multipart;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.RGBLike;
 import net.worldseed.multipart.blueprint.ModelBlueprint;
 import net.worldseed.multipart.blueprint.ModelBoneInfo;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Pos;
-import net.worldseed.multipart.math.PositionParser;
 import net.worldseed.multipart.math.Vec;
 import net.worldseed.multipart.entity.*;
 import net.worldseed.multipart.entity.bone_types.HeadBone;
@@ -21,12 +19,9 @@ import net.worldseed.multipart.entity.entity.RootBoneEntity;
 import net.worldseed.multipart.entity.entity.TextDisplayBoneEntity;
 import net.worldseed.multipart.entity.misc.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<TViewer> {
@@ -83,7 +78,7 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
     }
 
     @Override
-    public double getGlobalRotation() {
+    public double getGlobalYRotation() {
         return globalRotation;
     }
 
@@ -275,7 +270,26 @@ public abstract class AbstractGenericModelImpl<TViewer> implements GenericModel<
     @Override
     public void setHeadRotation(String name, double rotation) {
         ModelBone<TViewer> found = this.parts.get(name);
-        if (found instanceof HeadBone<TViewer> head) head.setRotation(rotation);
+        if (found instanceof HeadBone<TViewer> head) head.setYRotation(rotation);
+    }
+
+    @Override
+    public void setHeadRotation(String name, double yaw, double pitch) {
+        ModelBone<TViewer> found = this.parts.get(name);
+        if (found instanceof HeadBone<TViewer> head) {
+            head.setYRotation(yaw);
+            head.setXRotation(pitch);
+        }
+    }
+
+    @Override
+    public void setHeadRotation(double yaw, double pitch) {
+        for (ModelBone<TViewer> value : this.parts.values()) {
+            if (value instanceof HeadBone<TViewer> head) {
+                head.setYRotation(yaw);
+                head.setXRotation(pitch);
+            }
+        }
     }
 
     public @NotNull List<ModelBone<TViewer>> getParts() {
