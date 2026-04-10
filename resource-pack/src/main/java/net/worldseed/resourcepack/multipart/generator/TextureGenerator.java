@@ -41,6 +41,9 @@ public class TextureGenerator {
         JsonValue uuid = textureObj.get("uuid");
         JsonObject mcmeta = null;
 
+        int actualHeight = textureObj.getInt("uv_height", height);
+        int actualWidth = textureObj.getInt("uv_width", width);
+
         if (uuid instanceof JsonString uid && mcmetas.containsKey(uid.getString())) {
             mcmeta = mcmetas.get(uid.getString());
         } else {
@@ -78,6 +81,6 @@ public class TextureGenerator {
             }
         }
 
-        return Map.entry(id, new TextureData(data, width, height, name, id, mcmeta));
+        return Map.entry(id, new TextureData(data, actualWidth, actualHeight, name, id, mcmeta));
     }
 }

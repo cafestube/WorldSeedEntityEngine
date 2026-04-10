@@ -169,7 +169,7 @@ public class ModelParser {
                 HashMap<TextureFace, UV> faces = new HashMap<>();
 
                 for (TextureFace face : cube.uv.keySet()) {
-                    UV newUv = convertUV(cube.uv.get(face), textureWidth, textureHeight, face == TextureFace.up || face == TextureFace.down);
+                    UV newUv = convertUV(cube.uv.get(face), textureWidth, textureHeight, bbModel.textures(), face == TextureFace.up || face == TextureFace.down);
                     faces.put(face, newUv);
                 }
 
@@ -345,7 +345,16 @@ public class ModelParser {
         return res;
     }
 
-    private static UV convertUV(UV uv, int width, int height, boolean inverse) {
+    private static UV convertUV(UV uv, int fallbackWidth, int fallbackHeight, Map<String, TextureGenerator.TextureData> textures, boolean inverse) {
+        int width = fallbackWidth;
+        int height = fallbackHeight;
+
+        TextureGenerator.TextureData textureData = textures.get(uv.texture);
+        if (textureData != null) {
+            width = textureData.width();
+            height = textureData.height();
+        }
+
         double sx = uv.x1 * (16.0 / width);
         double sy = uv.y1 * (16.0 / height);
         double ex = uv.x2 * (16.0 / width);
