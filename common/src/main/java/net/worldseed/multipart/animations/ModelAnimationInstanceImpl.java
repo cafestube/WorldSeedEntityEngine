@@ -148,6 +148,16 @@ public class ModelAnimationInstanceImpl implements ModelAnimationInstance {
     }
 
     @Override
+    public boolean isRotationGlobal(String bone) {
+        AnimatedBoneData animatedBoneData = animation.bones().get(bone);
+        if (animatedBoneData == null || animatedBoneData.rotation() == null) {
+            return false;
+        }
+
+        return animatedBoneData.rotateInGlobalSpace();
+    }
+
+    @Override
     public Point getScale(String bone) {
         AnimatedBoneData animatedBoneData = animation.bones().get(bone);
         if(animatedBoneData == null) return Vec.ONE;

@@ -74,6 +74,7 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
         Point translation = Vec.ZERO;
         Point rotation = Vec.ZERO;
         Point scale = Vec.ONE;
+        boolean rotateInGlobalSpace = false;
 
         for (ModelAnimationInstance modelAnimationInstance : animationsSortedDescending) {
             //Avoid allocations by just not doing any calculation for these
@@ -84,6 +85,7 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
             Point thisTranslation = modelAnimationInstance.getTranslation(bone.getName());
             Point thisRotation = modelAnimationInstance.getRotation(bone.getName());
             Point thisScale = modelAnimationInstance.getScale(bone.getName());
+            boolean thisRotateInGlobalSpace = modelAnimationInstance.isRotationGlobal(bone.getName());
 
             switch (modelAnimationInstance.getState()) {
                 case FADE_IN -> {
@@ -120,15 +122,17 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
                 translation = thisTranslation;
                 rotation = thisRotation;
                 scale = thisScale;
+                rotateInGlobalSpace = thisRotateInGlobalSpace;
             } else {
                 translation = translation.add(thisTranslation);
                 rotation = rotation.add(thisRotation);
                 scale = scale.mul(thisScale);
+                rotateInGlobalSpace = rotateInGlobalSpace || thisRotateInGlobalSpace;
             }
         }
 
-        if(!translation.equals(Vec.ZERO) || !rotation.equals(Vec.ZERO) || !scale.equals(Vec.ONE)) {
-            bone.setAnimationTransform(new BoneAnimationTransform(translation, rotation, scale));
+        if(!translation.equals(Vec.ZERO) || !rotation.equals(Vec.ZERO) || !scale.equals(Vec.ONE) || rotateInGlobalSpace) {
+            bone.setAnimationTransform(new BoneAnimationTransform(translation, rotation, scale, rotateInGlobalSpace));
         } else {
             bone.setAnimationTransform(BoneAnimationTransform.ZERO);
         }

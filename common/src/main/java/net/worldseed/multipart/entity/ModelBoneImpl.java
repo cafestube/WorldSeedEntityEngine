@@ -116,9 +116,7 @@ public abstract class ModelBoneImpl<TViewer> implements ModelBone<TViewer> {
     }
 
     public Point getPropogatedRotation() {
-        Point netTransform = Vec.ZERO;
-        netTransform = netTransform.add(this.animationTransform.rotation());
-        return this.rotation.add(netTransform);
+        return this.rotation.add(this.animationTransform.rotation());
     }
 
     @Override
@@ -141,11 +139,10 @@ public abstract class ModelBoneImpl<TViewer> implements ModelBone<TViewer> {
     }
 
     public Quaternion calculateFinalAngle(Quaternion q) {
-        if (this.parent != null) {
+        if (this.parent != null && !animationTransform.rotateInGlobalSpace()) {
             Quaternion pq = parent.calculateFinalAngle(new Quaternion(parent.getPropogatedRotation()));
             q = pq.multiply(q);
         }
-
         return q;
     }
 

@@ -43,10 +43,12 @@ public class AnimationLoader {
 
         for (Map.Entry<String, JsonElement> boneEntry : animation.getAsJsonObject().get("bones").getAsJsonObject().entrySet()) {
             String boneName = boneEntry.getKey();
+            JsonObject boneObject = boneEntry.getValue().getAsJsonObject();
 
-            JsonElement animationRotation = boneEntry.getValue().getAsJsonObject().get("rotation");
-            JsonElement animationPosition = boneEntry.getValue().getAsJsonObject().get("position");
-            JsonElement animationScale = boneEntry.getValue().getAsJsonObject().get("scale");
+            JsonElement animationRotation = boneObject.get("rotation");
+            JsonElement animationPosition = boneObject.get("position");
+            JsonElement animationScale = boneObject.get("scale");
+            boolean rotateInGlobalSpace = shouldRotateInGlobalSpace(boneObject);
 
             BoneAnimationData rotation = null;
             BoneAnimationData position = null;
@@ -74,7 +76,7 @@ public class AnimationLoader {
                 }
             }
 
-            bones.put(boneName, new AnimatedBoneData(rotation, position, scale));
+            bones.put(boneName, new AnimatedBoneData(rotation, position, scale, rotateInGlobalSpace));
         }
 
         return new AnimationData(loop, override, length, bones);
@@ -83,6 +85,20 @@ public class AnimationLoader {
     private static FrameProvider computeMathTransforms(int length, JsonElement keyframes, AnimationType type) {
         List<KeyFrame> transform = parseKeyFrames(keyframes);
         return new ComputedFrameProvider(transform, type, length);
+    }
+
+    private static boolean shouldRotateInGlobalSpace(JsonObject boneObject) {
+        JsonElement relativeToElement = boneObject.get("relative_to");
+        if (!(relativeToElement instanceof JsonObject relativeTo)) {
+            return false;
+        }
+
+        JsonElement rotationElement = relativeTo.get("rotation");
+        if (rotationElement == null || !rotationElement.isJsonPrimitive()) {
+            return false;
+        }
+
+        return "entity".equalsIgnoreCase(rotationElement.getAsString());
     }
 
     private static FrameProvider computeCachedTransforms(int length, JsonElement keyframes, AnimationType type) {

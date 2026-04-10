@@ -6,13 +6,16 @@ import net.worldseed.multipart.math.Vec;
 public record BoneAnimationTransform(
         Point translation,
         Point rotation,
-        Point scale
+        Point scale,
+
+        boolean rotateInGlobalSpace
 ) {
 
     public static BoneAnimationTransform ZERO = new BoneAnimationTransform(
             Vec.ZERO,
             Vec.ZERO,
-            Vec.ONE
+            Vec.ONE,
+            false
     );
 
 }

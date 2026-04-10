@@ -30,6 +30,7 @@ public class AnimationGenerator {
                 JsonObject animator = animator_.asJsonObject();
 
                 String type = animator.getString("type", "bone");
+                boolean rotationGlobal = animator.getBoolean("rotation_global", false);
 
                 if (!type.equals("bone")) continue;
                 String boneName = animator.getString("name");
@@ -119,6 +120,9 @@ public class AnimationGenerator {
                 }
                 if(hasScale) {
                     objectBuilder.add("scale", scaleJson);
+                }
+                if(rotationGlobal) {
+                    objectBuilder.add("relative_to", Json.createObjectBuilder().add("rotation", "entity"));
                 }
                 bones.add(boneName, objectBuilder.build());
             }

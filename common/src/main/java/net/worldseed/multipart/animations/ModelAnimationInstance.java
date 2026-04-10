@@ -80,6 +80,8 @@ public interface ModelAnimationInstance {
 
     Point getRotation(String name);
 
+    boolean isRotationGlobal(String name);
+
     Point getScale(String name);
 
     enum AnimationState {
