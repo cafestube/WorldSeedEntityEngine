@@ -10,12 +10,12 @@ import java.util.Map;
 public class PrecomputeScriptExecutor implements ScriptExecutor {
 
     private MolangEvaluator molangEvaluator;
-    private ThreadLocal<Map<String, MolangValue>> customQueryValues = ThreadLocal.withInitial(HashMap::new);
+    private Map<String, MolangValue> customQueryValues = new HashMap<>();
 
     public PrecomputeScriptExecutor() {
         MolangValue query = (MolangValue.Holder) field -> {
-            if(customQueryValues.get().containsKey(field)) {
-                return customQueryValues.get().get(field);
+            if(customQueryValues.containsKey(field)) {
+                return customQueryValues.get(field);
             }
 
             return MolangValue.NIL;
@@ -29,7 +29,7 @@ public class PrecomputeScriptExecutor implements ScriptExecutor {
 
 
     public void setLocalCustomQueryValue(String name, MolangValue value) {
-        this.customQueryValues.get().put(name, value);
+        this.customQueryValues.put(name, value);
     }
 
     public MolangEvaluator getMolangEvaluator() {
@@ -37,7 +37,7 @@ public class PrecomputeScriptExecutor implements ScriptExecutor {
     }
 
     public void resetLocalCustomValues() {
-        this.customQueryValues.remove();
+        this.customQueryValues.clear();
     }
 
 }

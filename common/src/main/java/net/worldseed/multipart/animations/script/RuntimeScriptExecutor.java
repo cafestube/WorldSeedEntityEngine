@@ -12,14 +12,14 @@ public class RuntimeScriptExecutor implements ScriptExecutor {
 
     private ModelAnimationInstance instance;
     private MolangEvaluator molangEvaluator;
-    private ThreadLocal<Map<String, MolangValue>> customQueryValues = ThreadLocal.withInitial(HashMap::new);
+    private Map<String, MolangValue> customQueryValues = new HashMap<>();
 
     public RuntimeScriptExecutor(ModelAnimationInstance instance) {
         this.instance = instance;
 
         MolangValue query = (MolangValue.Holder) field -> {
-            if(customQueryValues.get().containsKey(field)) {
-                return customQueryValues.get().get(field);
+            if(customQueryValues.containsKey(field)) {
+                return customQueryValues.get(field);
             }
 
             if(field.equals("anim_time")) {
@@ -37,7 +37,7 @@ public class RuntimeScriptExecutor implements ScriptExecutor {
 
 
     public void setLocalCustomQueryValue(String name, MolangValue value) {
-        this.customQueryValues.get().put(name, value);
+        this.customQueryValues.put(name, value);
     }
 
     public MolangEvaluator getMolangEvaluator() {
@@ -45,7 +45,7 @@ public class RuntimeScriptExecutor implements ScriptExecutor {
     }
 
     public void resetLocalCustomValues() {
-        this.customQueryValues.remove();
+        this.customQueryValues.clear();
     }
 
 }
