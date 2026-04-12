@@ -3,12 +3,13 @@ package net.worldseed.multipart.mql;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.hollowcube.molang.eval.MolangValue;
+import net.worldseed.multipart.animations.script.ScriptExecutor;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Vec;
 import net.hollowcube.molang.MolangExpr;
 import net.hollowcube.molang.MolangOptimizer;
 import net.hollowcube.molang.eval.MolangEvaluator;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -21,12 +22,6 @@ public class MQLPoint {
     double x = 0;
     double y = 0;
     double z = 0;
-
-    private final MQLData data = new MQLData();
-    private final MolangEvaluator evaluator = new MolangEvaluator(Map.of(
-            "q", this.data,
-            "query", this.data
-    ));
 
     public MQLPoint() {
         this(0, 0, 0);
@@ -107,13 +102,16 @@ public class MQLPoint {
         return MolangOptimizer.optimizeAst(molangExpr);
     }
 
-    public Point evaluate(double time) {
-        data.setTime(time);
+    public Point evaluate(ScriptExecutor executor, double time) {
+        boolean requiresExecutor = molangX != null || molangY != null || molangZ != null;
+        if(requiresExecutor) {
+            executor.setLocalCustomQueryValue("anim_time", new MolangValue.Num(time));
+        }
 
         double evaluatedX = x;
         if (molangX != null) {
             try {
-                evaluatedX = this.evaluator.eval(this.molangX);
+                evaluatedX = executor.getMolangEvaluator().eval(this.molangX);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -122,7 +120,7 @@ public class MQLPoint {
         double evaluatedY = y;
         if (molangY != null) {
             try {
-                evaluatedY = this.evaluator.eval(this.molangY);
+                evaluatedY = executor.getMolangEvaluator().eval(this.molangY);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -131,12 +129,15 @@ public class MQLPoint {
         double evaluatedZ = z;
         if (molangZ != null) {
             try {
-                evaluatedZ = this.evaluator.eval(this.molangZ);
+                evaluatedZ = executor.getMolangEvaluator().eval(this.molangZ);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
+        if(requiresExecutor) {
+            executor.resetLocalCustomValues();
+        }
         return new Vec(evaluatedX, evaluatedY, evaluatedZ);
     }
 

@@ -24,7 +24,7 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.13.1")
 
-    implementation("dev.hollowcube:molang:1.0.2")
+    implementation("dev.hollowcube:molang:1.1.0")
     implementation(kotlin("stdlib-jdk8"))
 }
 

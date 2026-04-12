@@ -1,5 +1,6 @@
 package net.worldseed.multipart.animations;
 
+import net.worldseed.multipart.animations.script.ScriptExecutor;
 import net.worldseed.multipart.blueprint.animation.AnimationData;
 import net.worldseed.multipart.math.Point;
 
@@ -83,6 +84,8 @@ public interface ModelAnimationInstance {
     boolean isRotationGlobal(String name);
 
     Point getScale(String name);
+
+    ScriptExecutor getScriptExecutor();
 
     enum AnimationState {
         FADE_IN, PLAYING, FADE_OUT

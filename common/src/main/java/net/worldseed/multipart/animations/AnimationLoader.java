@@ -15,6 +15,9 @@ import java.util.*;
 public class AnimationLoader {
     protected static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
+    //TODO: Maybe system property?
+    //TODO: Check how we continue with this. Cached doesn't give that much of a performance boost
+    public static final boolean USE_CACHED_TRANSFORM = true;
 
     public static Map<String, AnimationData> parseAnimations(String animationString) {
         JsonObject animations = GSON.fromJson(new StringReader(animationString), JsonObject.class);
@@ -54,7 +57,7 @@ public class AnimationLoader {
             BoneAnimationData position = null;
             BoneAnimationData scale = null;
 
-            if (length != 0) {
+            if (length != 0 && USE_CACHED_TRANSFORM) {
                 if (animationRotation != null) {
                     rotation = new BoneAnimationData(computeCachedTransforms(convertedLength, animationRotation, AnimationType.ROTATION));
                 }
@@ -66,13 +69,13 @@ public class AnimationLoader {
                 }
             } else {
                 if (animationRotation != null) {
-                    rotation = new BoneAnimationData(computeMathTransforms(convertedLength, animationRotation, AnimationType.ROTATION));
+                    rotation = new BoneAnimationData(computeMathTransforms(animationRotation, AnimationType.ROTATION));
                 }
                 if (animationPosition != null) {
-                    position = new BoneAnimationData(computeMathTransforms(convertedLength, animationPosition, AnimationType.TRANSLATION));
+                    position = new BoneAnimationData(computeMathTransforms(animationPosition, AnimationType.TRANSLATION));
                 }
                 if (animationScale != null) {
-                    scale = new BoneAnimationData(computeMathTransforms(convertedLength, animationScale, AnimationType.SCALE));
+                    scale = new BoneAnimationData(computeMathTransforms(animationScale, AnimationType.SCALE));
                 }
             }
 
@@ -82,9 +85,9 @@ public class AnimationLoader {
         return new AnimationData(loop, override, length, bones);
     }
 
-    private static FrameProvider computeMathTransforms(int length, JsonElement keyframes, AnimationType type) {
-        List<KeyFrame> transform = parseKeyFrames(keyframes);
-        return new ComputedFrameProvider(transform, type, length);
+    private static FrameProvider computeMathTransforms(JsonElement keyframes, AnimationType type) {
+        KeyFrame[] transform = parseKeyFrames(keyframes);
+        return new ComputedFrameProvider(transform, type);
     }
 
     private static boolean shouldRotateInGlobalSpace(JsonObject boneObject) {
@@ -102,11 +105,11 @@ public class AnimationLoader {
     }
 
     private static FrameProvider computeCachedTransforms(int length, JsonElement keyframes, AnimationType type) {
-        List<KeyFrame> transform = parseKeyFrames(keyframes);
+        KeyFrame[] transform = parseKeyFrames(keyframes);
         return new CachedFrameProvider(length, transform, type);
     }
 
-    private static List<KeyFrame> parseKeyFrames(JsonElement keyframes) {
+    private static KeyFrame[] parseKeyFrames(JsonElement keyframes) {
         JsonObject keyFrameObj = keyframes.getAsJsonObject();
         List<KeyFrame> transform = new ArrayList<>(keyFrameObj.size());
 
@@ -145,7 +148,7 @@ public class AnimationLoader {
         }
 
         Collections.sort(transform);
-        return transform;
+        return transform.toArray(new KeyFrame[0]);
     }
 
 

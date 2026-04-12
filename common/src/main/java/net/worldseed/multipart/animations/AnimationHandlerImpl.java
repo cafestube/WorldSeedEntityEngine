@@ -78,8 +78,6 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
 
         for (ModelAnimationInstance modelAnimationInstance : animationsSortedDescending) {
             //Avoid allocations by just not doing any calculation for these
-            if(!modelAnimationInstance.getAnimatedBones().contains(bone.getName()))
-                continue;
             if(!modelAnimationInstance.isActive()) continue;
 
             Point thisTranslation = modelAnimationInstance.getTranslation(bone.getName());
@@ -207,6 +205,7 @@ public class AnimationHandlerImpl<TViewer> implements AnimationHandler {
                 }
             }
 
+            //TODO: Consider drawing async as animating can get quite expensive
             if(animationRunning || animationRunningLastTick) {
                 this.model.draw();
             }

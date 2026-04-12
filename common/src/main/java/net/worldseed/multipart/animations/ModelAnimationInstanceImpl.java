@@ -1,6 +1,8 @@
 package net.worldseed.multipart.animations;
 
 import net.worldseed.multipart.GenericModel;
+import net.worldseed.multipart.animations.script.RuntimeScriptExecutor;
+import net.worldseed.multipart.animations.script.ScriptExecutor;
 import net.worldseed.multipart.blueprint.animation.AnimatedBoneData;
 import net.worldseed.multipart.blueprint.animation.AnimationData;
 import net.worldseed.multipart.math.Point;
@@ -28,6 +30,7 @@ public class ModelAnimationInstanceImpl implements ModelAnimationInstance {
     private int fadeOut = 0;
 
     private GenericModel<?> model;
+    private ScriptExecutor scriptExecutor;
 
     public ModelAnimationInstanceImpl(GenericModel<?> model, String name, AnimationData animation, int priority) {
         this.animation = animation;
@@ -36,6 +39,8 @@ public class ModelAnimationInstanceImpl implements ModelAnimationInstance {
 
         this.priority = priority;
         reset();
+
+        this.scriptExecutor = new RuntimeScriptExecutor(this);
     }
 
     @Override
@@ -144,7 +149,7 @@ public class ModelAnimationInstanceImpl implements ModelAnimationInstance {
         if(animatedBoneData == null) return Vec.ZERO;
         if(animatedBoneData.rotation() == null) return Vec.ZERO;
 
-        return animatedBoneData.rotation().frameProvider().getFrame(this.tick);
+        return animatedBoneData.rotation().frameProvider().getFrame(getScriptExecutor(), tick);
     }
 
     @Override
@@ -163,7 +168,12 @@ public class ModelAnimationInstanceImpl implements ModelAnimationInstance {
         if(animatedBoneData == null) return Vec.ONE;
         if(animatedBoneData.scale() == null) return Vec.ONE;
 
-        return animatedBoneData.scale().frameProvider().getFrame(this.tick);
+        return animatedBoneData.scale().frameProvider().getFrame(getScriptExecutor(), this.tick);
+    }
+
+    @Override
+    public ScriptExecutor getScriptExecutor() {
+        return this.scriptExecutor;
     }
 
     @Override
@@ -172,7 +182,7 @@ public class ModelAnimationInstanceImpl implements ModelAnimationInstance {
         if(animatedBoneData == null) return Vec.ZERO;
         if(animatedBoneData.position() == null) return Vec.ZERO;
 
-        return animatedBoneData.position().frameProvider().getFrame(this.tick);
+        return animatedBoneData.position().frameProvider().getFrame(getScriptExecutor(), this.tick);
     }
 
     private void tickFadeOut() {

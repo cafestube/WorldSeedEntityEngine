@@ -1,35 +1,33 @@
 package net.worldseed.multipart.animations;
 
+import net.worldseed.multipart.animations.script.ScriptExecutor;
 import net.worldseed.multipart.blueprint.animation.KeyFrame;
 import net.worldseed.multipart.math.Point;
 import net.worldseed.multipart.math.Vec;
 
-import java.security.Key;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.function.Function;
+import java.util.TreeMap;
 
 public enum Interpolation {
     LINEAR("linear") {
         @Override
-        public Point interpolate(List<KeyFrame> points, int toIndex, double time, double timePercent) {
-            KeyFrame to = points.get(toIndex);
-            KeyFrame from = toIndex > 0 ? points.get(toIndex - 1) : to;
-            if(to == from) return to.p().evaluate(time);
+        public Point interpolate(ScriptExecutor executor, KeyFrame[] keyFrames, int fromIndex, KeyFrame from, int toIndex, KeyFrame to, double time, double timePercent) {
+            if(from == to) return to.point().evaluate(executor, time);
 
-            return from.p().evaluate(time).lerp(to.p().evaluate(time), timePercent);
+            return from.point().evaluate(executor, time).lerp(to.point().evaluate(executor, time), timePercent);
         }
     },
 
     CATMULL_ROM("catmullrom") {
         @Override
-        public Point interpolate(List<KeyFrame> points, int toIndex, double time, double timePercent) {
-            Point before = (toIndex > 1 ? points.get(toIndex - 2) : points.getFirst()).p().evaluate(time);
-            KeyFrame toFrame = points.get(toIndex);
-            Point to = toFrame.p().evaluate(time);
-            Point from = (toIndex > 0 ? points.get(toIndex - 1) : toFrame).p().evaluate(time);
-            Point after = ( toIndex + 1 < points.size() ? points.get(toIndex + 1) : points.getLast()).p().evaluate(time);
+        public Point interpolate(ScriptExecutor executor, KeyFrame[] keyFrames, int fromIndex, KeyFrame fromFrame, int toIndex, KeyFrame toFrame, double time, double timePercent) {
+            int beforeFrame = Interpolation.getPreviousKeyframeIndex(keyFrames, fromIndex);
+            int afterFrame = Interpolation.getNextKeyframeIndex(keyFrames, toIndex);
+
+            Point before = keyFrames[beforeFrame].point().evaluate(executor, time);
+            Point to = toFrame.point().evaluate(executor, time);
+            Point from = fromFrame.point().evaluate(executor, time);
+            Point after = keyFrames[afterFrame].point().evaluate(executor, time);
 
             return new Vec(
                     catmullRom(before.x(), from.x(), to.x(), after.x(), timePercent),
@@ -47,8 +45,8 @@ public enum Interpolation {
 
     STEP("step") {
         @Override
-        public Point interpolate(List<KeyFrame> points, int toIndex, double time, double timePercent) {
-            return (toIndex > 0 ? points.get(toIndex - 1) : points.get(toIndex)).p().evaluate(time);
+        public Point interpolate(ScriptExecutor executor, KeyFrame[] keyFrames, int fromIndex, KeyFrame from, int toIndex, KeyFrame to, double time, double timePercent) {
+            return from.point().evaluate(executor, time);
         }
     };
 
@@ -58,7 +56,16 @@ public enum Interpolation {
         this.bedrockName = bedrockName;
     }
 
-    public abstract Point interpolate(List<KeyFrame> keyFrames, int toIndex, double time, double timePercent);
+    public abstract Point interpolate(
+            ScriptExecutor executor,
+            KeyFrame[] keyFrames,
+            int fromIndex,
+            KeyFrame from,
+            int toIndex,
+            KeyFrame to,
+            double time,
+            double timePercent
+    );
 
     public static Interpolation fromBedrockName(String name) {
         if(name == null) {
@@ -73,30 +80,69 @@ public enum Interpolation {
         return LINEAR; // Default to LINEAR if not found
     }
 
-    public static Point interpolate(double time, List<KeyFrame> transform, double animationTime, Vec fallback) {
-        if(transform.isEmpty()) return fallback;
+    private static int findPreviousOrCurrentKeyframeIndex(KeyFrame[] keyframes, double currentTime) {
+        int left = 0;
+        int right = keyframes.length - 1;
+        int result = -1;
 
-        int currentIndex = 0;
-        for (int i = 0; i < transform.size(); i++) {
-            if (transform.get(i).time() > time) {
-                break;
+        while (left <= right) {
+            int mid = (left + right) >>> 1;
+            double midTime = keyframes[mid].time();
+
+            if (midTime <= currentTime) {
+                result = mid;
+                left = mid + 1;
+            } else {
+                right = mid - 1;
             }
-            currentIndex = i;
         }
 
-        currentIndex = Math.min(currentIndex, transform.size() - 1);
-        int nextIndex = Math.min(currentIndex+1, transform.size() - 1);
+        return result;
+    }
 
-        KeyFrame currentFrame = transform.get(currentIndex);
-        KeyFrame nextFrame = transform.get(nextIndex);
+    private static int getNextKeyframeIndex(KeyFrame[] keyFrames, int current) {
+        if(keyFrames.length <= current+1) return current;
+        return current + 1;
+    }
 
-        if(currentFrame == nextFrame) {
-            return currentFrame.p().evaluate(time);
+    private static int getPreviousKeyframeIndex(KeyFrame[] keyFrames, int current) {
+        if(current-1 < 0) return current;
+        return current - 1;
+    }
+
+
+    public static Point interpolate(ScriptExecutor executor, double time, KeyFrame[] transform, Vec fallback) {
+        if(transform.length == 0) return fallback;
+        if(transform.length == 1) return transform[0].point().evaluate(executor, time);
+
+        int index = findPreviousOrCurrentKeyframeIndex(transform, time);
+        if(index == -1) return fallback;
+        KeyFrame currentOrPrevious = transform[index];
+        if(currentOrPrevious.time() == time) { //We are at this exact point, stop here
+            return currentOrPrevious.point().evaluate(executor, time);
         }
 
-        double timeDiff = nextFrame.time() - currentFrame.time();
-        double timePercent = (time - currentFrame.time()) / timeDiff;
+        int nextFrame = getNextKeyframeIndex(transform, index);
+        if(nextFrame == index) { //We have no next frame
+            return transform[nextFrame].point().evaluate(executor, time);
+        }
+        KeyFrame nextKeyFrame = transform[nextFrame];
 
-        return currentFrame.lerp().interpolate(transform, nextIndex, time, timePercent);
+        double timeDiff = nextKeyFrame.time() - currentOrPrevious.time();
+        double timePercent = (time - currentOrPrevious.time()) / timeDiff;
+
+        return currentOrPrevious.interpolation().interpolate(
+                executor,
+                transform,
+
+                index,
+                currentOrPrevious,
+
+                nextFrame,
+                nextKeyFrame,
+
+                time,
+                timePercent
+        );
     }
 }
